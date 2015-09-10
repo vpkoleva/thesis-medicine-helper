@@ -36,7 +36,7 @@ public class OAuth2Service {
     @Timed
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public HashMap.Entry<String, String> getToken(@FormParam("grant_type") String grantType,
+    public HashMap.SimpleEntry<String, String> getToken(@FormParam("grant_type") String grantType,
             @FormParam("username") String username,
             @FormParam("password") String password) {
 
