@@ -1,4 +1,4 @@
-package bg.unisofia.fmi.valentinalatinova.rest.json;
+package bg.unisofia.fmi.valentinalatinova.rest.dto;
 
 import bg.unisofia.fmi.valentinalatinova.rest.utils.JsonDateTimeUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,9 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.joda.time.DateTime;
 
-public class MobileTableValue {
-    @JsonProperty
-    private long id;
+public class MobileTableValueDto extends BaseDto {
     @JsonProperty
     private String measurement;
     @JsonProperty
@@ -16,21 +14,13 @@ public class MobileTableValue {
     @JsonDeserialize(using = JsonDateTimeUtils.DateTimeDeserializer.class)
     private DateTime measurementDate;
     @JsonProperty
-    private long fieldId;
+    private long tableId;
 
-    public MobileTableValue(long id, String measurement, DateTime measurementDate, long fieldId) {
+    public MobileTableValueDto(long id, String measurement, DateTime measurementDate, long tableId) {
         this.id = id;
         this.measurement = measurement;
         this.measurementDate = measurementDate;
-        this.fieldId = fieldId;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
+        this.tableId = tableId;
     }
 
     public String getMeasurement() {
@@ -49,11 +39,11 @@ public class MobileTableValue {
         this.measurementDate = measurementDate;
     }
 
-    public long getFieldId() {
-        return fieldId;
+    public long getTableId() {
+        return tableId;
     }
 
-    public void setFieldId(long fieldId) {
-        this.fieldId = fieldId;
+    public void setTableId(long tableId) {
+        this.tableId = tableId;
     }
 }

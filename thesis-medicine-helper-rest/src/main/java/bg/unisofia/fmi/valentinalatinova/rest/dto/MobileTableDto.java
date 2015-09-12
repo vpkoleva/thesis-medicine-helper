@@ -1,31 +1,23 @@
-package bg.unisofia.fmi.valentinalatinova.rest.json;
+package bg.unisofia.fmi.valentinalatinova.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class MobileTableField {
-    @JsonProperty
-    private long id;
+import java.util.List;
+
+public class MobileTableDto extends BaseDto {
     @JsonProperty
     private String name;
     @JsonProperty
-    private int order;
+    private List<MobileTableValueDto> values;
     @JsonIgnore
     private long usedId;
 
-    public MobileTableField(long id, String name, int order, long usedId) {
+    public MobileTableDto(long id, String name, List<MobileTableValueDto> values, long usedId) {
         this.id = id;
         this.name = name;
-        this.order = order;
+        this.values = values;
         this.usedId = usedId;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -36,12 +28,12 @@ public class MobileTableField {
         this.name = name;
     }
 
-    public int getOrder() {
-        return order;
+    public List<MobileTableValueDto> getValues() {
+        return values;
     }
 
-    public void setOrder(int order) {
-        this.order = order;
+    public void setValues(List<MobileTableValueDto> values) {
+        this.values = values;
     }
 
     public long getUsedId() {

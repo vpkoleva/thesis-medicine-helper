@@ -1,4 +1,4 @@
-package bg.unisofia.fmi.valentinalatinova.rest.json;
+package bg.unisofia.fmi.valentinalatinova.rest.dto;
 
 import bg.unisofia.fmi.valentinalatinova.rest.utils.Duration;
 import bg.unisofia.fmi.valentinalatinova.rest.utils.JsonDateTimeUtils;
@@ -8,9 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.joda.time.DateTime;
 
-public class MobileSchedule {
-    @JsonProperty
-    private long id;
+public class MobileScheduleDto extends BaseDto {
     @JsonProperty
     private String description;
     @JsonProperty
@@ -28,12 +26,12 @@ public class MobileSchedule {
     @JsonIgnore
     private long userId;
 
-    public MobileSchedule() {
+    public MobileScheduleDto() {
         // Needed by Jackson deserialization
     }
 
-    public MobileSchedule(long id, String description, DateTime startDate, int duration,
-            Duration durationType, int frequency, Duration frequencyType, long userId) {
+    public MobileScheduleDto(long id, String description, DateTime startDate, int duration,
+                             Duration durationType, int frequency, Duration frequencyType, long userId) {
         this.id = id;
         this.description = description;
         this.startDate = startDate;
@@ -42,31 +40,6 @@ public class MobileSchedule {
         this.frequency = frequency;
         this.frequencyType = frequencyType;
         this.userId = userId;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        MobileSchedule that = (MobileSchedule) o;
-        return id == that.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return (int) (id ^ (id >>> 32));
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public String getDescription() {

@@ -2,8 +2,10 @@ package bg.unisofia.fmi.valentinalatinova.rest.resources;
 
 import bg.unisofia.fmi.valentinalatinova.rest.data.AccessToken;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.AccessTokenDAO;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.UserDAO;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.AccessTokenDaoo;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.UserDaoo;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.AccessTokenDaoImpl;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.UserDaoImpl;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
@@ -23,10 +25,10 @@ import java.util.HashMap;
 @Produces(MediaType.APPLICATION_JSON)
 public class OAuth2Service {
     private ImmutableList<String> allowedGrantTypes;
-    private AccessTokenDAO accessTokenDAO;
-    private UserDAO userDAO;
+    private AccessTokenDaoo accessTokenDAO;
+    private UserDaoo userDAO;
 
-    public OAuth2Service(ImmutableList<String> allowedGrantTypes, AccessTokenDAO accessTokenDAO, UserDAO userDAO) {
+    public OAuth2Service(ImmutableList<String> allowedGrantTypes, AccessTokenDaoo accessTokenDAO, UserDaoo userDAO) {
         this.allowedGrantTypes = allowedGrantTypes;
         this.accessTokenDAO = accessTokenDAO;
         this.userDAO = userDAO;
@@ -53,7 +55,7 @@ public class OAuth2Service {
         }
 
         // User was found, generate a token and return it.
-        AccessToken accessToken = accessTokenDAO.generateAccessToken(user.get(), new DateTime());
+        AccessToken accessToken = accessTokenDAO.generateAccessToken(user.get());
         return new HashMap.SimpleEntry<String, String>("authToken", accessToken.getAccessTokenId().toString());
     }
 }

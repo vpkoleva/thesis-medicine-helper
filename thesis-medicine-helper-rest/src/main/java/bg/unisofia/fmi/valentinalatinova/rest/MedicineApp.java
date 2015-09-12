@@ -2,8 +2,10 @@ package bg.unisofia.fmi.valentinalatinova.rest;
 
 import bg.unisofia.fmi.valentinalatinova.rest.auth.OAuth2Authenticator;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.AccessTokenDAO;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.UserDAO;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.AccessTokenDaoo;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.UserDaoo;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.AccessTokenDaoImpl;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.UserDaoImpl;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.MobileScheduleService;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.MobileTableService;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.OAuth2Service;
@@ -21,8 +23,8 @@ public class MedicineApp extends Application<MedicineConfig> {
     @Override
     public void run(MedicineConfig config, Environment environment) {
         // Create DAOs
-        AccessTokenDAO accessTokenDAO = new AccessTokenDAO();
-        UserDAO userDAO = new UserDAO();
+        AccessTokenDaoo accessTokenDAO = new AccessTokenDaoImpl();
+        UserDaoo userDAO = new UserDaoImpl();
 
         // Register oauth2 service
         final OAuth2Service oAuth2Service = new OAuth2Service(config.getOAuth().getAllowedGrantTypes(),

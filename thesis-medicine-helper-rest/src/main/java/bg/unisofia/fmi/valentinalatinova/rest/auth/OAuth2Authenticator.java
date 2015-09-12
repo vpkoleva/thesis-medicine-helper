@@ -2,7 +2,7 @@ package bg.unisofia.fmi.valentinalatinova.rest.auth;
 
 import bg.unisofia.fmi.valentinalatinova.rest.data.AccessToken;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.AccessTokenDAO;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.AccessTokenDaoo;
 import com.google.common.base.Optional;
 import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;
@@ -12,12 +12,12 @@ import org.joda.time.Period;
 import java.util.UUID;
 
 public class OAuth2Authenticator implements Authenticator<String, User> {
-    private AccessTokenDAO accessTokenDAO;
+    private AccessTokenDaoo accessTokenDao;
     private boolean authDisabled;
     private int accessTokenExpireTimeMinutes;
 
-    public OAuth2Authenticator(AccessTokenDAO accessTokenDAO, boolean authDisabled, int accessTokenExpireTimeMinutes) {
-        this.accessTokenDAO = accessTokenDAO;
+    public OAuth2Authenticator(AccessTokenDaoo accessTokenDao, boolean authDisabled, int accessTokenExpireTimeMinutes) {
+        this.accessTokenDao = accessTokenDao;
         this.authDisabled = authDisabled;
         this.accessTokenExpireTimeMinutes = accessTokenExpireTimeMinutes;
     }
@@ -38,7 +38,7 @@ public class OAuth2Authenticator implements Authenticator<String, User> {
         }
 
         // Get the access token from the database
-        Optional<AccessToken> accessToken = accessTokenDAO.findAccessTokenById(accessTokenUUID);
+        Optional<AccessToken> accessToken = accessTokenDao.findAccessTokenById(accessTokenUUID);
         if (accessToken == null || !accessToken.isPresent()) {
             return Optional.absent();
         }
@@ -50,7 +50,7 @@ public class OAuth2Authenticator implements Authenticator<String, User> {
         }
 
         // Update the access time for the token
-        accessTokenDAO.updateLastAccessTime(accessTokenUUID, new DateTime());
+        accessTokenDao.updateLastAccessTime(accessTokenUUID);
 
         // Return the user's id for processing
         return Optional.of(accessToken.get().getUser());
