@@ -1,13 +1,13 @@
 package bg.unisofia.fmi.valentinalatinova.rest.persistence.impl;
 
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.UserDaoo;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.UserDao;
 import com.google.common.base.Optional;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class UserDaoImpl implements UserDaoo {
+public class UserDaoImpl implements UserDao {
     final static Map<Long, User> userTable = new HashMap<>();
 
     static {

@@ -4,7 +4,7 @@ import bg.unisofia.fmi.valentinalatinova.rest.dto.MobileScheduleDto;
 
 import java.util.List;
 
-public interface MobileScheduleDaoo extends BaseDao<MobileScheduleDto> {
+public interface MobileScheduleDao extends BaseDao<MobileScheduleDto> {
 
     /**
      * Gets all schedules for given user.

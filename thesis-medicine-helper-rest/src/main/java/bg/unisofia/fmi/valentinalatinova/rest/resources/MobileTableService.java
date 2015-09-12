@@ -2,7 +2,7 @@ package bg.unisofia.fmi.valentinalatinova.rest.resources;
 
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
 import bg.unisofia.fmi.valentinalatinova.rest.dto.MobileTableDto;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.MobileTableDaoo;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.MobileTableDao;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.MobileTableDaoImpl;
 import com.codahale.metrics.annotation.Timed;
 import io.dropwizard.auth.Auth;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @Path("/mobile/table")
 public class MobileTableService {
-    private MobileTableDaoo mobileTableDaoo;
+    private MobileTableDao mobileTableDaoo;
 
     public MobileTableService() {
         mobileTableDaoo = new MobileTableDaoImpl();

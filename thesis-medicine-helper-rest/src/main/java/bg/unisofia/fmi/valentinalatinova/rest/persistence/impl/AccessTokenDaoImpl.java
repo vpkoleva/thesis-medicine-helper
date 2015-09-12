@@ -2,7 +2,7 @@ package bg.unisofia.fmi.valentinalatinova.rest.persistence.impl;
 
 import bg.unisofia.fmi.valentinalatinova.rest.data.AccessToken;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.AccessTokenDaoo;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.AccessTokenDao;
 import com.google.common.base.Optional;
 import org.joda.time.DateTime;
 
@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class AccessTokenDaoImpl implements AccessTokenDaoo {
+public class AccessTokenDaoImpl implements AccessTokenDao {
     private static Map<UUID, AccessToken> accessTokenTable = new HashMap<>();
 
     @Override

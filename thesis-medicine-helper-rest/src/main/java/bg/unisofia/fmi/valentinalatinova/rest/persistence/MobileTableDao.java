@@ -5,7 +5,7 @@ import bg.unisofia.fmi.valentinalatinova.rest.dto.MobileTableValueDto;
 
 import java.util.List;
 
-public interface MobileTableDaoo extends BaseDao<MobileTableValueDto> {
+public interface MobileTableDao extends BaseDao<MobileTableValueDto> {
 
     /**
      * Get mobile tables for given user id.

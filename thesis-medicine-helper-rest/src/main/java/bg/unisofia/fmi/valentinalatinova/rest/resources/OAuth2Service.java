@@ -2,8 +2,8 @@ package bg.unisofia.fmi.valentinalatinova.rest.resources;
 
 import bg.unisofia.fmi.valentinalatinova.rest.data.AccessToken;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.AccessTokenDaoo;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.UserDaoo;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.AccessTokenDao;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.UserDao;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.AccessTokenDaoImpl;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.UserDaoImpl;
 import com.codahale.metrics.annotation.Timed;
@@ -25,13 +25,13 @@ import java.util.HashMap;
 @Produces(MediaType.APPLICATION_JSON)
 public class OAuth2Service {
     private ImmutableList<String> allowedGrantTypes;
-    private AccessTokenDaoo accessTokenDAO;
-    private UserDaoo userDAO;
+    private AccessTokenDao accessTokenDAO;
+    private UserDao userDao;
 
-    public OAuth2Service(ImmutableList<String> allowedGrantTypes, AccessTokenDaoo accessTokenDAO, UserDaoo userDAO) {
+    public OAuth2Service(ImmutableList<String> allowedGrantTypes, AccessTokenDao accessTokenDAO, UserDao userDao) {
         this.allowedGrantTypes = allowedGrantTypes;
         this.accessTokenDAO = accessTokenDAO;
-        this.userDAO = userDAO;
+        this.userDao = userDao;
     }
 
     @POST
@@ -49,7 +49,7 @@ public class OAuth2Service {
         }
 
         // Try to find a user with the supplied credentials.
-        Optional<User> user = userDAO.findByUsernameAndPassword(username, password);
+        Optional<User> user = userDao.findByUsernameAndPassword(username, password);
         if (user == null || !user.isPresent()) {
             throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
         }

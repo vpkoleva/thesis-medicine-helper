@@ -3,7 +3,7 @@ package bg.unisofia.fmi.valentinalatinova.rest.persistence;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
 import com.google.common.base.Optional;
 
-public interface UserDaoo {
+public interface UserDao {
 
     /**
      * Finds user by username and password.

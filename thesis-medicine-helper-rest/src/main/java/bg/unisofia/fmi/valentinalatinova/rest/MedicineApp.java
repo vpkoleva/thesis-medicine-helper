@@ -2,8 +2,8 @@ package bg.unisofia.fmi.valentinalatinova.rest;
 
 import bg.unisofia.fmi.valentinalatinova.rest.auth.OAuth2Authenticator;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.AccessTokenDaoo;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.UserDaoo;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.AccessTokenDao;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.UserDao;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.AccessTokenDaoImpl;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.UserDaoImpl;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.MobileScheduleService;
@@ -23,12 +23,12 @@ public class MedicineApp extends Application<MedicineConfig> {
     @Override
     public void run(MedicineConfig config, Environment environment) {
         // Create DAOs
-        AccessTokenDaoo accessTokenDAO = new AccessTokenDaoImpl();
-        UserDaoo userDAO = new UserDaoImpl();
+        AccessTokenDao accessTokenDao = new AccessTokenDaoImpl();
+        UserDao userDao = new UserDaoImpl();
 
         // Register oauth2 service
         final OAuth2Service oAuth2Service = new OAuth2Service(config.getOAuth().getAllowedGrantTypes(),
-                accessTokenDAO, userDAO);
+                accessTokenDao, userDao);
         environment.jersey().register(oAuth2Service);
 
         // Register mobile schedule service
@@ -45,7 +45,7 @@ public class MedicineApp extends Application<MedicineConfig> {
         environment.jersey().register(healthCheck);
 
         // Register security component
-        OAuth2Authenticator authenticator = new OAuth2Authenticator(accessTokenDAO, config.getOAuth().isDisabled(),
+        OAuth2Authenticator authenticator = new OAuth2Authenticator(accessTokenDao, config.getOAuth().isDisabled(),
                 config.getOAuth().getAccessTokenExpireTimeMinutes());
         environment.jersey().register(
                 AuthFactory.binder(new OAuthFactory<User>(authenticator, "oauth2-provider", User.class)));

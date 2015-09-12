@@ -3,13 +3,13 @@ package bg.unisofia.fmi.valentinalatinova.rest.persistence.impl;
 import bg.unisofia.fmi.valentinalatinova.rest.dto.MobileTableDto;
 import bg.unisofia.fmi.valentinalatinova.rest.dto.MobileTableValueDto;
 import bg.unisofia.fmi.valentinalatinova.rest.dto.ResultDto;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.MobileTableDaoo;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.MobileTableDao;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MobileTableDaoImpl implements MobileTableDaoo {
+public class MobileTableDaoImpl implements MobileTableDao {
     private static List<MobileTableDto> tables = new ArrayList<>();
 
     static {

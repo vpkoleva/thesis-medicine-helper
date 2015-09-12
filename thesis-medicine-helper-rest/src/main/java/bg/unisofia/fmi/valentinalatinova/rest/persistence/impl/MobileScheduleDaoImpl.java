@@ -2,14 +2,14 @@ package bg.unisofia.fmi.valentinalatinova.rest.persistence.impl;
 
 import bg.unisofia.fmi.valentinalatinova.rest.dto.MobileScheduleDto;
 import bg.unisofia.fmi.valentinalatinova.rest.dto.ResultDto;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.MobileScheduleDaoo;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.MobileScheduleDao;
 import bg.unisofia.fmi.valentinalatinova.rest.utils.Duration;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MobileScheduleDaoImpl implements MobileScheduleDaoo {
+public class MobileScheduleDaoImpl implements MobileScheduleDao {
 
     private static List<MobileScheduleDto> schedules = new ArrayList<>();
 

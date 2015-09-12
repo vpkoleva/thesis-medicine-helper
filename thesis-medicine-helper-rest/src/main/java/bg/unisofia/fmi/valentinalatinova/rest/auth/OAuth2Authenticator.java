@@ -2,7 +2,7 @@ package bg.unisofia.fmi.valentinalatinova.rest.auth;
 
 import bg.unisofia.fmi.valentinalatinova.rest.data.AccessToken;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.AccessTokenDaoo;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.AccessTokenDao;
 import com.google.common.base.Optional;
 import io.dropwizard.auth.AuthenticationException;
 import io.dropwizard.auth.Authenticator;
@@ -12,11 +12,11 @@ import org.joda.time.Period;
 import java.util.UUID;
 
 public class OAuth2Authenticator implements Authenticator<String, User> {
-    private AccessTokenDaoo accessTokenDao;
+    private AccessTokenDao accessTokenDao;
     private boolean authDisabled;
     private int accessTokenExpireTimeMinutes;
 
-    public OAuth2Authenticator(AccessTokenDaoo accessTokenDao, boolean authDisabled, int accessTokenExpireTimeMinutes) {
+    public OAuth2Authenticator(AccessTokenDao accessTokenDao, boolean authDisabled, int accessTokenExpireTimeMinutes) {
         this.accessTokenDao = accessTokenDao;
         this.authDisabled = authDisabled;
         this.accessTokenExpireTimeMinutes = accessTokenExpireTimeMinutes;

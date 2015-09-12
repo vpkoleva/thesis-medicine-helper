@@ -6,7 +6,7 @@ import com.google.common.base.Optional;
 
 import java.util.UUID;
 
-public interface AccessTokenDaoo {
+public interface AccessTokenDao {
 
     /**
      * Finds access token by id.
