@@ -33,7 +33,7 @@ public class MobileScheduleService {
     @Path("/save")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes({MediaType.APPLICATION_JSON})
-    public ResultDto addMobileSchedule(@Auth User user, MobileScheduleDto schedule) {
+    public ResultDto saveMobileSchedule(@Auth User user, MobileScheduleDto schedule) {
         schedule.setUserId(user.getId());
         return mobileScheduleDao.save(schedule);
     }
@@ -50,9 +50,9 @@ public class MobileScheduleService {
 
     @GET
     @Timed
-    @Path("/remove/{id}")
+    @Path("/delete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ResultDto removeMobileSchedule(@Auth User user, @PathParam("id") long id) {
-        return mobileScheduleDao.delete(id);
+    public ResultDto deleteMobileSchedule(@Auth User user, @PathParam("id") long id) {
+        return mobileScheduleDao.delete(id, user.getId());
     }
 }

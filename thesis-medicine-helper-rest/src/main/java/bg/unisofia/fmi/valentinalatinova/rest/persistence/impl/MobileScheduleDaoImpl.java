@@ -45,7 +45,7 @@ public class MobileScheduleDaoImpl implements MobileScheduleDao {
     }
 
     @Override
-    public ResultDto delete(long id) {
+    public ResultDto delete(long id, long userId) {
         try {
             for (MobileScheduleDto schedule : schedules) {
                 if (schedule.getId() == id) {

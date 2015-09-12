@@ -24,8 +24,9 @@ public interface BaseDao<T extends BaseDto> {
     /**
      * Deletes DTO.
      *
-     * @param id of dto to be deleted
+     * @param id     of DTO to be deleted
+     * @param userId of user that DTO belong to
      * @return Result TRUE in case of success and FALSE in case of failure
      */
-    ResultDto delete(long id);
+    ResultDto delete(long id, long userId);
 }

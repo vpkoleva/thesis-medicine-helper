@@ -1,6 +1,7 @@
 package bg.unisofia.fmi.valentinalatinova.rest.dto;
 
 import bg.unisofia.fmi.valentinalatinova.rest.utils.JsonDateTimeUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -15,6 +16,12 @@ public class MobileTableValueDto extends BaseDto {
     private DateTime measurementDate;
     @JsonProperty
     private long tableId;
+    @JsonIgnore
+    private long userId;
+
+    public MobileTableValueDto() {
+        // Needed by Jackson deserialization
+    }
 
     public MobileTableValueDto(long id, String measurement, DateTime measurementDate, long tableId) {
         this.id = id;
@@ -45,5 +52,13 @@ public class MobileTableValueDto extends BaseDto {
 
     public void setTableId(long tableId) {
         this.tableId = tableId;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 }

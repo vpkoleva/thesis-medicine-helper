@@ -30,17 +30,38 @@ public class MobileTableDaoImpl implements MobileTableDao {
     }
 
     @Override
-    public ResultDto save(MobileTableValueDto dto) {
-        return null;
+    public ResultDto save(MobileTableValueDto tableValue) {
+        try {
+            tables.get(0).getValues().add(tableValue);
+            return ResultDto.createSuccess(tableValue.getId());
+        } catch (Exception ex) {
+            return ResultDto.createError(ex.getMessage());
+        }
     }
 
     @Override
-    public ResultDto update(MobileTableValueDto dto) {
-        return null;
+    public ResultDto update(MobileTableValueDto tableValue) {
+        try {
+            tables.get(0).getValues().remove(tableValue);
+            tables.get(0).getValues().add(tableValue);
+            return ResultDto.createSuccess(tableValue.getId());
+        } catch (Exception ex) {
+            return ResultDto.createError(ex.getMessage());
+        }
     }
 
     @Override
-    public ResultDto delete(long id) {
-        return null;
+    public ResultDto delete(long id, long userId) {
+        try {
+            for (MobileTableValueDto tableValue : tables.get(0).getValues()) {
+                if (tableValue.getId() == id) {
+                    tables.get(0).getValues().remove(tableValue);
+                    return ResultDto.createSuccess(id);
+                }
+            }
+            return ResultDto.createError("Record with id=" + id + " not found");
+        } catch (Exception ex) {
+            return ResultDto.createError(ex.getMessage());
+        }
     }
 }
