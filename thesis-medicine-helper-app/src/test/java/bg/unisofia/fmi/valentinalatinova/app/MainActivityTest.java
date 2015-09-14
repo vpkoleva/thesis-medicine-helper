@@ -5,15 +5,15 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 /**
- * Unit test for simple MyActivity.
+ * Unit test for simple MainActivity.
  */
-public class MyActivityTest extends TestCase {
+public class MainActivityTest extends TestCase {
     /**
      * Create the test case
      *
      * @param testName name of the test case
      */
-    public MyActivityTest(String testName) {
+    public MainActivityTest(String testName) {
         super(testName);
     }
 
@@ -21,7 +21,7 @@ public class MyActivityTest extends TestCase {
      * @return the suite of tests being tested
      */
     public static Test suite() {
-        return new TestSuite(MyActivityTest.class);
+        return new TestSuite(MainActivityTest.class);
     }
 
     /**

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+            android:key="settings_url"
+            android:title="@string/settings_url"
+            android:defaultValue="@string/settings_url_default" />
+    <CheckBoxPreference
+            android:key="settings_accept_all_certificates"
+            android:title="@string/settings_accept_all_certificates"
+            android:defaultValue="true" />
+</PreferenceScreen>
