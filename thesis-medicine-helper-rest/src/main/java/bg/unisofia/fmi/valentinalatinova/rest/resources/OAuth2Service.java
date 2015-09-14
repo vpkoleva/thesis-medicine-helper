@@ -4,12 +4,9 @@ import bg.unisofia.fmi.valentinalatinova.rest.data.AccessToken;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.AccessTokenDao;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.UserDao;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.AccessTokenDaoImpl;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.UserDaoImpl;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
-import org.joda.time.DateTime;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;

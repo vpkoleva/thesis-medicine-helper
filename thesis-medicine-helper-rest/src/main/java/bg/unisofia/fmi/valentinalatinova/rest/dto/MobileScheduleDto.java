@@ -31,7 +31,7 @@ public class MobileScheduleDto extends BaseDto {
     }
 
     public MobileScheduleDto(long id, String description, DateTime startDate, int duration,
-                             Duration durationType, int frequency, Duration frequencyType, long userId) {
+            Duration durationType, int frequency, Duration frequencyType, long userId) {
         this.id = id;
         this.description = description;
         this.startDate = startDate;
