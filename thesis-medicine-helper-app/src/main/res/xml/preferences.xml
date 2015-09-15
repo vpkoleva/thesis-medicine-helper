@@ -3,9 +3,9 @@
     <EditTextPreference
             android:key="settings_url"
             android:title="@string/settings_url"
-            android:defaultValue="@string/settings_url_default" />
+            android:defaultValue="@string/settings_url_default"/>
     <CheckBoxPreference
             android:key="settings_accept_all_certificates"
             android:title="@string/settings_accept_all_certificates"
-            android:defaultValue="true" />
+            android:defaultValue="true"/>
 </PreferenceScreen>
