@@ -1,8 +1,8 @@
 package bg.unisofia.fmi.valentinalatinova.rest.resources;
 
+import bg.unisofia.fmi.valentinalatinova.core.dto.MobileScheduleDto;
+import bg.unisofia.fmi.valentinalatinova.core.dto.ResultDto;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
-import bg.unisofia.fmi.valentinalatinova.rest.dto.MobileScheduleDto;
-import bg.unisofia.fmi.valentinalatinova.rest.dto.ResultDto;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.MobileScheduleDao;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.MobileScheduleDaoImpl;
 import com.codahale.metrics.annotation.Timed;

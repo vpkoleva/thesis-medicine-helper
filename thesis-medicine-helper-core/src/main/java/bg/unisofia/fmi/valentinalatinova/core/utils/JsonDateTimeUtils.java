@@ -1,4 +1,4 @@
-package bg.unisofia.fmi.valentinalatinova.rest.utils;
+package bg.unisofia.fmi.valentinalatinova.core.utils;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;

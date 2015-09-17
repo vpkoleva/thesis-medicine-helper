@@ -1,7 +1,7 @@
 package bg.unisofia.fmi.valentinalatinova.rest.persistence;
 
-import bg.unisofia.fmi.valentinalatinova.rest.dto.MobileTableDto;
-import bg.unisofia.fmi.valentinalatinova.rest.dto.MobileTableValueDto;
+import bg.unisofia.fmi.valentinalatinova.core.dto.MobileTableDto;
+import bg.unisofia.fmi.valentinalatinova.core.dto.MobileTableValueDto;
 
 import java.util.List;
 

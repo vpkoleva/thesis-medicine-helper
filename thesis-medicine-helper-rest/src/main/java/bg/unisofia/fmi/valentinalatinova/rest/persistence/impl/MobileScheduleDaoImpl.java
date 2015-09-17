@@ -1,9 +1,9 @@
 package bg.unisofia.fmi.valentinalatinova.rest.persistence.impl;
 
-import bg.unisofia.fmi.valentinalatinova.rest.dto.MobileScheduleDto;
-import bg.unisofia.fmi.valentinalatinova.rest.dto.ResultDto;
+import bg.unisofia.fmi.valentinalatinova.core.dto.MobileScheduleDto;
+import bg.unisofia.fmi.valentinalatinova.core.dto.ResultDto;
+import bg.unisofia.fmi.valentinalatinova.core.utils.Duration;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.MobileScheduleDao;
-import bg.unisofia.fmi.valentinalatinova.rest.utils.Duration;
 import org.joda.time.DateTime;
 
 import java.util.ArrayList;

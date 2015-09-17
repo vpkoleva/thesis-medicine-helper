@@ -1,4 +1,4 @@
-package bg.unisofia.fmi.valentinalatinova.rest.dto;
+package bg.unisofia.fmi.valentinalatinova.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;

@@ -1,7 +1,7 @@
 package bg.unisofia.fmi.valentinalatinova.rest.persistence;
 
-import bg.unisofia.fmi.valentinalatinova.rest.dto.BaseDto;
-import bg.unisofia.fmi.valentinalatinova.rest.dto.ResultDto;
+import bg.unisofia.fmi.valentinalatinova.core.dto.BaseDto;
+import bg.unisofia.fmi.valentinalatinova.core.dto.ResultDto;
 
 public interface BaseDao<T extends BaseDto> {
 

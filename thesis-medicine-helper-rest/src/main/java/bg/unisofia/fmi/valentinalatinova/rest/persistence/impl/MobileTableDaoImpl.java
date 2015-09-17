@@ -1,8 +1,8 @@
 package bg.unisofia.fmi.valentinalatinova.rest.persistence.impl;
 
-import bg.unisofia.fmi.valentinalatinova.rest.dto.MobileTableDto;
-import bg.unisofia.fmi.valentinalatinova.rest.dto.MobileTableValueDto;
-import bg.unisofia.fmi.valentinalatinova.rest.dto.ResultDto;
+import bg.unisofia.fmi.valentinalatinova.core.dto.MobileTableDto;
+import bg.unisofia.fmi.valentinalatinova.core.dto.MobileTableValueDto;
+import bg.unisofia.fmi.valentinalatinova.core.dto.ResultDto;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.MobileTableDao;
 import org.joda.time.DateTime;
 

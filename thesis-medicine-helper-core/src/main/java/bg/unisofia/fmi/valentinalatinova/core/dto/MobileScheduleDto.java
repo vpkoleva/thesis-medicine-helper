@@ -1,7 +1,7 @@
-package bg.unisofia.fmi.valentinalatinova.rest.dto;
+package bg.unisofia.fmi.valentinalatinova.core.dto;
 
-import bg.unisofia.fmi.valentinalatinova.rest.utils.Duration;
-import bg.unisofia.fmi.valentinalatinova.rest.utils.JsonDateTimeUtils;
+import bg.unisofia.fmi.valentinalatinova.core.utils.Duration;
+import bg.unisofia.fmi.valentinalatinova.core.utils.JsonDateTimeUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

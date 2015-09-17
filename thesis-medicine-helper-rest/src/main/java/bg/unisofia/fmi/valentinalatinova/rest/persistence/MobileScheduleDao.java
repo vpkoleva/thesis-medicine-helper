@@ -1,6 +1,6 @@
 package bg.unisofia.fmi.valentinalatinova.rest.persistence;
 
-import bg.unisofia.fmi.valentinalatinova.rest.dto.MobileScheduleDto;
+import bg.unisofia.fmi.valentinalatinova.core.dto.MobileScheduleDto;
 
 import java.util.List;
 

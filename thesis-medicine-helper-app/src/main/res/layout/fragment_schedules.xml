@@ -6,22 +6,15 @@
                 android:background="#aaaaaa">
 
     <TextView
+            android:id="@+id/main_result"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Current Schedules"
-            android:id="@+id/textView"/>
+            android:layout_height="wrap_content"/>
 
     <Button
+            android:id="@+id/submit_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/button_submit"
             android:onClick="doGetSchedules"
-            android:layout_below="@+id/textView"
-            android:id="@+id/submit_button"/>
-
-    <TextView
-            android:id="@+id/main_result"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_below="@+id/submit_button"/>
+            android:layout_below="@+id/main_result"/>
 </RelativeLayout>

@@ -14,24 +14,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 import bg.unisofia.fmi.valentinalatinova.app.tabs.TabsPagerAdapter;
-
-import javax.net.ssl.SSLException;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import bg.unisofia.fmi.valentinalatinova.core.dto.MobileScheduleDto;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 
     private static final int RESULT_SETTINGS = 1;
-    private String settingsUrl = null;
-    private boolean settingsAcceptAll = true;
+    private HttpClient httpClient;
     private ViewPager viewPager;
     private TabsPagerAdapter mAdapter;
     private ActionBar actionBar;
-    // Tab titles
     private String[] tabs = {"Schedules", "Tables"};
 
     /**
@@ -43,14 +34,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        reloadSettings();
-
         // Initialisation
-        viewPager = (ViewPager) findViewById(R.id.pager);
-        actionBar = getActionBar();
         mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
-
+        viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(mAdapter);
+        actionBar = getActionBar();
         actionBar.setHomeButtonEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
@@ -58,6 +46,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         for (String tab_name : tabs) {
             actionBar.addTab(actionBar.newTab().setText(tab_name).setTabListener(this));
         }
+
+        httpClient = new HttpClient();
+
+        reloadSettings();
     }
 
     /**
@@ -141,54 +133,37 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     }
 
     public void doGetSchedules(View view) {
-        final String urlString = settingsUrl + "/mobile/schedule/all";
-        new CallAPI().execute(urlString);
+        final String path = "/mobile/schedule/all";
+        new CallAPI().execute(path);
     }
 
     private void reloadSettings() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        settingsUrl = sharedPref.getString(SettingsActivity.KEY_URL, null);
-        settingsAcceptAll = sharedPref.getBoolean(SettingsActivity.KEY_ACCEPT_ALL_CERTIFICATES, true);
+        String settingsUrl = sharedPref.getString(SettingsActivity.KEY_URL, null);
+        boolean settingsAcceptAll = sharedPref.getBoolean(SettingsActivity.KEY_ACCEPT_ALL_CERTIFICATES, true);
         // If defaults are not read, take them from string.xml
         if (settingsUrl == null) {
             settingsUrl = this.getString(R.string.settings_url_default);
             settingsAcceptAll = Boolean.valueOf(this.getString(R.string.settings_accept_all_certificates));
         }
+        httpClient.setEndpointUrl(settingsUrl);
+        httpClient.setAcceptAllCertificates(settingsAcceptAll);
     }
 
-    private class CallAPI extends AsyncTask<String, String, String> {
+    private class CallAPI extends AsyncTask<String, String, MobileScheduleDto[]> {
 
         @Override
-        protected String doInBackground(String... params) {
-            String urlString = params[0];
-            String resultToDisplay = "";
-            try {
-                URL url = new URL(urlString);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-                String authorization = "Bearer 66408bd9-2bc0-40c3-9823-e9bec390532a";
-                urlConnection.setRequestProperty("Authorization", authorization);
-                InputStream resp = urlConnection.getInputStream();
-                InputStreamReader is = new InputStreamReader(resp);
-                BufferedReader br = new BufferedReader(is);
-                String read = null;
-                StringBuffer sb = new StringBuffer();
-                while ((read = br.readLine()) != null) {
-                    sb.append(read);
-                }
-                resultToDisplay = sb.toString();
-            } catch (SSLException ssle) {
-                resultToDisplay = "Error: " + ssle.getLocalizedMessage();
-            } catch (IOException ioe) {
-                resultToDisplay = "Error: " + ioe.getLocalizedMessage();
-            }
-            return resultToDisplay;
+        protected MobileScheduleDto[] doInBackground(String... params) {
+            String path = params[0];
+            MobileScheduleDto[] result = httpClient.get(path, MobileScheduleDto[].class);
+            return result;
         }
 
         @Override
-        protected void onPostExecute(String result) {
+        protected void onPostExecute(MobileScheduleDto[] result) {
             TextView textView = (TextView) findViewById(R.id.main_result);
             textView.setTextSize(14);
-            textView.setText(result);
+            textView.setText(String.valueOf(result.length));
         }
     }
 }
