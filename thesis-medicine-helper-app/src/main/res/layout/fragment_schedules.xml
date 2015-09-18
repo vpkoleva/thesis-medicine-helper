@@ -1,20 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:orientation="vertical"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="#aaaaaa">
-
-    <TextView
-            android:id="@+id/main_result"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/ScrollView01"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="fill_parent"
+            android:background="#aaaaaa">
 
-    <Button
-            android:id="@+id/submit_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_submit"
-            android:onClick="doGetSchedules"
-            android:layout_below="@+id/main_result"/>
-</RelativeLayout>
+    <RelativeLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+        <TableLayout
+                android:id="@+id/schedules_table"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"/>
+
+        <Button
+                android:id="@+id/schedules_button_refresh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/schedules_button_refresh"
+                android:layout_below="@+id/schedules_table"/>
+    </RelativeLayout>
+</ScrollView>

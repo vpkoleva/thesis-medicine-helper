@@ -4,17 +4,13 @@ import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
 import bg.unisofia.fmi.valentinalatinova.app.tabs.TabsPagerAdapter;
-import bg.unisofia.fmi.valentinalatinova.core.dto.MobileScheduleDto;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 
@@ -34,21 +30,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        // Initialisation
-        mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
-        viewPager = (ViewPager) findViewById(R.id.pager);
-        viewPager.setAdapter(mAdapter);
-        actionBar = getActionBar();
-        actionBar.setHomeButtonEnabled(false);
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-        // Adding Tabs
-        for (String tab_name : tabs) {
-            actionBar.addTab(actionBar.newTab().setText(tab_name).setTabListener(this));
-        }
-
+        initialiseTabs();
         httpClient = new HttpClient();
-
         reloadSettings();
     }
 
@@ -132,9 +115,23 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     }
 
-    public void doGetSchedules(View view) {
-        final String path = "/mobile/schedule/all";
-        new CallAPI().execute(path);
+    public HttpClient getHttpClient() {
+        return httpClient;
+    }
+
+    private void initialiseTabs() {
+        // Initialisation
+        mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
+        viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager.setAdapter(mAdapter);
+        actionBar = getActionBar();
+        actionBar.setHomeButtonEnabled(false);
+        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+        // Adding Tabs
+        for (String tab_name : tabs) {
+            actionBar.addTab(actionBar.newTab().setText(tab_name).setTabListener(this));
+        }
     }
 
     private void reloadSettings() {
@@ -148,22 +145,5 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         }
         httpClient.setEndpointUrl(settingsUrl);
         httpClient.setAcceptAllCertificates(settingsAcceptAll);
-    }
-
-    private class CallAPI extends AsyncTask<String, String, MobileScheduleDto[]> {
-
-        @Override
-        protected MobileScheduleDto[] doInBackground(String... params) {
-            String path = params[0];
-            MobileScheduleDto[] result = httpClient.get(path, MobileScheduleDto[].class);
-            return result;
-        }
-
-        @Override
-        protected void onPostExecute(MobileScheduleDto[] result) {
-            TextView textView = (TextView) findViewById(R.id.main_result);
-            textView.setTextSize(14);
-            textView.setText(String.valueOf(result.length));
-        }
     }
 }
