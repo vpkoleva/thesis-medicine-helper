@@ -53,6 +53,7 @@ public class HttpClient {
         URLConnection urlConnection = openUrlConnection(endpointUrl);
         String authorization = "Bearer 66408bd9-2bc0-40c3-9823-e9bec390532a";
         urlConnection.setRequestProperty("Authorization", authorization);
+        urlConnection.setConnectTimeout(10000);
         InputStream resp = urlConnection.getInputStream();
         InputStreamReader is = new InputStreamReader(resp);
         BufferedReader br = new BufferedReader(is);
@@ -72,7 +73,7 @@ public class HttpClient {
             // Accept of all certificates
             if (acceptAllCertificates) {
                 // Trust all certificates
-                TrustManager[] trustAllCerts = new TrustManager[] {
+                TrustManager[] trustAllCerts = new TrustManager[]{
                         new X509TrustManager() {
                             public void checkClientTrusted(X509Certificate[] certs, String authType) {
                             }

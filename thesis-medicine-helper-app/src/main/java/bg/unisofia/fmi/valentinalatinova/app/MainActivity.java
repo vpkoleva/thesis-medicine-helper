@@ -17,14 +17,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     private static final int RESULT_SETTINGS = 1;
     private HttpClient httpClient;
     private ViewPager viewPager;
-    private TabsPagerAdapter mAdapter;
-    private ActionBar actionBar;
     private String[] tabs = {"Schedules", "Tables"};
 
     /**
      * Called when activity is first created.
      *
-     * @param savedInstanceState
+     * @param savedInstanceState previous state if such exists
      */
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -39,7 +37,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      * Create standard options menu. Currently there is only Settings option in it.
      *
      * @param menu the menu where items are placed
-     * @return
+     * @return TRUE if menu is to be displayed, in case of FALSE menu will not be displayed
      */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -51,7 +49,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      * Called when some item from menu is called. Currently only Settings is present.
      *
      * @param item selected menu item
-     * @return
+     * @return FALSE for normal processing, TRUE to consume menu action here
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -69,7 +67,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      *
      * @param requestCode code supplied to startActivityForResult() method
      * @param resultCode result code returned from activity
-     * @param data data that is tranferred from exitting activity to current activity
+     * @param data data that is transferred from exiting activity to current activity
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -84,8 +82,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     /**
      * Called when tab is selected.
      *
-     * @param tab
-     * @param fragmentTransaction
+     * @param tab tab that was selected
+     * @param fragmentTransaction for queueing fragment operations
      */
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
@@ -96,8 +94,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     /**
      * Called when tab is exists selected state.
      *
-     * @param tab
-     * @param fragmentTransaction
+     * @param tab tab that was unselected
+     * @param fragmentTransaction for queueing fragment operations
      */
     @Override
     public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
@@ -107,8 +105,8 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     /**
      * Called when type is already selected and then selected again.
      *
-     * @param tab
-     * @param fragmentTransaction
+     * @param tab tab that was reselected
+     * @param fragmentTransaction for queueing fragment operations
      */
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
@@ -121,10 +119,10 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     private void initialiseTabs() {
         // Initialisation
-        mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
+        TabsPagerAdapter mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
         viewPager = (ViewPager) findViewById(R.id.pager);
         viewPager.setAdapter(mAdapter);
-        actionBar = getActionBar();
+        ActionBar actionBar = getActionBar();
         actionBar.setHomeButtonEnabled(false);
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 

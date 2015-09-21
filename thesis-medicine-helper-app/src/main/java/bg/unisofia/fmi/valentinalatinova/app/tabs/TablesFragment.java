@@ -12,10 +12,10 @@ public class TablesFragment extends Fragment {
     /**
      * Instantiates fragment user interface.
      *
-     * @param inflater
-     * @param container
-     * @param savedInstanceState
-     * @return
+     * @param inflater object used to inflate any views in the fragment
+     * @param container parent to which fragment is attached to
+     * @param savedInstanceState previous states
+     * @return return fragment UI
      */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -24,9 +24,9 @@ public class TablesFragment extends Fragment {
     }
 
     /**
-     * Workaround to make Setting menu not crash the fragment.
+     * Called to save fragment state. Workaround to make Setting menu not crash the fragment.
      *
-     * @param outState
+     * @param outState bundle to save state in
      */
     @Override
     public void onSaveInstanceState(Bundle outState) {
