@@ -1,6 +1,7 @@
 package bg.unisofia.fmi.valentinalatinova.app;
 
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -115,6 +116,15 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     public HttpClient getHttpClient() {
         return httpClient;
+    }
+
+    public void createErrorDialog(String message) {
+        AlertDialog.Builder error = new AlertDialog.Builder(this);
+        error.setTitle(R.string.error_name);
+        error.setMessage(message);
+        error.setPositiveButton(R.string.error_close, null);
+        error.setCancelable(true);
+        error.create().show();
     }
 
     private void initialiseTabs() {

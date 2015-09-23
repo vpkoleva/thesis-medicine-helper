@@ -4,32 +4,34 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class ResultDto extends BaseDto {
     @JsonProperty
-    private boolean result;
+    private boolean success;
     @JsonProperty
     private String error;
 
+    public ResultDto() {
+        // Needed by Jackson deserialization
+    }
+
     public ResultDto(long id, boolean result, String error) {
         this.id = id;
-        this.result = result;
+        this.success = result;
         this.error = error;
     }
 
     public static ResultDto createSuccess(long id) {
-        ResultDto result = new ResultDto(id, true, null);
-        return result;
+        return new ResultDto(id, true, null);
     }
 
     public static ResultDto createError(String error) {
-        ResultDto result = new ResultDto(-1, false, error);
-        return result;
+        return new ResultDto(-1, false, error);
     }
 
-    public boolean isResult() {
-        return result;
+    public boolean isSuccess() {
+        return success;
     }
 
-    public void setResult(boolean result) {
-        this.result = result;
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 
     public String getError() {

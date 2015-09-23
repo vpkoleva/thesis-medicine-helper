@@ -19,16 +19,21 @@ import bg.unisofia.fmi.valentinalatinova.app.Logger;
 import bg.unisofia.fmi.valentinalatinova.app.MainActivity;
 import bg.unisofia.fmi.valentinalatinova.app.R;
 import bg.unisofia.fmi.valentinalatinova.core.dto.MobileScheduleDto;
+import bg.unisofia.fmi.valentinalatinova.core.dto.ResultDto;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class SchedulesFragment extends Fragment {
 
-    private final String PATH_SCHEDULES = "/mobile/schedule/all";
     private final int MENU_GROUP_ID = 101;
     private final int MENU_EDIT_ID = 1;
     private final int MENU_DELETE_ID = 2;
     private View rootView;
     private TableLayout schedulesTable;
     private MobileScheduleDto selectedSchedule;
+    private List<MobileScheduleDto> allSchedules;
 
     /**
      * Instantiates fragment user interface.
@@ -98,7 +103,7 @@ public class SchedulesFragment extends Fragment {
     }
 
     private void invokeGetSchedules() {
-        new GetSchedules().execute(PATH_SCHEDULES);
+        new GetSchedules().execute();
     }
 
     private void registerOnClickListenerButtonRefresh() {
@@ -129,17 +134,17 @@ public class SchedulesFragment extends Fragment {
                 .setPositiveButton(R.string.schedules_dialog_yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Logger.debug("Delete: " + selectedSchedule.getId());
+                        new DeleteSchedule().execute(selectedSchedule.getId());
                     }
                 })
                 .setNegativeButton(R.string.schedules_dialog_no, null)
                 .show();
     }
 
-    private void drawTable(MobileScheduleDto[] results) {
+    private void drawSchedulesTable() {
         schedulesTable.removeAllViews();
-        if (results != null && results.length > 0) {
-            for (MobileScheduleDto result : results) {
+        if (allSchedules != null && allSchedules.size() > 0) {
+            for (MobileScheduleDto result : allSchedules) {
                 TableRow row = generateTableRow(result);
                 // Add Date
                 TextView date = generateTextView(result.getStartDate().toString());
@@ -179,7 +184,9 @@ public class SchedulesFragment extends Fragment {
         return cell;
     }
 
-    private class GetSchedules extends AsyncTask<String, String, MobileScheduleDto[]> {
+    private class GetSchedules extends AsyncTask<String, String, List<MobileScheduleDto>> {
+
+        private final String PATH_SCHEDULES = "/mobile/schedule/all";
 
         /**
          * Performs the action in background thread.
@@ -188,10 +195,12 @@ public class SchedulesFragment extends Fragment {
          * @return result
          */
         @Override
-        protected MobileScheduleDto[] doInBackground(String... params) {
-            String path = params[0];
+        protected List<MobileScheduleDto> doInBackground(String... params) {
             HttpClient client = ((MainActivity) getActivity()).getHttpClient();
-            return client.get(path, MobileScheduleDto[].class);
+            MobileScheduleDto[] schedulesArray = client.get(PATH_SCHEDULES, MobileScheduleDto[].class);
+            List<MobileScheduleDto> result = new ArrayList<>();
+            Collections.addAll(result, schedulesArray);
+            return result;
         }
 
         /**
@@ -200,8 +209,32 @@ public class SchedulesFragment extends Fragment {
          * @param result result from doInBackground() method
          */
         @Override
-        protected void onPostExecute(MobileScheduleDto[] result) {
-            drawTable(result);
+        protected void onPostExecute(List<MobileScheduleDto> result) {
+            allSchedules = result;
+            drawSchedulesTable();
+        }
+    }
+
+    private class DeleteSchedule extends AsyncTask<Long, String, ResultDto> {
+
+        private final String PATH_DELETE = "/mobile/schedule/delete/";
+
+        @Override
+        protected ResultDto doInBackground(Long... params) {
+            HttpClient client = ((MainActivity) getActivity()).getHttpClient();
+            return client.get(PATH_DELETE + params[0], ResultDto.class);
+        }
+
+        @Override
+        protected void onPostExecute(ResultDto result) {
+            if (result != null) {
+                if (result.isSuccess()) {
+                    allSchedules.remove(selectedSchedule);
+                    drawSchedulesTable();
+                } else {
+                    ((MainActivity) getActivity()).createErrorDialog(result.getError());
+                }
+            }
         }
     }
 }

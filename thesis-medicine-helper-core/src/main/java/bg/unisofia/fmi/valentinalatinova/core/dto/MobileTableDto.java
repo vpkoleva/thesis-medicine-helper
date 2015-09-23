@@ -13,6 +13,10 @@ public class MobileTableDto extends BaseDto {
     @JsonIgnore
     private long usedId;
 
+    public MobileTableDto() {
+        // Needed by Jackson deserialization
+    }
+
     public MobileTableDto(long id, String name, List<MobileTableValueDto> values, long usedId) {
         this.id = id;
         this.name = name;

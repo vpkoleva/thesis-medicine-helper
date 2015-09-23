@@ -5,6 +5,8 @@
     <string name="settings_url">URL</string>
     <string name="settings_url_default">http://10.11.10.185:9000</string>
     <string name="settings_accept_all_certificates">Accept invalid SSL certificates</string>
+    <string name="error_name">Error</string>
+    <string name="error_close">Close</string>
     <string name="schedules_button_refresh">Refresh</string>
     <string name="schedules_button_add">Add Schedule</string>
     <string name="schedules_context_edit">Edit Schedule</string>
