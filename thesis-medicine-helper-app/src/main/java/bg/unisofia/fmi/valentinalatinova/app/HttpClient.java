@@ -12,7 +12,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
+import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.KeyManagementException;
@@ -29,12 +29,23 @@ public class HttpClient {
         jsonObjectMapper = new ObjectMapper();
     }
 
-    public <R> R get(String path, Class<R> entityResponseClass) {
+    public <T> T get(String path, Class<T> entityResponseClass) {
         try {
             final String url = endpointUrl + path;
-            String resultJson = doRequest(url);
-            R result = jsonObjectMapper.readValue(resultJson, entityResponseClass);
-            return result;
+            String resultJson = doRequest(url, null);
+            return jsonObjectMapper.readValue(resultJson, entityResponseClass);
+        } catch (KeyManagementException | NoSuchAlgorithmException | IOException ex) {
+            Logger.error(ex);
+            return null;
+        }
+    }
+
+    public <E, T> T post(String path, E entityToPost, Class<T> entityResponseClass) {
+        try {
+            final String url = endpointUrl + path;
+            String request = jsonObjectMapper.writeValueAsString(entityToPost);
+            String resultJson = doRequest(url, request);
+            return jsonObjectMapper.readValue(resultJson, entityResponseClass);
         } catch (KeyManagementException | NoSuchAlgorithmException | IOException ex) {
             Logger.error(ex);
             return null;
@@ -49,20 +60,31 @@ public class HttpClient {
         this.acceptAllCertificates = acceptAllCertificates;
     }
 
-    public String doRequest(String endpointUrl) throws IOException, KeyManagementException, NoSuchAlgorithmException {
+    public String doRequest(String endpointUrl, String data)
+            throws IOException, KeyManagementException, NoSuchAlgorithmException {
         URLConnection urlConnection = openUrlConnection(endpointUrl);
         String authorization = "Bearer 66408bd9-2bc0-40c3-9823-e9bec390532a";
         urlConnection.setRequestProperty("Authorization", authorization);
         urlConnection.setConnectTimeout(10000);
-        InputStream resp = urlConnection.getInputStream();
-        InputStreamReader is = new InputStreamReader(resp);
-        BufferedReader br = new BufferedReader(is);
-        String read = null;
-        StringBuffer sb = new StringBuffer();
-        while ((read = br.readLine()) != null) {
-            sb.append(read);
+        // This is POST
+        if (data != null) {
+            urlConnection.setDoOutput(true);
+            urlConnection.setRequestProperty("Content-Type", "application/json");
+            try (OutputStream output = urlConnection.getOutputStream()) {
+                output.write(data.getBytes());
+            }
         }
-        return sb.toString();
+        InputStream response = urlConnection.getInputStream();
+        StringBuilder result = new StringBuilder();
+        try (InputStreamReader inputStreamReader = new InputStreamReader(response)) {
+            try (BufferedReader bufferedReader = new BufferedReader(inputStreamReader)) {
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    result.append(line);
+                }
+            }
+        }
+        return result.toString();
     }
 
     private URLConnection openUrlConnection(String endpointUrl)
@@ -73,7 +95,7 @@ public class HttpClient {
             // Accept of all certificates
             if (acceptAllCertificates) {
                 // Trust all certificates
-                TrustManager[] trustAllCerts = new TrustManager[]{
+                TrustManager[] trustAllCerts = new TrustManager[] {
                         new X509TrustManager() {
                             public void checkClientTrusted(X509Certificate[] certs, String authType) {
                             }
@@ -98,8 +120,7 @@ public class HttpClient {
             }
             return result;
         } else {
-            HttpURLConnection result = (HttpURLConnection) url.openConnection();
-            return result;
+            return url.openConnection();
         }
     }
 }

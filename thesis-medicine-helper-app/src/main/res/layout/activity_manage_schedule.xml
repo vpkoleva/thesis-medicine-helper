@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/schedules_scroll"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="@color/main_background">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:orientation="vertical"
+                    android:layout_width="fill_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/main_background">
+
+        <TextView
+                android:id="@+id/manage_schedule_description_label"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/manage_schedule_description_label"/>
+
+        <EditText
+                android:id="@+id/manage_schedule_description"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/manage_schedule_description_label"/>
+
+        <TextView
+                android:id="@+id/manage_schedule_datetime_label"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/manage_schedule_datetime_label"
+                android:layout_below="@+id/manage_schedule_description"/>
+
+        <LinearLayout
+                android:id="@+id/manage_schedule_datetime"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/manage_schedule_datetime_label">
+
+            <DatePicker
+                    android:id="@+id/manage_schedule_date"
+                    android:calendarViewShown="false"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:layout_height="wrap_content"
+                    style="@style/datetime"/>
+
+            <TimePicker
+                    android:id="@+id/manage_schedule_time"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:layout_height="wrap_content"
+                    style="@style/datetime"/>
+        </LinearLayout>
+
+        <TextView
+                android:id="@+id/manage_schedule_duration_label"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/manage_schedule_duration_label"
+                android:layout_below="@+id/manage_schedule_datetime"/>
+
+        <LinearLayout
+                android:id="@+id/manage_schedule_duration_group"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/manage_schedule_duration_label">
+
+            <NumberPicker
+                    android:id="@+id/manage_schedule_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/number"/>
+
+            <Spinner
+                    android:id="@+id/manage_schedule_duration_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="35dp"/>
+        </LinearLayout>
+
+        <TextView
+                android:id="@+id/manage_schedule_frequency_label"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/manage_schedule_frequency_label"
+                android:layout_below="@+id/manage_schedule_duration_group"/>
+
+        <LinearLayout
+                android:id="@+id/manage_schedule_frequency_group"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/manage_schedule_frequency_label">
+
+
+            <NumberPicker
+                    android:id="@+id/manage_schedule_frequency"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/number"/>
+
+            <Spinner
+                    android:id="@+id/manage_schedule_frequency_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="35dp"/>
+        </LinearLayout>
+
+        <Button
+                android:id="@+id/manage_schedule_button_save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/button_save"
+                android:layout_below="@+id/manage_schedule_frequency_group"/>
+
+        <Button
+                android:id="@+id/manage_schedule_button_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/button_cancel"
+                android:layout_below="@+id/manage_schedule_frequency_group"
+                android:layout_alignParentRight="true"/>
+    </RelativeLayout>
+</ScrollView>

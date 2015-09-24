@@ -3,6 +3,7 @@ package bg.unisofia.fmi.valentinalatinova.app;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,7 +17,7 @@ import bg.unisofia.fmi.valentinalatinova.app.tabs.TabsPagerAdapter;
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 
     private static final int RESULT_SETTINGS = 1;
-    private HttpClient httpClient;
+    private static HttpClient httpClient;
     private ViewPager viewPager;
     private String[] tabs = {"Schedules", "Tables"};
 
@@ -73,10 +74,9 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case RESULT_SETTINGS:
-                reloadSettings();
-                break;
+        // In case of Setting change
+        if (RESULT_SETTINGS == requestCode) {
+            reloadSettings();
         }
     }
 
@@ -114,12 +114,13 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
 
     }
 
-    public HttpClient getHttpClient() {
+    // Static methods
+    public static HttpClient getHttpClient() {
         return httpClient;
     }
 
-    public void createErrorDialog(String message) {
-        AlertDialog.Builder error = new AlertDialog.Builder(this);
+    public static void createErrorDialog(Context context, String message) {
+        AlertDialog.Builder error = new AlertDialog.Builder(context);
         error.setTitle(R.string.error_name);
         error.setMessage(message);
         error.setPositiveButton(R.string.error_close, null);
@@ -127,10 +128,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         error.create().show();
     }
 
+    // Private methods
     private void initialiseTabs() {
         // Initialisation
         TabsPagerAdapter mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
-        viewPager = (ViewPager) findViewById(R.id.pager);
+        viewPager = (ViewPager) findViewById(R.id.main_activity_pager);
         viewPager.setAdapter(mAdapter);
         ActionBar actionBar = getActionBar();
         actionBar.setHomeButtonEnabled(false);

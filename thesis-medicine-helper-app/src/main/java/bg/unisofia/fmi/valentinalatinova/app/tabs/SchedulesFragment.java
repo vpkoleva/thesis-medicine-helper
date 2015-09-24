@@ -1,7 +1,9 @@
 package bg.unisofia.fmi.valentinalatinova.app.tabs;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,8 +17,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import bg.unisofia.fmi.valentinalatinova.app.HttpClient;
-import bg.unisofia.fmi.valentinalatinova.app.Logger;
 import bg.unisofia.fmi.valentinalatinova.app.MainActivity;
+import bg.unisofia.fmi.valentinalatinova.app.ManageScheduleActivity;
 import bg.unisofia.fmi.valentinalatinova.app.R;
 import bg.unisofia.fmi.valentinalatinova.core.dto.MobileScheduleDto;
 import bg.unisofia.fmi.valentinalatinova.core.dto.ResultDto;
@@ -27,12 +29,15 @@ import java.util.List;
 
 public class SchedulesFragment extends Fragment {
 
+    public static final String RESULT_EXTRA = "MobileScheduleDto";
     private final int MENU_GROUP_ID = 101;
-    private final int MENU_EDIT_ID = 1;
-    private final int MENU_DELETE_ID = 2;
+    private final int MENU_EDIT_ID = 111;
+    private final int MENU_DELETE_ID = 112;
+    private final int RESULT_ADD = 121;
+    private final int RESULT_EDIT = 122;
     private View rootView;
     private TableLayout schedulesTable;
-    private MobileScheduleDto selectedSchedule;
+    private MobileScheduleDto currentSchedule;
     private List<MobileScheduleDto> allSchedules;
 
     /**
@@ -75,7 +80,7 @@ public class SchedulesFragment extends Fragment {
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
         MobileScheduleDto schedule = (MobileScheduleDto) view.getTag();
-        selectedSchedule = schedule;
+        currentSchedule = schedule;
         menu.setHeaderTitle(schedule.getDescription());
         menu.add(MENU_GROUP_ID, MENU_EDIT_ID, MENU_EDIT_ID, R.string.schedules_context_edit);
         menu.add(MENU_GROUP_ID, MENU_DELETE_ID, MENU_DELETE_ID, R.string.schedules_context_delete);
@@ -92,7 +97,9 @@ public class SchedulesFragment extends Fragment {
         if (MENU_GROUP_ID == item.getGroupId()) {
             switch (item.getItemId()) {
                 case MENU_EDIT_ID:
-                    Logger.debug("Edit: " + selectedSchedule.getId());
+                    Intent intent = new Intent(rootView.getContext(), ManageScheduleActivity.class);
+                    intent.putExtra(RESULT_EXTRA, currentSchedule);
+                    startActivityForResult(intent, RESULT_EDIT);
                     break;
                 case MENU_DELETE_ID:
                     registerOnDeleteConfirmationDialog();
@@ -102,6 +109,30 @@ public class SchedulesFragment extends Fragment {
         return true;
     }
 
+    /**
+     * Called when launched activity exits giving the code you started the activity with.
+     *
+     * @param requestCode code supplied to startActivityForResult() method
+     * @param resultCode result code returned from activity
+     * @param data data that is transferred from exiting activity to current activity
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // In case of Add or Edit Schedule request and OK result
+        if ((requestCode == RESULT_ADD || requestCode == RESULT_EDIT) && resultCode == Activity.RESULT_OK) {
+            Bundle result = data.getExtras();
+            currentSchedule = (MobileScheduleDto) result.getSerializable(RESULT_EXTRA);
+            // Remove before add in case of Edit Schedule
+            if (requestCode == RESULT_EDIT) {
+                allSchedules.remove(currentSchedule);
+            }
+            allSchedules.add(currentSchedule);
+            drawSchedulesTable();
+        }
+    }
+
+    // Private methods
     private void invokeGetSchedules() {
         new GetSchedules().execute();
     }
@@ -121,7 +152,8 @@ public class SchedulesFragment extends Fragment {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Logger.debug("Add schedule");
+                Intent intent = new Intent(rootView.getContext(), ManageScheduleActivity.class);
+                startActivityForResult(intent, RESULT_ADD);
             }
         });
     }
@@ -134,7 +166,7 @@ public class SchedulesFragment extends Fragment {
                 .setPositiveButton(R.string.schedules_dialog_yes, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        new DeleteSchedule().execute(selectedSchedule.getId());
+                        new DeleteSchedule().execute(currentSchedule.getId());
                     }
                 })
                 .setNegativeButton(R.string.schedules_dialog_no, null)
@@ -196,7 +228,7 @@ public class SchedulesFragment extends Fragment {
          */
         @Override
         protected List<MobileScheduleDto> doInBackground(String... params) {
-            HttpClient client = ((MainActivity) getActivity()).getHttpClient();
+            HttpClient client = MainActivity.getHttpClient();
             MobileScheduleDto[] schedulesArray = client.get(PATH_SCHEDULES, MobileScheduleDto[].class);
             List<MobileScheduleDto> result = new ArrayList<>();
             Collections.addAll(result, schedulesArray);
@@ -229,10 +261,10 @@ public class SchedulesFragment extends Fragment {
         protected void onPostExecute(ResultDto result) {
             if (result != null) {
                 if (result.isSuccess()) {
-                    allSchedules.remove(selectedSchedule);
+                    allSchedules.remove(currentSchedule);
                     drawSchedulesTable();
                 } else {
-                    ((MainActivity) getActivity()).createErrorDialog(result.getError());
+                    MainActivity.createErrorDialog(rootView.getContext(), result.getError());
                 }
             }
         }

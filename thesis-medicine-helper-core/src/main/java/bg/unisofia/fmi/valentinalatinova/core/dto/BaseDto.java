@@ -3,8 +3,10 @@ package bg.unisofia.fmi.valentinalatinova.core.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.io.Serializable;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public abstract class BaseDto {
+public abstract class BaseDto implements Serializable {
     @JsonProperty
     protected long id;
 
@@ -12,7 +14,7 @@ public abstract class BaseDto {
         return id;
     }
 
-    public void setID(long id) {
+    public void setId(long id) {
         this.id = id;
     }
 

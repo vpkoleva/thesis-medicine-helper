@@ -21,5 +21,6 @@
         <activity
                 android:name="SettingsActivity"
                 android:label="@string/settings_menu"/>
+        <activity android:name="ManageScheduleActivity"/>
     </application>
 </manifest>

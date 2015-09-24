@@ -7,6 +7,8 @@
     <string name="settings_accept_all_certificates">Accept invalid SSL certificates</string>
     <string name="error_name">Error</string>
     <string name="error_close">Close</string>
+    <string name="button_save">Save</string>
+    <string name="button_cancel">Cancel</string>
     <string name="schedules_button_refresh">Refresh</string>
     <string name="schedules_button_add">Add Schedule</string>
     <string name="schedules_context_edit">Edit Schedule</string>
@@ -15,4 +17,8 @@
     <string name="schedules_dialog_text">Are you sure you want to delete this schedule?</string>
     <string name="schedules_dialog_yes">Yes</string>
     <string name="schedules_dialog_no">No</string>
+    <string name="manage_schedule_description_label">Schedule description: </string>
+    <string name="manage_schedule_datetime_label">Start from: </string>
+    <string name="manage_schedule_duration_label">How long: </string>
+    <string name="manage_schedule_frequency_label">At what intervals: </string>
 </resources>

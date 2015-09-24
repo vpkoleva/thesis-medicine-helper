@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="scale">
+        <item name="android:padding">-19dp</item>
+        <item name="android:scaleX">0.5</item>
+        <item name="android:scaleY">0.5</item>
+    </style>
+
+    <style name="datetime" parent="@style/scale">
+        <item name="android:layout_marginTop">-65dp</item>
+        <item name="android:layout_marginBottom">-65dp</item>
+        <item name="android:layout_marginLeft">-30dp</item>
+        <item name="android:layout_marginRight">-30dp</item>
+    </style>
+
+    <style name="number" parent="@style/scale">
+        <item name="android:layout_marginTop">-45dp</item>
+        <item name="android:layout_marginBottom">-45dp</item>
+    </style>
+</resources>
