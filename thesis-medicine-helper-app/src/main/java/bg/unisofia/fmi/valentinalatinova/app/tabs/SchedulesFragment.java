@@ -231,7 +231,9 @@ public class SchedulesFragment extends Fragment {
             HttpClient client = MainActivity.getHttpClient();
             MobileScheduleDto[] schedulesArray = client.get(PATH_SCHEDULES, MobileScheduleDto[].class);
             List<MobileScheduleDto> result = new ArrayList<>();
-            Collections.addAll(result, schedulesArray);
+            if (schedulesArray != null) {
+                Collections.addAll(result, schedulesArray);
+            }
             return result;
         }
 
@@ -253,7 +255,7 @@ public class SchedulesFragment extends Fragment {
 
         @Override
         protected ResultDto doInBackground(Long... params) {
-            HttpClient client = ((MainActivity) getActivity()).getHttpClient();
+            HttpClient client = MainActivity.getHttpClient();
             return client.get(PATH_DELETE + params[0], ResultDto.class);
         }
 
