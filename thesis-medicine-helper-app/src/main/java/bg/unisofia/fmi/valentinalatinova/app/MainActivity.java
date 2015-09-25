@@ -1,22 +1,19 @@
 package bg.unisofia.fmi.valentinalatinova.app;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.view.Menu;
-import android.view.MenuItem;
 import bg.unisofia.fmi.valentinalatinova.app.tabs.TabsPagerAdapter;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 
-    private static final int RESULT_SETTINGS = 1;
+    public static final int RESULT_LOGIN = 1;
     private static HttpClient httpClient;
     private ViewPager viewPager;
     private String[] tabs = {"Schedules", "Tables"};
@@ -30,38 +27,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        initialiseTabs();
-        httpClient = new HttpClient();
-        reloadSettings();
-    }
-
-    /**
-     * Create standard options menu. Currently there is only Settings option in it.
-     *
-     * @param menu the menu where items are placed
-     * @return TRUE if menu is to be displayed, in case of FALSE menu will not be displayed
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.settings, menu);
-        return true;
-    }
-
-    /**
-     * Called when some item from menu is called. Currently only Settings is present.
-     *
-     * @param item selected menu item
-     * @return FALSE for normal processing, TRUE to consume menu action here
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_settings:
-                Intent intent = new Intent(this, SettingsActivity.class);
-                startActivityForResult(intent, RESULT_SETTINGS);
-                break;
-        }
-        return true;
+        startLoginActivity();
     }
 
     /**
@@ -74,9 +40,16 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // In case of Setting change
-        if (RESULT_SETTINGS == requestCode) {
-            reloadSettings();
+        switch (requestCode) {
+            case RESULT_LOGIN:
+                if (resultCode == Activity.RESULT_OK) {
+                    Bundle result = data.getExtras();
+                    httpClient = (HttpClient) result.getSerializable(LoginActivity.RESULT_EXTRA);
+                    initialiseTabs();
+                } else {
+                    finish();
+                }
+                break;
         }
     }
 
@@ -115,11 +88,14 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     }
 
     // Static methods
-    public static HttpClient getHttpClient() {
+    public static HttpClient getAuthenticatedHttpClient() {
+        if (!httpClient.isAuthenticated()) {
+            httpClient.authenticate();
+        }
         return httpClient;
     }
 
-    public static void createErrorDialog(Context context, String message) {
+    public static void createErrorDialog(final Context context, String message) {
         AlertDialog.Builder error = new AlertDialog.Builder(context);
         error.setTitle(R.string.error_name);
         error.setMessage(message);
@@ -129,6 +105,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     }
 
     // Private methods
+    private void startLoginActivity() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        intent.putExtra("", httpClient);
+        startActivityForResult(intent, RESULT_LOGIN);
+    }
+
     private void initialiseTabs() {
         // Initialisation
         TabsPagerAdapter mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
@@ -142,18 +124,5 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         for (String tab_name : tabs) {
             actionBar.addTab(actionBar.newTab().setText(tab_name).setTabListener(this));
         }
-    }
-
-    private void reloadSettings() {
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String settingsUrl = sharedPref.getString(SettingsActivity.KEY_URL, null);
-        boolean settingsAcceptAll = sharedPref.getBoolean(SettingsActivity.KEY_ACCEPT_ALL_CERTIFICATES, true);
-        // If defaults are not read, take them from string.xml
-        if (settingsUrl == null) {
-            settingsUrl = this.getString(R.string.settings_url_default);
-            settingsAcceptAll = Boolean.valueOf(this.getString(R.string.settings_accept_all_certificates));
-        }
-        httpClient.setEndpointUrl(settingsUrl);
-        httpClient.setAcceptAllCertificates(settingsAcceptAll);
     }
 }

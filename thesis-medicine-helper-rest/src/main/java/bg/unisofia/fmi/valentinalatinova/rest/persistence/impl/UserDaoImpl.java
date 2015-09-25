@@ -11,8 +11,8 @@ public class UserDaoImpl implements UserDao {
     final static Map<Long, User> userTable = new HashMap<>();
 
     static {
-        userTable.put(1l, new User(2, "user1", "password"));
-        userTable.put(2l, new User(3, "user2", "password"));
+        userTable.put(1l, new User(2, "user1", "password", "FirstN1", "LastN1"));
+        userTable.put(2l, new User(3, "user2", "password", "FirstN2", "LastN2"));
     }
 
     @Override

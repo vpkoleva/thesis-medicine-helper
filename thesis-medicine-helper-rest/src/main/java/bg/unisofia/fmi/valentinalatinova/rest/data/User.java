@@ -4,15 +4,20 @@ public class User {
     private long id;
     private String username;
     private String password;
-    private static User noAuthUser = new User(1, "System", "System");
+    private String firstName;
+    private String lastName;
+    private static User noAuthUser = new User();
 
     private User() {
+        this.id = 1;
     }
 
-    public User(long id, String username, String password) {
+    public User(long id, String username, String password, String firstName, String lastName) {
         this.id = id;
         this.username = username;
         this.password = password;
+        this.firstName = firstName;
+        this.lastName = lastName;
     }
 
     public static User getNoAuthUser() {
@@ -29,5 +34,21 @@ public class User {
 
     public String getPassword() {
         return password;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
     }
 }

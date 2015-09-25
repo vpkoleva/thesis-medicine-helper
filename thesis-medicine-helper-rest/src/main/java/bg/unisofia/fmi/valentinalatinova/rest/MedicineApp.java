@@ -22,13 +22,16 @@ public class MedicineApp extends Application<MedicineConfig> {
 
     @Override
     public void run(MedicineConfig config, Environment environment) {
+        final boolean isAuthDisabled = config.getOAuth().isDisabled();
+        final int tokenExpiryMinutes = config.getOAuth().getAccessTokenExpireTimeMinutes();
+
         // Create DAOs
         AccessTokenDao accessTokenDao = new AccessTokenDaoImpl();
         UserDao userDao = new UserDaoImpl();
 
         // Register oauth2 service
-        final OAuth2Service oAuth2Service = new OAuth2Service(config.getOAuth().getAllowedGrantTypes(),
-                accessTokenDao, userDao);
+        final OAuth2Service oAuth2Service = new OAuth2Service(config.getOAuth().getAllowedGrantTypes(), accessTokenDao,
+                userDao, isAuthDisabled, tokenExpiryMinutes);
         environment.jersey().register(oAuth2Service);
 
         // Register mobile schedule service
@@ -45,8 +48,7 @@ public class MedicineApp extends Application<MedicineConfig> {
         environment.jersey().register(healthCheck);
 
         // Register security component
-        OAuth2Authenticator authenticator = new OAuth2Authenticator(accessTokenDao, config.getOAuth().isDisabled(),
-                config.getOAuth().getAccessTokenExpireTimeMinutes());
+        OAuth2Authenticator authenticator = new OAuth2Authenticator(accessTokenDao, isAuthDisabled, tokenExpiryMinutes);
         environment.jersey().register(
                 AuthFactory.binder(new OAuthFactory<User>(authenticator, "oauth2-provider", User.class)));
     }

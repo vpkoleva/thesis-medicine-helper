@@ -22,5 +22,8 @@
                 android:name="SettingsActivity"
                 android:label="@string/settings_menu"/>
         <activity android:name="ManageScheduleActivity"/>
+        <activity
+                android:name="LoginActivity"
+                android:label="@string/login_message"/>
     </application>
 </manifest>

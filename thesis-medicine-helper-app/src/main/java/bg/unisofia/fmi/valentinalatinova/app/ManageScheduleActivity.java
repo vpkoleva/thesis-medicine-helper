@@ -182,7 +182,7 @@ public class ManageScheduleActivity extends Activity {
          */
         @Override
         protected ResultDto doInBackground(String... params) {
-            HttpClient client = MainActivity.getHttpClient();
+            HttpClient client = MainActivity.getAuthenticatedHttpClient();
             return client.post(params[0], currentSchedule, ResultDto.class);
         }
 

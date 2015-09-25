@@ -1,5 +1,6 @@
 package bg.unisofia.fmi.valentinalatinova.app;
 
+import bg.unisofia.fmi.valentinalatinova.core.dto.AuthTokenDto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.net.ssl.HostnameVerifier;
@@ -13,17 +14,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
-public class HttpClient {
+public class HttpClient implements Serializable {
 
-    private String endpointUrl = null;
+    private ObjectMapper jsonObjectMapper;
+    private AuthTokenDto authToken;
     private boolean acceptAllCertificates = true;
-    ObjectMapper jsonObjectMapper = null;
+    private String endpointUrl;
+    private String username;
+    private String password;
 
     public HttpClient() {
         jsonObjectMapper = new ObjectMapper();
@@ -52,6 +57,23 @@ public class HttpClient {
         }
     }
 
+    public boolean authenticate() {
+        try {
+            final String url = endpointUrl + "/token";
+            final String data = "grant_type=password&username=" + username + "&password=" + password;
+            String resultJson = doRequest(url, data);
+            authToken = jsonObjectMapper.readValue(resultJson, AuthTokenDto.class);
+            return true;
+        } catch (KeyManagementException | NoSuchAlgorithmException | IOException ex) {
+            Logger.error(ex);
+            return false;
+        }
+    }
+
+    public boolean isAuthenticated() {
+        return authToken != null && authToken.getExpiryDate().isAfterNow();
+    }
+
     public void setEndpointUrl(String endpointUrl) {
         this.endpointUrl = endpointUrl;
     }
@@ -60,16 +82,31 @@ public class HttpClient {
         this.acceptAllCertificates = acceptAllCertificates;
     }
 
-    public String doRequest(String endpointUrl, String data)
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    // Private methods
+    private String doRequest(String endpointUrl, String data)
             throws IOException, KeyManagementException, NoSuchAlgorithmException {
         URLConnection urlConnection = openUrlConnection(endpointUrl);
-        String authorization = "Bearer 66408bd9-2bc0-40c3-9823-e9bec390532a";
-        urlConnection.setRequestProperty("Authorization", authorization);
         urlConnection.setConnectTimeout(10000);
+        if (authToken != null) {
+            urlConnection.setRequestProperty("Authorization", "Bearer " + authToken.getAuthToken());
+        }
         // This is POST
         if (data != null) {
             urlConnection.setDoOutput(true);
-            urlConnection.setRequestProperty("Content-Type", "application/json");
+            // This is authentication request
+            if (data.startsWith("grant_type")) {
+                urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            } else {
+                urlConnection.setRequestProperty("Content-Type", "application/json");
+            }
             try (OutputStream output = urlConnection.getOutputStream()) {
                 output.write(data.getBytes());
             }
