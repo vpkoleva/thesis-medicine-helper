@@ -193,11 +193,13 @@ public class ManageScheduleActivity extends Activity {
          */
         @Override
         protected void onPostExecute(ResultDto result) {
-            if (result.isSuccess()) {
-                currentSchedule.setId(result.getId());
-                assembleResponseAndFinish();
-            } else {
-                MainActivity.createErrorDialog(ManageScheduleActivity.this, result.getError());
+            if (result != null) {
+                if (result.isSuccess()) {
+                    currentSchedule.setId(result.getId());
+                    assembleResponseAndFinish();
+                } else {
+                    MainActivity.createErrorDialog(ManageScheduleActivity.this, result.getError());
+                }
             }
         }
     }
