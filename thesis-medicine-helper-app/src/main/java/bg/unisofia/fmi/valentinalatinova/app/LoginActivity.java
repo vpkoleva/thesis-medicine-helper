@@ -1,7 +1,6 @@
 package bg.unisofia.fmi.valentinalatinova.app;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -11,15 +10,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
 public class LoginActivity extends Activity {
 
     public static final String RESULT_EXTRA = "HttpClient";
-    public static final String KEY_USERNAME = "settings_username";
-    private static final int RESULT_SETTINGS = 10;
-    private static HttpClient httpClient;
+    private final String KEY_USERNAME = "settings_username";
+    private final String KEY_PASSWORD = "settings_password";
+    private final String KEY_REMEMBER = "settings_remember";
+    private final int RESULT_SETTINGS = 10;
+    private HttpClient httpClient;
 
     /**
      * Called when activity is first created.
@@ -33,6 +35,7 @@ public class LoginActivity extends Activity {
         httpClient = new HttpClient();
         reloadSettings();
         registerOnClickListenerButtonLogin();
+        fillLoginForm();
     }
 
     private void registerOnClickListenerButtonLogin() {
@@ -66,7 +69,8 @@ public class LoginActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (R.id.menu_settings == item.getItemId()) {
-            startSettingsActivity(this);
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivityForResult(intent, RESULT_SETTINGS);
         }
         return true;
     }
@@ -88,16 +92,10 @@ public class LoginActivity extends Activity {
         }
     }
 
-    public static void startSettingsActivity(Context context) {
-        Intent intent = new Intent(context, SettingsActivity.class);
-        ((Activity) context).startActivityForResult(intent, RESULT_SETTINGS);
-    }
-
     private void reloadSettings() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String settingsUrl = sharedPref.getString(SettingsActivity.KEY_URL, null);
         boolean settingsAcceptAll = sharedPref.getBoolean(SettingsActivity.KEY_ACCEPT_ALL_CERTIFICATES, true);
-        String username = sharedPref.getString(KEY_USERNAME, "");
         // If connection defaults are not read, take them from string.xml
         if (settingsUrl == null) {
             settingsUrl = this.getString(R.string.settings_url_default);
@@ -105,7 +103,24 @@ public class LoginActivity extends Activity {
         }
         httpClient.setEndpointUrl(settingsUrl);
         httpClient.setAcceptAllCertificates(settingsAcceptAll);
-        httpClient.setUsername(username);
+    }
+
+    private void fillLoginForm() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        String username = sharedPref.getString(KEY_USERNAME, "");
+        String password = sharedPref.getString(KEY_PASSWORD, "");
+        boolean rememberMe = sharedPref.getBoolean(KEY_REMEMBER, false);
+        if (rememberMe) {
+            // Fill username
+            EditText userField = (EditText) findViewById(R.id.login_username);
+            userField.setText(username);
+            // Fill password
+            EditText passField = (EditText) findViewById(R.id.login_password);
+            passField.setText(password);
+            // Fill remember me
+            CheckBox rememberField = (CheckBox) findViewById(R.id.login_remember);
+            rememberField.setChecked(true);
+        }
     }
 
     private class GetAuthToken extends AsyncTask<String, String, HttpClient> {
@@ -118,14 +133,20 @@ public class LoginActivity extends Activity {
          */
         @Override
         protected HttpClient doInBackground(String... params) {
-            EditText username = (EditText) findViewById(R.id.login_username);
-            String user = username.getText().toString();
-            EditText password = (EditText) findViewById(R.id.login_password);
-            String pass = password.getText().toString();
-            httpClient.setUsername(user);
-            httpClient.setPassword(pass);
-            boolean result = httpClient.authenticate();
-            if (result) {
+            // Set username
+            EditText userField = (EditText) findViewById(R.id.login_username);
+            String username = userField.getText().toString();
+            httpClient.setUsername(username);
+            // Set password
+            EditText passField = (EditText) findViewById(R.id.login_password);
+            String password = passField.getText().toString();
+            httpClient.setPassword(password);
+            // Set remember me
+            CheckBox rememberField = (CheckBox) findViewById(R.id.login_remember);
+            boolean rememberMe = rememberField.isChecked();
+            // If authenticate successful
+            if (httpClient.authenticate()) {
+                saveLoginInformation(username, password, rememberMe);
                 return httpClient;
             } else {
                 return null;
@@ -150,6 +171,21 @@ public class LoginActivity extends Activity {
                 TextView login = (TextView) findViewById(R.id.login_error);
                 login.setText(R.string.login_error);
             }
+        }
+
+        private void saveLoginInformation(String username, String password, boolean rememberMe) {
+            SharedPreferences.Editor sharedPrefs
+                    = PreferenceManager.getDefaultSharedPreferences(LoginActivity.this).edit();
+            if (rememberMe) {
+                sharedPrefs.putString(KEY_USERNAME, username);
+                sharedPrefs.putString(KEY_PASSWORD, password);
+                sharedPrefs.putBoolean(KEY_REMEMBER, true);
+            } else {
+                sharedPrefs.putString(KEY_USERNAME, "");
+                sharedPrefs.putString(KEY_PASSWORD, "");
+                sharedPrefs.putBoolean(KEY_REMEMBER, false);
+            }
+            sharedPrefs.apply();
         }
     }
 }
