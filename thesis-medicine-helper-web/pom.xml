@@ -4,7 +4,7 @@
     <parent>
         <groupId>bg.unisofia.fmi.valentinalatinova</groupId>
         <artifactId>thesis-medicine-helper</artifactId>
-        <version>${project.version}</version>
+        <version>1.0-SNAPSHOT</version>
     </parent>
     <groupId>bg.unisofia.fmi.valentinalatinova.web</groupId>
     <artifactId>thesis-medicine-helper-web</artifactId>
