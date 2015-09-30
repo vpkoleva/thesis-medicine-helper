@@ -7,24 +7,27 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 import bg.unisofia.fmi.valentinalatinova.app.HttpClient;
+import bg.unisofia.fmi.valentinalatinova.app.Logger;
 import bg.unisofia.fmi.valentinalatinova.app.MainActivity;
 import bg.unisofia.fmi.valentinalatinova.app.ManageScheduleActivity;
 import bg.unisofia.fmi.valentinalatinova.app.R;
 import bg.unisofia.fmi.valentinalatinova.core.dto.MobileScheduleDto;
 import bg.unisofia.fmi.valentinalatinova.core.dto.ResultDto;
+import com.roomorama.caldroid.CaldroidFragment;
+import com.roomorama.caldroid.CaldroidListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 public class SchedulesFragment extends Fragment {
@@ -36,7 +39,7 @@ public class SchedulesFragment extends Fragment {
     private final int RESULT_ADD = 121;
     private final int RESULT_EDIT = 122;
     private View rootView;
-    private TableLayout schedulesTable;
+    private CaldroidFragment schedulesCalendar;
     private MobileScheduleDto currentSchedule;
     private List<MobileScheduleDto> allSchedules;
 
@@ -51,7 +54,7 @@ public class SchedulesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_schedules, container, false);
-        schedulesTable = (TableLayout) rootView.findViewById(R.id.schedules_table);
+        initialiseCalendar();
         registerOnClickListenerButtonRefresh();
         registerOnClickListenerButtonAdd();
         invokeGetSchedules();
@@ -128,7 +131,7 @@ public class SchedulesFragment extends Fragment {
                 allSchedules.remove(currentSchedule);
             }
             allSchedules.add(currentSchedule);
-            drawSchedulesTable();
+            refreshCalendar();
         }
     }
 
@@ -173,48 +176,61 @@ public class SchedulesFragment extends Fragment {
                 .show();
     }
 
-    private void drawSchedulesTable() {
-        schedulesTable.removeAllViews();
+    private void initialiseCalendar() {
+        schedulesCalendar = new CaldroidFragment();
+        Bundle args = new Bundle();
+        Calendar today = Calendar.getInstance();
+        args.putInt(CaldroidFragment.MONTH, today.get(Calendar.MONTH) + 1);
+        args.putInt(CaldroidFragment.YEAR, today.get(Calendar.YEAR));
+        args.putInt(CaldroidFragment.START_DAY_OF_WEEK, CaldroidFragment.MONDAY);
+        schedulesCalendar.setArguments(args);
+        schedulesCalendar.setCaldroidListener(calendarListener);
+        schedulesCalendar.setBackgroundResourceForDate(R.drawable.today, today.getTime());
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.schedules_calendar, schedulesCalendar);
+        transaction.commit();
+    }
+
+    private void refreshCalendar() {
         if (allSchedules != null && allSchedules.size() > 0) {
-            for (MobileScheduleDto result : allSchedules) {
-                TableRow row = generateTableRow(result);
-                // Add Date
-                TextView date = generateTextView(result.getStartDate().toString());
-                row.addView(date);
-                // Add Description
-                TextView description = generateTextView(result.getDescription());
-                row.addView(description);
-                // Add Duration
-                TextView duration = generateTextView(result.getDuration() + result.getDurationType().toString());
-                row.addView(duration);
-                // Add Frequency
-                TextView frequency = generateTextView(result.getFrequency() + result.getFrequencyType().toString());
-                row.addView(frequency);
-                schedulesTable.addView(row);
+            for (MobileScheduleDto schedule : allSchedules) {
+                Date date = schedule.getStartDate().toDate();
+                if (isToday(date)) {
+                    schedulesCalendar.setBackgroundResourceForDate(R.drawable.today_circle, date);
+                } else {
+                    schedulesCalendar.setBackgroundResourceForDate(R.drawable.circle, date);
+                }
             }
-        } else {
-            TableRow row = generateTableRow(null);
-            TextView message = generateTextView("No Schedules available");
-            row.addView(message);
-            schedulesTable.addView(row);
+            schedulesCalendar.refreshView();
         }
     }
 
-    private TableRow generateTableRow(MobileScheduleDto schedule) {
-        TableRow row = new TableRow(rootView.getContext());
-        row.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT));
-        if (schedule != null) {
-            row.setTag(schedule);
-            registerForContextMenu(row);
-        }
-        return row;
+    private boolean isToday(Date date) {
+        Date today = Calendar.getInstance().getTime();
+        int todayInt = today.getYear() + today.getMonth() + today.getDay();
+        int dateInt = date.getYear() + date.getMonth() + date.getDay();
+        return dateInt == todayInt;
     }
 
-    private TextView generateTextView(String content) {
-        TextView cell = new TextView(rootView.getContext());
-        cell.setText(content);
-        return cell;
-    }
+    private final CaldroidListener calendarListener = new CaldroidListener() {
+
+        @Override
+        public void onSelectDate(Date date, View view) {
+        }
+
+        @Override
+        public void onChangeMonth(int month, int year) {
+        }
+
+        @Override
+        public void onLongClickDate(Date date, View view) {
+            Logger.debug("Date clicked" + date.toString());
+        }
+
+        @Override
+        public void onCaldroidViewCreated() {
+        }
+    };
 
     private class GetSchedules extends AsyncTask<String, String, List<MobileScheduleDto>> {
 
@@ -245,7 +261,7 @@ public class SchedulesFragment extends Fragment {
         @Override
         protected void onPostExecute(List<MobileScheduleDto> result) {
             allSchedules = result;
-            drawSchedulesTable();
+            refreshCalendar();
         }
     }
 
@@ -264,7 +280,7 @@ public class SchedulesFragment extends Fragment {
             if (result != null) {
                 if (result.isSuccess()) {
                     allSchedules.remove(currentSchedule);
-                    drawSchedulesTable();
+                    refreshCalendar();
                 } else {
                     MainActivity.createErrorDialog(rootView.getContext(), result.getError());
                 }

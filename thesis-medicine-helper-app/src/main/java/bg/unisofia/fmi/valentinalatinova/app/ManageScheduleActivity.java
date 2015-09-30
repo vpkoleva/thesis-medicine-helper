@@ -133,7 +133,7 @@ public class ManageScheduleActivity extends Activity {
         // Frequency
         NumberPicker frequency = (NumberPicker) findViewById(R.id.manage_schedule_frequency);
         currentSchedule.setFrequency(frequency.getValue());
-        Spinner frequencyType = (Spinner) findViewById(R.id.manage_schedule_duration_type);
+        Spinner frequencyType = (Spinner) findViewById(R.id.manage_schedule_frequency_type);
         currentSchedule.setFrequencyType(Duration.valueOf(frequencyType.getSelectedItem().toString()));
     }
 

@@ -10,7 +10,7 @@
             android:layout_height="wrap_content"
             android:text="@string/login_message"
             android:layout_margin="40dp"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:textAlignment="center"/>
 
     <LinearLayout
@@ -24,13 +24,14 @@
                 android:id="@+id/login_username_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/login_username_label"/>
+                android:text="@string/login_username_label"
+                android:labelFor="@+id/login_username"/>
 
         <EditText
                 android:id="@+id/login_username"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"/>
+                android:inputType="text"/>
     </LinearLayout>
 
     <LinearLayout
@@ -44,7 +45,8 @@
                 android:id="@+id/login_password_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/login_password_label"/>
+                android:text="@string/login_password_label"
+                android:labelFor="@+id/login_password"/>
 
         <EditText
                 android:id="@+id/login_password"
@@ -69,8 +71,7 @@
         <CheckBox
                 android:id="@+id/login_remember"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"/>
+                android:layout_height="wrap_content"/>
     </LinearLayout>
 
     <TextView

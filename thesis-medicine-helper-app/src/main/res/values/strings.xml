@@ -9,11 +9,10 @@
     <string name="login_error">Invalid login. Check Settings.</string>
     <string name="settings_menu">Settings</string>
     <string name="settings_url">URL</string>
-    <string name="settings_url_default">http://10.11.10.185:9000</string>
+    <string name="settings_url_default">http://10.11.10.107:9000</string>
     <string name="settings_accept_all_certificates">Accept invalid SSL certificates</string>
     <string name="error_name">Error</string>
     <string name="error_close">Close</string>
-    <string name="error_connection">Connection to server not possible! Please configure proper server URL, Username and Password in Settings</string>
     <string name="button_save">Save</string>
     <string name="button_cancel">Cancel</string>
     <string name="schedules_button_refresh">Refresh</string>

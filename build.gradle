@@ -1,0 +1,10 @@
+allprojects {
+    group = 'bg.unisofia.fmi.valentinalatinova'
+    version = '1.0-SNAPSHOT'
+}
+
+subprojects {
+    repositories {
+        mavenCentral()
+    }
+}

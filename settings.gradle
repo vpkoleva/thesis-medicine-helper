@@ -1,0 +1,11 @@
+rootProject.name = 'thesis-medicine-helper-parent'
+include ':thesis-medicine-helper-app'
+include ':thesis-medicine-helper-core'
+include ':thesis-medicine-helper-rest'
+include ':thesis-medicine-helper-web'
+
+
+project(':thesis-medicine-helper-app').projectDir = "$rootDir/thesis-medicine-helper-app" as File
+project(':thesis-medicine-helper-core').projectDir = "$rootDir/thesis-medicine-helper-core" as File
+project(':thesis-medicine-helper-rest').projectDir = "$rootDir/thesis-medicine-helper-rest" as File
+project(':thesis-medicine-helper-web').projectDir = "$rootDir/thesis-medicine-helper-web" as File
