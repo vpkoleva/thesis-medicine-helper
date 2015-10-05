@@ -42,6 +42,7 @@ public class SchedulesFragment extends Fragment {
     private CaldroidFragment schedulesCalendar;
     private MobileSchedule currentSchedule;
     private List<MobileSchedule> allSchedules;
+    private List<Date> selectedDates = new ArrayList<>();
 
     /**
      * Instantiates fragment user interface.
@@ -192,15 +193,26 @@ public class SchedulesFragment extends Fragment {
     }
 
     private void refreshCalendar() {
+        // Clear previously selected dates
+        schedulesCalendar.clearBackgroundResourceForDates(selectedDates);
+        schedulesCalendar.refreshView();
+        // Iterate current dates
         if (allSchedules != null && allSchedules.size() > 0) {
+            // Initialise empty array
+            selectedDates = new ArrayList<>();
+            // Iterate current dates
             for (MobileSchedule schedule : allSchedules) {
                 Date date = schedule.getStartDate().toDate();
+                // Save date is being selected
+                selectedDates.add(date);
+                // Set different background depending if this is today or not
                 if (isToday(date)) {
                     schedulesCalendar.setBackgroundResourceForDate(R.drawable.today_circle, date);
                 } else {
                     schedulesCalendar.setBackgroundResourceForDate(R.drawable.circle, date);
                 }
             }
+            // Refresh view
             schedulesCalendar.refreshView();
         }
     }

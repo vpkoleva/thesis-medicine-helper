@@ -41,7 +41,7 @@ public class ManageScheduleActivity extends Activity {
             currentScheduleId = currentSchedule.getId();
             setTitle(R.string.schedules_context_edit);
         } else {
-            setTitle(R.string.schedules_button_add);
+            setTitle(R.string.schedules_add);
         }
         // Fill form with existing data
         initialiseManageScheduleForm();

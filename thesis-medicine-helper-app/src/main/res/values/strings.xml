@@ -15,8 +15,7 @@
     <string name="error_close">Close</string>
     <string name="button_save">Save</string>
     <string name="button_cancel">Cancel</string>
-    <string name="schedules_button_refresh">Refresh</string>
-    <string name="schedules_button_add">Add Schedule</string>
+    <string name="schedules_add">Add Schedule</string>
     <string name="schedules_context_edit">Edit Schedule</string>
     <string name="schedules_context_delete">Delete Schedule</string>
     <string name="schedules_dialog_name">Confirm delete</string>

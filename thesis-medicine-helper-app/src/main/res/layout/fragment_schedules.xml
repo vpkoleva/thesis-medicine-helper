@@ -19,15 +19,15 @@
 
         <Button
                 android:id="@+id/schedules_button_refresh"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/schedules_button_refresh"/>
+                android:layout_width="50dip"
+                android:layout_height="50dip"
+                android:background="@drawable/refresh"/>
 
         <Button
                 android:id="@+id/schedules_button_add"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/schedules_button_add"
-                android:layout_alignParentEnd="true"/>
+                android:layout_width="50dip"
+                android:layout_height="50dip"
+                android:background="@drawable/add"
+                android:layout_toEndOf="@+id/schedules_button_refresh"/>
     </RelativeLayout>
 </LinearLayout>
