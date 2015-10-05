@@ -1,9 +1,9 @@
 package bg.unisofia.fmi.valentinalatinova.rest.persistence;
 
-import bg.unisofia.fmi.valentinalatinova.core.dto.BaseDto;
-import bg.unisofia.fmi.valentinalatinova.core.dto.ResultDto;
+import bg.unisofia.fmi.valentinalatinova.core.json.BaseJson;
+import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 
-public interface BaseDao<T extends BaseDto> {
+public interface BaseDao<T extends BaseJson> {
 
     /**
      * Saves DTO.
@@ -11,7 +11,7 @@ public interface BaseDao<T extends BaseDto> {
      * @param dto
      * @return Result TRUE in case of success and FALSE in case of failure
      */
-    ResultDto save(T dto);
+    Result save(T dto);
 
     /**
      * Updates DTO.
@@ -19,7 +19,7 @@ public interface BaseDao<T extends BaseDto> {
      * @param dto
      * @return Result TRUE in case of success and FALSE in case of failure
      */
-    ResultDto update(T dto);
+    Result update(T dto);
 
     /**
      * Deletes DTO.
@@ -28,5 +28,5 @@ public interface BaseDao<T extends BaseDto> {
      * @param userId of user that DTO belong to
      * @return Result TRUE in case of success and FALSE in case of failure
      */
-    ResultDto delete(long id, long userId);
+    Result delete(long id, long userId);
 }

@@ -1,7 +1,7 @@
 package bg.unisofia.fmi.valentinalatinova.rest.resources;
 
-import bg.unisofia.fmi.valentinalatinova.core.dto.MobileScheduleDto;
-import bg.unisofia.fmi.valentinalatinova.core.dto.ResultDto;
+import bg.unisofia.fmi.valentinalatinova.core.json.MobileSchedule;
+import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.MobileScheduleDao;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.MobileScheduleDaoImpl;
@@ -29,7 +29,7 @@ public class MobileScheduleService {
     @Timed
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<MobileScheduleDto> getMobileSchedules(@Auth User user) {
+    public List<MobileSchedule> getMobileSchedules(@Auth User user) {
         return mobileScheduleDao.getAll(user.getId());
     }
 
@@ -38,7 +38,7 @@ public class MobileScheduleService {
     @Path("/save")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes({MediaType.APPLICATION_JSON})
-    public ResultDto saveMobileSchedule(@Auth User user, MobileScheduleDto schedule) {
+    public Result saveMobileSchedule(@Auth User user, MobileSchedule schedule) {
         schedule.setUserId(user.getId());
         return mobileScheduleDao.save(schedule);
     }
@@ -48,7 +48,7 @@ public class MobileScheduleService {
     @Path("/update")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes({MediaType.APPLICATION_JSON})
-    public ResultDto updateMobileSchedule(@Auth User user, MobileScheduleDto schedule) {
+    public Result updateMobileSchedule(@Auth User user, MobileSchedule schedule) {
         schedule.setUserId(user.getId());
         return mobileScheduleDao.update(schedule);
     }
@@ -57,7 +57,7 @@ public class MobileScheduleService {
     @Timed
     @Path("/delete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ResultDto deleteMobileSchedule(@Auth User user, @PathParam("id") long id) {
+    public Result deleteMobileSchedule(@Auth User user, @PathParam("id") long id) {
         return mobileScheduleDao.delete(id, user.getId());
     }
 }

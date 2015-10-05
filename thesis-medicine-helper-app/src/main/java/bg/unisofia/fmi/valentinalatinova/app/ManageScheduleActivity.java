@@ -13,8 +13,8 @@ import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 import bg.unisofia.fmi.valentinalatinova.app.tabs.SchedulesFragment;
-import bg.unisofia.fmi.valentinalatinova.core.dto.MobileScheduleDto;
-import bg.unisofia.fmi.valentinalatinova.core.dto.ResultDto;
+import bg.unisofia.fmi.valentinalatinova.core.json.MobileSchedule;
+import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 import bg.unisofia.fmi.valentinalatinova.core.utils.Duration;
 import org.joda.time.DateTime;
 
@@ -25,7 +25,7 @@ public class ManageScheduleActivity extends Activity {
 
     private final String PATH_SAVE_SCHEDULE = "/mobile/schedule/save";
     private final String PATH_UPDATE_SCHEDULE = "/mobile/schedule/update";
-    private MobileScheduleDto currentSchedule;
+    private MobileSchedule currentSchedule;
     private long currentScheduleId = -1;
 
     @Override
@@ -35,7 +35,7 @@ public class ManageScheduleActivity extends Activity {
 
         // Get schedule object
         Intent intent = getIntent();
-        currentSchedule = (MobileScheduleDto) intent.getSerializableExtra(SchedulesFragment.RESULT_EXTRA);
+        currentSchedule = (MobileSchedule) intent.getSerializableExtra(SchedulesFragment.RESULT_EXTRA);
         // If schedule is passed then this is an Edit Action so capture its ID
         if (currentSchedule != null) {
             currentScheduleId = currentSchedule.getId();
@@ -109,7 +109,7 @@ public class ManageScheduleActivity extends Activity {
     }
 
     private void readManageScheduleForm() {
-        currentSchedule = new MobileScheduleDto();
+        currentSchedule = new MobileSchedule();
         // Description
         EditText description = (EditText) findViewById(R.id.manage_schedule_description);
         currentSchedule.setDescription(description.getText().toString());
@@ -172,7 +172,7 @@ public class ManageScheduleActivity extends Activity {
         finish();
     }
 
-    private class ManageSchedule extends AsyncTask<String, String, ResultDto> {
+    private class ManageSchedule extends AsyncTask<String, String, Result> {
 
         /**
          * Performs the action in background thread.
@@ -181,9 +181,9 @@ public class ManageScheduleActivity extends Activity {
          * @return result
          */
         @Override
-        protected ResultDto doInBackground(String... params) {
+        protected Result doInBackground(String... params) {
             HttpClient client = MainActivity.getAuthenticatedHttpClient();
-            return client.post(params[0], currentSchedule, ResultDto.class);
+            return client.post(params[0], currentSchedule, Result.class);
         }
 
         /**
@@ -192,7 +192,7 @@ public class ManageScheduleActivity extends Activity {
          * @param result result from doInBackground() method
          */
         @Override
-        protected void onPostExecute(ResultDto result) {
+        protected void onPostExecute(Result result) {
             if (result != null) {
                 if (result.isSuccess()) {
                     currentSchedule.setId(result.getId());

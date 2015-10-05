@@ -1,18 +1,18 @@
 package bg.unisofia.fmi.valentinalatinova.rest.persistence;
 
-import bg.unisofia.fmi.valentinalatinova.core.dto.MobileTableDto;
-import bg.unisofia.fmi.valentinalatinova.core.dto.MobileTableValueDto;
+import bg.unisofia.fmi.valentinalatinova.core.json.MobileTable;
+import bg.unisofia.fmi.valentinalatinova.core.json.MobileTableValue;
 
 import java.util.List;
 
-public interface MobileTableDao extends BaseDao<MobileTableValueDto> {
+public interface MobileTableDao extends BaseDao<MobileTableValue> {
 
     /**
      * Get mobile tables for given user id.
      *
      * @param userId
-     * @return list with MobileTableDto objects
+     * @return list with MobileTable objects
      */
-    List<MobileTableDto> getTables(long userId);
+    List<MobileTable> getTables(long userId);
 
 }

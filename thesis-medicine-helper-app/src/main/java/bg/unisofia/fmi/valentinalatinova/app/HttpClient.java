@@ -1,6 +1,6 @@
 package bg.unisofia.fmi.valentinalatinova.app;
 
-import bg.unisofia.fmi.valentinalatinova.core.dto.AuthTokenDto;
+import bg.unisofia.fmi.valentinalatinova.core.json.AuthToken;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import javax.net.ssl.HostnameVerifier;
@@ -24,7 +24,7 @@ import java.security.cert.X509Certificate;
 public class HttpClient implements Serializable {
 
     private ObjectMapper jsonObjectMapper;
-    private AuthTokenDto authToken;
+    private AuthToken authToken;
     private boolean acceptAllCertificates = true;
     private String endpointUrl;
     private String username;
@@ -62,7 +62,7 @@ public class HttpClient implements Serializable {
             final String url = endpointUrl + "/token";
             final String data = "grant_type=password&username=" + username + "&password=" + password;
             String resultJson = doRequest(url, data);
-            authToken = jsonObjectMapper.readValue(resultJson, AuthTokenDto.class);
+            authToken = jsonObjectMapper.readValue(resultJson, AuthToken.class);
             return true;
         } catch (KeyManagementException | NoSuchAlgorithmException | IOException ex) {
             Logger.error(ex);
@@ -121,6 +121,7 @@ public class HttpClient implements Serializable {
                 }
             }
         }
+        response.close();
         return result.toString();
     }
 

@@ -1,4 +1,4 @@
-package bg.unisofia.fmi.valentinalatinova.core.dto;
+package bg.unisofia.fmi.valentinalatinova.core.json;
 
 import bg.unisofia.fmi.valentinalatinova.core.utils.JsonDateTimeUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,7 +9,7 @@ import org.joda.time.DateTime;
 import java.io.Serializable;
 import java.util.UUID;
 
-public class AuthTokenDto implements Serializable {
+public class AuthToken implements Serializable {
     @JsonProperty
     private String firstName;
     @JsonProperty
@@ -21,11 +21,11 @@ public class AuthTokenDto implements Serializable {
     @JsonDeserialize(using = JsonDateTimeUtils.DateTimeDeserializer.class)
     private DateTime expiryDate;
 
-    public AuthTokenDto() {
+    public AuthToken() {
         // Needed by Jackson deserialization
     }
 
-    public AuthTokenDto(UUID authToken, String firstName, String lastName, DateTime expiryDate) {
+    public AuthToken(UUID authToken, String firstName, String lastName, DateTime expiryDate) {
         this.authToken = authToken;
         this.firstName = firstName;
         this.lastName = lastName;

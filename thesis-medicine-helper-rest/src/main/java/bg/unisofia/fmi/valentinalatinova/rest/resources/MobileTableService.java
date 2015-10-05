@@ -1,9 +1,9 @@
 package bg.unisofia.fmi.valentinalatinova.rest.resources;
 
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
-import bg.unisofia.fmi.valentinalatinova.core.dto.MobileTableDto;
-import bg.unisofia.fmi.valentinalatinova.core.dto.MobileTableValueDto;
-import bg.unisofia.fmi.valentinalatinova.core.dto.ResultDto;
+import bg.unisofia.fmi.valentinalatinova.core.json.MobileTable;
+import bg.unisofia.fmi.valentinalatinova.core.json.MobileTableValue;
+import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.MobileTableDao;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.MobileTableDaoImpl;
 import com.codahale.metrics.annotation.Timed;
@@ -30,7 +30,7 @@ public class MobileTableService {
     @Timed
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<MobileTableDto> getMobileTable(@Auth User user) {
+    public List<MobileTable> getMobileTable(@Auth User user) {
         return mobileTableDao.getTables(user.getId());
     }
 
@@ -39,7 +39,7 @@ public class MobileTableService {
     @Path("/save")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes({MediaType.APPLICATION_JSON})
-    public ResultDto saveMobileTableValue(@Auth User user, MobileTableValueDto tableValue) {
+    public Result saveMobileTableValue(@Auth User user, MobileTableValue tableValue) {
         tableValue.setUserId(user.getId());
         return mobileTableDao.save(tableValue);
     }
@@ -49,7 +49,7 @@ public class MobileTableService {
     @Path("/update")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes({MediaType.APPLICATION_JSON})
-    public ResultDto updateMobileTableValue(@Auth User user, MobileTableValueDto tableValue) {
+    public Result updateMobileTableValue(@Auth User user, MobileTableValue tableValue) {
         tableValue.setUserId(user.getId());
         return mobileTableDao.update(tableValue);
     }
@@ -58,7 +58,7 @@ public class MobileTableService {
     @Timed
     @Path("/delete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public ResultDto deleteMobileTableValue(@Auth User user, @PathParam("id") long id) {
+    public Result deleteMobileTableValue(@Auth User user, @PathParam("id") long id) {
         return mobileTableDao.delete(id, user.getId());
     }
 }

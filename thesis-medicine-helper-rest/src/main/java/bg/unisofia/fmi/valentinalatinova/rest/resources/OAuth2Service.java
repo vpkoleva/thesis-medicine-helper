@@ -1,6 +1,6 @@
 package bg.unisofia.fmi.valentinalatinova.rest.resources;
 
-import bg.unisofia.fmi.valentinalatinova.core.dto.AuthTokenDto;
+import bg.unisofia.fmi.valentinalatinova.core.json.AuthToken;
 import bg.unisofia.fmi.valentinalatinova.rest.data.AccessToken;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.AccessTokenDao;
@@ -42,12 +42,12 @@ public class OAuth2Service {
     @Timed
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public AuthTokenDto getToken(@FormParam("grant_type") String grantType,
+    public AuthToken getToken(@FormParam("grant_type") String grantType,
             @FormParam("username") String username,
             @FormParam("password") String password) {
 
         if (isAuthenticationDisabled) {
-            return new AuthTokenDto(UUID.randomUUID(), User.getNoAuthUser().getFirstName(),
+            return new AuthToken(UUID.randomUUID(), User.getNoAuthUser().getFirstName(),
                     User.getNoAuthUser().getLastName(), DateTime.now().plusMonths(1));
         }
         // Check if the grant type is allowed
@@ -66,6 +66,6 @@ public class OAuth2Service {
         User user = optUser.get();
         AccessToken accessToken = accessTokenDAO.generateAccessToken(user);
         DateTime expiryDate = accessToken.getLastAccess().plusMinutes(accessTokenExpireTimeMinutes);
-        return new AuthTokenDto(accessToken.getAccessTokenId(), user.getFirstName(), user.getLastName(), expiryDate);
+        return new AuthToken(accessToken.getAccessTokenId(), user.getFirstName(), user.getLastName(), expiryDate);
     }
 }

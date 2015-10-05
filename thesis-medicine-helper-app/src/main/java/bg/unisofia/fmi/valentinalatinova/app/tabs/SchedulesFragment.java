@@ -19,8 +19,8 @@ import bg.unisofia.fmi.valentinalatinova.app.Logger;
 import bg.unisofia.fmi.valentinalatinova.app.MainActivity;
 import bg.unisofia.fmi.valentinalatinova.app.ManageScheduleActivity;
 import bg.unisofia.fmi.valentinalatinova.app.R;
-import bg.unisofia.fmi.valentinalatinova.core.dto.MobileScheduleDto;
-import bg.unisofia.fmi.valentinalatinova.core.dto.ResultDto;
+import bg.unisofia.fmi.valentinalatinova.core.json.MobileSchedule;
+import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
 
@@ -32,7 +32,7 @@ import java.util.List;
 
 public class SchedulesFragment extends Fragment {
 
-    public static final String RESULT_EXTRA = "MobileScheduleDto";
+    public static final String RESULT_EXTRA = "MobileSchedule";
     private final int MENU_GROUP_ID = 101;
     private final int MENU_EDIT_ID = 111;
     private final int MENU_DELETE_ID = 112;
@@ -40,8 +40,8 @@ public class SchedulesFragment extends Fragment {
     private final int RESULT_EDIT = 122;
     private View rootView;
     private CaldroidFragment schedulesCalendar;
-    private MobileScheduleDto currentSchedule;
-    private List<MobileScheduleDto> allSchedules;
+    private MobileSchedule currentSchedule;
+    private List<MobileSchedule> allSchedules;
 
     /**
      * Instantiates fragment user interface.
@@ -82,7 +82,7 @@ public class SchedulesFragment extends Fragment {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
-        MobileScheduleDto schedule = (MobileScheduleDto) view.getTag();
+        MobileSchedule schedule = (MobileSchedule) view.getTag();
         currentSchedule = schedule;
         menu.setHeaderTitle(schedule.getDescription());
         menu.add(MENU_GROUP_ID, MENU_EDIT_ID, MENU_EDIT_ID, R.string.schedules_context_edit);
@@ -125,7 +125,7 @@ public class SchedulesFragment extends Fragment {
         // In case of Add or Edit Schedule request and OK result
         if ((requestCode == RESULT_ADD || requestCode == RESULT_EDIT) && resultCode == Activity.RESULT_OK) {
             Bundle result = data.getExtras();
-            currentSchedule = (MobileScheduleDto) result.getSerializable(RESULT_EXTRA);
+            currentSchedule = (MobileSchedule) result.getSerializable(RESULT_EXTRA);
             // Remove before add in case of Edit Schedule
             if (requestCode == RESULT_EDIT) {
                 allSchedules.remove(currentSchedule);
@@ -193,7 +193,7 @@ public class SchedulesFragment extends Fragment {
 
     private void refreshCalendar() {
         if (allSchedules != null && allSchedules.size() > 0) {
-            for (MobileScheduleDto schedule : allSchedules) {
+            for (MobileSchedule schedule : allSchedules) {
                 Date date = schedule.getStartDate().toDate();
                 if (isToday(date)) {
                     schedulesCalendar.setBackgroundResourceForDate(R.drawable.today_circle, date);
@@ -232,7 +232,7 @@ public class SchedulesFragment extends Fragment {
         }
     };
 
-    private class GetSchedules extends AsyncTask<String, String, List<MobileScheduleDto>> {
+    private class GetSchedules extends AsyncTask<String, String, List<MobileSchedule>> {
 
         private final String PATH_SCHEDULES = "/mobile/schedule/all";
 
@@ -243,10 +243,10 @@ public class SchedulesFragment extends Fragment {
          * @return result
          */
         @Override
-        protected List<MobileScheduleDto> doInBackground(String... params) {
+        protected List<MobileSchedule> doInBackground(String... params) {
             HttpClient client = MainActivity.getAuthenticatedHttpClient();
-            MobileScheduleDto[] schedulesArray = client.get(PATH_SCHEDULES, MobileScheduleDto[].class);
-            List<MobileScheduleDto> result = new ArrayList<>();
+            MobileSchedule[] schedulesArray = client.get(PATH_SCHEDULES, MobileSchedule[].class);
+            List<MobileSchedule> result = new ArrayList<>();
             if (schedulesArray != null) {
                 Collections.addAll(result, schedulesArray);
             }
@@ -259,24 +259,24 @@ public class SchedulesFragment extends Fragment {
          * @param result result from doInBackground() method
          */
         @Override
-        protected void onPostExecute(List<MobileScheduleDto> result) {
+        protected void onPostExecute(List<MobileSchedule> result) {
             allSchedules = result;
             refreshCalendar();
         }
     }
 
-    private class DeleteSchedule extends AsyncTask<Long, String, ResultDto> {
+    private class DeleteSchedule extends AsyncTask<Long, String, Result> {
 
         private final String PATH_DELETE = "/mobile/schedule/delete/";
 
         @Override
-        protected ResultDto doInBackground(Long... params) {
+        protected Result doInBackground(Long... params) {
             HttpClient client = MainActivity.getAuthenticatedHttpClient();
-            return client.get(PATH_DELETE + params[0], ResultDto.class);
+            return client.get(PATH_DELETE + params[0], Result.class);
         }
 
         @Override
-        protected void onPostExecute(ResultDto result) {
+        protected void onPostExecute(Result result) {
             if (result != null) {
                 if (result.isSuccess()) {
                     allSchedules.remove(currentSchedule);

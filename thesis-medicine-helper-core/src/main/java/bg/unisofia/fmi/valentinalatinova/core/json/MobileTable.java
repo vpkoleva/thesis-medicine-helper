@@ -1,23 +1,23 @@
-package bg.unisofia.fmi.valentinalatinova.core.dto;
+package bg.unisofia.fmi.valentinalatinova.core.json;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.List;
 
-public class MobileTableDto extends BaseDto {
+public class MobileTable extends BaseJson {
     @JsonProperty
     private String name;
     @JsonProperty
-    private List<MobileTableValueDto> values;
+    private List<MobileTableValue> values;
     @JsonIgnore
     private long usedId;
 
-    public MobileTableDto() {
+    public MobileTable() {
         // Needed by Jackson deserialization
     }
 
-    public MobileTableDto(long id, String name, List<MobileTableValueDto> values, long usedId) {
+    public MobileTable(long id, String name, List<MobileTableValue> values, long usedId) {
         this.id = id;
         this.name = name;
         this.values = values;
@@ -32,11 +32,11 @@ public class MobileTableDto extends BaseDto {
         this.name = name;
     }
 
-    public List<MobileTableValueDto> getValues() {
+    public List<MobileTableValue> getValues() {
         return values;
     }
 
-    public void setValues(List<MobileTableValueDto> values) {
+    public void setValues(List<MobileTableValue> values) {
         this.values = values;
     }
 

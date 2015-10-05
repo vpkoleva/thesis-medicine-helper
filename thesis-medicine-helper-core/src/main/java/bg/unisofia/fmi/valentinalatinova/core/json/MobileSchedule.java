@@ -1,4 +1,4 @@
-package bg.unisofia.fmi.valentinalatinova.core.dto;
+package bg.unisofia.fmi.valentinalatinova.core.json;
 
 import bg.unisofia.fmi.valentinalatinova.core.utils.Duration;
 import bg.unisofia.fmi.valentinalatinova.core.utils.JsonDateTimeUtils;
@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.joda.time.DateTime;
 
-public class MobileScheduleDto extends BaseDto {
+public class MobileSchedule extends BaseJson {
     @JsonProperty
     private String description;
     @JsonProperty
@@ -26,11 +26,11 @@ public class MobileScheduleDto extends BaseDto {
     @JsonIgnore
     private long userId;
 
-    public MobileScheduleDto() {
+    public MobileSchedule() {
         // Needed by Jackson deserialization
     }
 
-    public MobileScheduleDto(long id, String description, DateTime startDate, int duration,
+    public MobileSchedule(long id, String description, DateTime startDate, int duration,
             Duration durationType, int frequency, Duration frequencyType, long userId) {
         this.id = id;
         this.description = description;
