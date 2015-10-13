@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import bg.unisofia.fmi.valentinalatinova.app.tabs.TabsPagerAdapter;
+import bg.unisofia.fmi.valentinalatinova.app.utils.HttpClient;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 

@@ -14,19 +14,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import bg.unisofia.fmi.valentinalatinova.app.HttpClient;
-import bg.unisofia.fmi.valentinalatinova.app.Logger;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 import bg.unisofia.fmi.valentinalatinova.app.MainActivity;
 import bg.unisofia.fmi.valentinalatinova.app.ManageScheduleActivity;
 import bg.unisofia.fmi.valentinalatinova.app.R;
+import bg.unisofia.fmi.valentinalatinova.app.utils.DateUtils;
+import bg.unisofia.fmi.valentinalatinova.app.utils.HttpClient;
+import bg.unisofia.fmi.valentinalatinova.app.utils.Logger;
 import bg.unisofia.fmi.valentinalatinova.core.json.MobileSchedule;
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
+import org.joda.time.format.DateTimeFormat;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -42,7 +48,7 @@ public class SchedulesFragment extends Fragment {
     private CaldroidFragment schedulesCalendar;
     private MobileSchedule currentSchedule;
     private List<MobileSchedule> allSchedules;
-    private List<Date> selectedDates = new ArrayList<>();
+    private List<Date> datesWithSchedules = new ArrayList<>();
 
     /**
      * Instantiates fragment user interface.
@@ -86,8 +92,8 @@ public class SchedulesFragment extends Fragment {
         MobileSchedule schedule = (MobileSchedule) view.getTag();
         currentSchedule = schedule;
         menu.setHeaderTitle(schedule.getDescription());
-        menu.add(MENU_GROUP_ID, MENU_EDIT_ID, MENU_EDIT_ID, R.string.schedules_context_edit);
-        menu.add(MENU_GROUP_ID, MENU_DELETE_ID, MENU_DELETE_ID, R.string.schedules_context_delete);
+        menu.add(MENU_GROUP_ID, MENU_EDIT_ID, MENU_EDIT_ID, R.string.schedules_menu_edit);
+        menu.add(MENU_GROUP_ID, MENU_DELETE_ID, MENU_DELETE_ID, R.string.schedules_menu_delete);
     }
 
     /**
@@ -132,7 +138,7 @@ public class SchedulesFragment extends Fragment {
                 allSchedules.remove(currentSchedule);
             }
             allSchedules.add(currentSchedule);
-            refreshCalendar();
+            refreshSchedulesFragment(currentSchedule.getStartDate().toDate());
         }
     }
 
@@ -184,50 +190,58 @@ public class SchedulesFragment extends Fragment {
         args.putInt(CaldroidFragment.MONTH, today.get(Calendar.MONTH) + 1);
         args.putInt(CaldroidFragment.YEAR, today.get(Calendar.YEAR));
         args.putInt(CaldroidFragment.START_DAY_OF_WEEK, CaldroidFragment.MONDAY);
+        args.putBoolean(CaldroidFragment.SQUARE_TEXT_VIEW_CELL, false);
         schedulesCalendar.setArguments(args);
         schedulesCalendar.setCaldroidListener(calendarListener);
-        schedulesCalendar.setBackgroundResourceForDate(R.drawable.today, today.getTime());
+        schedulesCalendar.setTextColorForDate(R.color.blue, today.getTime());
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.schedules_calendar, schedulesCalendar);
         transaction.commit();
     }
 
+    private void refreshSchedulesFragment(Date selectedDate) {
+        refreshCalendar();
+        clearSchedulesTable();
+        drawSchedulesTable(getSchedulesByDate(selectedDate));
+    }
+
     private void refreshCalendar() {
         // Clear previously selected dates
-        schedulesCalendar.clearBackgroundResourceForDates(selectedDates);
+        schedulesCalendar.clearBackgroundResourceForDates(datesWithSchedules);
         schedulesCalendar.refreshView();
         // Iterate current dates
         if (allSchedules != null && allSchedules.size() > 0) {
             // Initialise empty array
-            selectedDates = new ArrayList<>();
+            datesWithSchedules = new ArrayList<>();
             // Iterate current dates
             for (MobileSchedule schedule : allSchedules) {
                 Date date = schedule.getStartDate().toDate();
-                // Save date is being selected
-                selectedDates.add(date);
-                // Set different background depending if this is today or not
-                if (isToday(date)) {
-                    schedulesCalendar.setBackgroundResourceForDate(R.drawable.today_circle, date);
-                } else {
-                    schedulesCalendar.setBackgroundResourceForDate(R.drawable.circle, date);
-                }
+                // Save date with schedule
+                datesWithSchedules.add(date);
+                schedulesCalendar.setBackgroundResourceForDate(R.color.gray, date);
             }
             // Refresh view
             schedulesCalendar.refreshView();
         }
     }
 
-    private boolean isToday(Date date) {
-        Date today = Calendar.getInstance().getTime();
-        int todayInt = today.getYear() + today.getMonth() + today.getDay();
-        int dateInt = date.getYear() + date.getMonth() + date.getDay();
-        return dateInt == todayInt;
-    }
-
+    /**
+     * Implements CaldroidListener abstract class to handles calendar events.
+     */
     private final CaldroidListener calendarListener = new CaldroidListener() {
 
         @Override
-        public void onSelectDate(Date date, View view) {
+        public void onSelectDate(final Date date, View view) {
+            clearSchedulesTable();
+            int events = 0;
+            for (Date selected : datesWithSchedules) {
+                if (DateUtils.isSameDay(date, selected)) {
+                    events++;
+                }
+            }
+            if (events > 0) {
+                drawSchedulesTable(getSchedulesByDate(date));
+            }
         }
 
         @Override
@@ -243,6 +257,75 @@ public class SchedulesFragment extends Fragment {
         public void onCaldroidViewCreated() {
         }
     };
+
+    private List<MobileSchedule> getSchedulesByDate(Date date) {
+        List<MobileSchedule> result = new ArrayList<>();
+        for (MobileSchedule schedule : allSchedules) {
+            if (DateUtils.isSameDay(date, schedule.getStartDate().toDate())) {
+                result.add(schedule);
+            }
+        }
+        Collections.sort(result, new Comparator<MobileSchedule>() {
+            @Override
+            public int compare(MobileSchedule lhs, MobileSchedule rhs) {
+                return ((Long) lhs.getStartDate().getMillis()).compareTo(rhs.getStartDate().getMillis());
+            }
+        });
+        return result;
+    }
+
+    private void clearSchedulesTable() {
+        TextView label = (TextView) rootView.findViewById(R.id.schedules_view_for);
+        label.setVisibility(TextView.INVISIBLE);
+        TableLayout schedulesTable = (TableLayout) rootView.findViewById(R.id.schedules_list);
+        schedulesTable.removeAllViews();
+    }
+
+    private void drawSchedulesTable(List<MobileSchedule> schedules) {
+        if (schedules != null && schedules.size() > 0) {
+            // Generate header
+            TextView label = (TextView) rootView.findViewById(R.id.schedules_view_for);
+            label.setVisibility(TextView.VISIBLE);
+            String format = getString(R.string.schedules_view_for);
+            String text = String.format(format, DateUtils.formatDay(schedules.get(0).getStartDate().toDate()));
+            label.setText(text);
+            // Generate records
+            TableLayout schedulesTable = (TableLayout) rootView.findViewById(R.id.schedules_list);
+            for (MobileSchedule result : schedules) {
+                TableRow row = generateTableRow(result);
+                // Add Hour
+                String hour = DateTimeFormat.forPattern("HH:mm").print(result.getStartDate());
+                TextView date = generateTextView(hour);
+                row.addView(date);
+                // Add Description
+                TextView description = generateTextView(result.getDescription());
+                row.addView(description);
+                // Add Duration
+                TextView duration = generateTextView(result.getDuration() + result.getDurationType().toString());
+                row.addView(duration);
+                // Add Frequency
+                TextView frequency = generateTextView(result.getFrequency() + result.getFrequencyType().toString());
+                row.addView(frequency);
+                schedulesTable.addView(row);
+            }
+        }
+    }
+
+    private TableRow generateTableRow(MobileSchedule schedule) {
+        TableRow row = new TableRow(rootView.getContext());
+        row.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT));
+        if (schedule != null) {
+            row.setTag(schedule);
+            registerForContextMenu(row);
+        }
+        return row;
+    }
+
+    private TextView generateTextView(String content) {
+        TextView cell = new TextView(rootView.getContext());
+        cell.setText(content);
+        return cell;
+    }
 
     private class GetSchedules extends AsyncTask<String, String, List<MobileSchedule>> {
 
@@ -273,7 +356,7 @@ public class SchedulesFragment extends Fragment {
         @Override
         protected void onPostExecute(List<MobileSchedule> result) {
             allSchedules = result;
-            refreshCalendar();
+            refreshSchedulesFragment(Calendar.getInstance().getTime());
         }
     }
 
@@ -292,7 +375,7 @@ public class SchedulesFragment extends Fragment {
             if (result != null) {
                 if (result.isSuccess()) {
                     allSchedules.remove(currentSchedule);
-                    refreshCalendar();
+                    refreshSchedulesFragment(currentSchedule.getStartDate().toDate());
                 } else {
                     MainActivity.createErrorDialog(rootView.getContext(), result.getError());
                 }

@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import bg.unisofia.fmi.valentinalatinova.app.utils.HttpClient;
 
 public class LoginActivity extends Activity {
 

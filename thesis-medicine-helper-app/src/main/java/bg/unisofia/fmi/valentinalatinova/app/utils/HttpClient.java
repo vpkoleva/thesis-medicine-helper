@@ -1,4 +1,4 @@
-package bg.unisofia.fmi.valentinalatinova.app;
+package bg.unisofia.fmi.valentinalatinova.app.utils;
 
 import bg.unisofia.fmi.valentinalatinova.core.json.AuthToken;
 import com.fasterxml.jackson.databind.ObjectMapper;

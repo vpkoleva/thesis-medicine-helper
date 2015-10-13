@@ -1,9 +1,12 @@
-package bg.unisofia.fmi.valentinalatinova.app;
+package bg.unisofia.fmi.valentinalatinova.app.utils;
 
 import android.util.Log;
 
-public class Logger {
+public final class Logger {
     private static final String LOG_NAME = "medicine-helper";
+
+    private Logger() {
+    }
 
     public static void error(Exception exception) {
         Log.e(LOG_NAME, exception.getMessage(), exception);

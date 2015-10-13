@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TimePicker;
-import bg.unisofia.fmi.valentinalatinova.app.tabs.SchedulesFragment;
+import bg.unisofia.fmi.valentinalatinova.app.utils.HttpClient;
 import bg.unisofia.fmi.valentinalatinova.core.json.MobileSchedule;
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 import bg.unisofia.fmi.valentinalatinova.core.utils.Duration;
@@ -23,6 +23,7 @@ import java.util.List;
 
 public class ManageScheduleActivity extends Activity {
 
+    public static final String RESULT_EXTRA = "MobileSchedule";
     private final String PATH_SAVE_SCHEDULE = "/mobile/schedule/save";
     private final String PATH_UPDATE_SCHEDULE = "/mobile/schedule/update";
     private MobileSchedule currentSchedule;
@@ -35,13 +36,13 @@ public class ManageScheduleActivity extends Activity {
 
         // Get schedule object
         Intent intent = getIntent();
-        currentSchedule = (MobileSchedule) intent.getSerializableExtra(SchedulesFragment.RESULT_EXTRA);
+        currentSchedule = (MobileSchedule) intent.getSerializableExtra(RESULT_EXTRA);
         // If schedule is passed then this is an Edit Action so capture its ID
         if (currentSchedule != null) {
             currentScheduleId = currentSchedule.getId();
-            setTitle(R.string.schedules_context_edit);
+            setTitle(R.string.schedules_menu_edit);
         } else {
-            setTitle(R.string.schedules_add);
+            setTitle(R.string.schedules_add_window);
         }
         // Fill form with existing data
         initialiseManageScheduleForm();
@@ -165,7 +166,7 @@ public class ManageScheduleActivity extends Activity {
 
     private void assembleResponseAndFinish() {
         Bundle resultData = new Bundle();
-        resultData.putSerializable(SchedulesFragment.RESULT_EXTRA, currentSchedule);
+        resultData.putSerializable(RESULT_EXTRA, currentSchedule);
         Intent intent = new Intent();
         intent.putExtras(resultData);
         setResult(RESULT_OK, intent);
