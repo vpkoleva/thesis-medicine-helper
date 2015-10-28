@@ -14,6 +14,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -44,6 +46,7 @@ public class SchedulesFragment extends Fragment {
     private final int MENU_DELETE_ID = 112;
     private final int RESULT_ADD = 121;
     private final int RESULT_EDIT = 122;
+    private final int PAD = 30;
     private View rootView;
     private CaldroidFragment schedulesCalendar;
     private MobileSchedule currentSchedule;
@@ -62,6 +65,13 @@ public class SchedulesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_schedules, container, false);
         initialiseCalendar();
+        // Padding
+        RelativeLayout layout = (RelativeLayout) rootView.findViewById(R.id.button_layout);
+        layout.setPadding(0, PAD, 0, 0);
+        // Padding
+        ScrollView scroll = (ScrollView) rootView.findViewById(R.id.schedules_scroll);
+        scroll.setPadding(0, PAD, 0, 0);
+        // Register listeners
         registerOnClickListenerButtonRefresh();
         registerOnClickListenerButtonAdd();
         invokeGetSchedules();
@@ -293,19 +303,19 @@ public class SchedulesFragment extends Fragment {
             TableLayout schedulesTable = (TableLayout) rootView.findViewById(R.id.schedules_list);
             for (MobileSchedule result : schedules) {
                 TableRow row = generateTableRow(result);
-                // Add Hour
+                // Add hour
                 String hour = DateTimeFormat.forPattern("HH:mm").print(result.getStartDate());
                 TextView date = generateTextView(hour);
                 row.addView(date);
-                // Add Description
+                // Add separator
+                TextView separator = generateTextView("");
+                separator.setBackgroundResource(R.drawable.border);
+                separator.setPadding(3, PAD, 3, PAD);
+                row.addView(separator);
+                // Add description
                 TextView description = generateTextView(result.getDescription());
                 row.addView(description);
-                // Add Duration
-                TextView duration = generateTextView(result.getDuration() + result.getDurationType().toString());
-                row.addView(duration);
-                // Add Frequency
-                TextView frequency = generateTextView(result.getFrequency() + result.getFrequencyType().toString());
-                row.addView(frequency);
+                // Add row
                 schedulesTable.addView(row);
             }
         }
@@ -313,7 +323,8 @@ public class SchedulesFragment extends Fragment {
 
     private TableRow generateTableRow(MobileSchedule schedule) {
         TableRow row = new TableRow(rootView.getContext());
-        row.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT));
+        row.setLayoutParams(new TableLayout.LayoutParams());
+        row.setBackgroundResource(R.drawable.border);
         if (schedule != null) {
             row.setTag(schedule);
             registerForContextMenu(row);
@@ -324,6 +335,7 @@ public class SchedulesFragment extends Fragment {
     private TextView generateTextView(String content) {
         TextView cell = new TextView(rootView.getContext());
         cell.setText(content);
+        cell.setPadding(PAD, PAD, PAD, PAD);
         return cell;
     }
 
