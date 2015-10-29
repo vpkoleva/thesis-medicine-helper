@@ -35,7 +35,6 @@ import java.util.List;
 
 public class SchedulesFragment extends CustomFragment {
 
-    public static final String RESULT_EXTRA = "MobileSchedule";
     private final int MENU_GROUP_ID = 101;
     private final int MENU_EDIT_ID = 111;
     private final int MENU_DELETE_ID = 112;
@@ -103,7 +102,7 @@ public class SchedulesFragment extends CustomFragment {
             switch (item.getItemId()) {
                 case MENU_EDIT_ID:
                     Intent intent = new Intent(rootView.getContext(), ManageScheduleActivity.class);
-                    intent.putExtra(RESULT_EXTRA, currentSchedule);
+                    intent.putExtra(ManageScheduleActivity.RESULT_EXTRA, currentSchedule);
                     startActivityForResult(intent, RESULT_EDIT);
                     break;
                 case MENU_DELETE_ID:
@@ -133,7 +132,7 @@ public class SchedulesFragment extends CustomFragment {
         // In case of Add or Edit Schedule request and OK result
         if ((requestCode == RESULT_ADD || requestCode == RESULT_EDIT) && resultCode == Activity.RESULT_OK) {
             Bundle result = data.getExtras();
-            currentSchedule = (MobileSchedule) result.getSerializable(RESULT_EXTRA);
+            currentSchedule = (MobileSchedule) result.getSerializable(ManageScheduleActivity.RESULT_EXTRA);
             // Remove before add in case of Edit Schedule
             if (requestCode == RESULT_EDIT) {
                 allSchedules.remove(currentSchedule);

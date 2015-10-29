@@ -120,4 +120,5 @@
                 android:layout_below="@+id/manage_schedule_frequency_group"
                 android:layout_alignParentEnd="true"/>
     </RelativeLayout>
+
 </ScrollView>

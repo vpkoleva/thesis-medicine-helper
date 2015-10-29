@@ -11,7 +11,7 @@ import bg.unisofia.fmi.valentinalatinova.app.R;
 
 public class CustomFragment extends Fragment {
 
-    private final int PAD = 30;
+    private final int PAD = 10;
     protected View rootView;
 
     protected TableRow generateTableRow(Object tag) {

@@ -33,26 +33,25 @@ public class ManageScheduleActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_manage_schedule);
-
         // Get schedule object
         Intent intent = getIntent();
         currentSchedule = (MobileSchedule) intent.getSerializableExtra(RESULT_EXTRA);
         // If schedule is passed then this is an Edit Action so capture its ID
         if (currentSchedule != null) {
             currentScheduleId = currentSchedule.getId();
-            setTitle(R.string.schedules_edit_window);
+            setTitle(R.string.manage_schedule_edit_window);
         } else {
-            setTitle(R.string.schedules_add_window);
+            setTitle(R.string.manage_schedule_add_window);
         }
         // Fill form with existing data
         initialiseManageScheduleForm();
-        registerOnClickListenerButtonSave();
-        registerOnClickListenerButtonCancel();
+        registerOnClickListeners();
     }
 
-    private void registerOnClickListenerButtonSave() {
-        Button button = (Button) findViewById(R.id.manage_schedule_button_save);
-        button.setOnClickListener(new View.OnClickListener() {
+    private void registerOnClickListeners() {
+        // Save button
+        Button save = (Button) findViewById(R.id.manage_schedule_button_save);
+        save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 readManageScheduleForm();
@@ -65,9 +64,7 @@ public class ManageScheduleActivity extends Activity {
                 }
             }
         });
-    }
-
-    private void registerOnClickListenerButtonCancel() {
+        // Cancel button
         Button button = (Button) findViewById(R.id.manage_schedule_button_cancel);
         button.setOnClickListener(new View.OnClickListener() {
             @Override

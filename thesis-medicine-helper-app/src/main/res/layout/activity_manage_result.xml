@@ -1,0 +1,49 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+
+    <TextView
+            android:id="@+id/manage_result_name_label"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/manage_result_name_label"
+            android:labelFor="@+id/manage_result_name"/>
+
+    <EditText
+            android:id="@+id/manage_result_name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/manage_result_name_label"
+            android:inputType="text"/>
+
+    <TextView
+            android:id="@+id/manage_result_units_label"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/manage_result_units_label"
+            android:layout_below="@+id/manage_result_name"
+            android:labelFor="@+id/manage_result_units"/>
+
+    <EditText
+            android:id="@+id/manage_result_units"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/manage_result_units_label"
+            android:inputType="text"/>
+
+    <Button
+            android:id="@+id/manage_result_button_save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_save"
+            android:layout_below="@+id/manage_result_units"/>
+
+    <Button
+            android:id="@+id/manage_result_button_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_cancel"
+            android:layout_below="@+id/manage_result_units"
+            android:layout_alignParentEnd="true"/>
+
+</RelativeLayout>

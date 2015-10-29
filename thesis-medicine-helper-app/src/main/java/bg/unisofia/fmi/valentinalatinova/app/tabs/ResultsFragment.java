@@ -1,6 +1,8 @@
 package bg.unisofia.fmi.valentinalatinova.app.tabs;
 
+import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.ContextMenu;
@@ -13,6 +15,8 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import bg.unisofia.fmi.valentinalatinova.app.MainActivity;
+import bg.unisofia.fmi.valentinalatinova.app.ManageResultActivity;
+import bg.unisofia.fmi.valentinalatinova.app.ManageResultsValueActivity;
 import bg.unisofia.fmi.valentinalatinova.app.R;
 import bg.unisofia.fmi.valentinalatinova.app.utils.DateUtils;
 import bg.unisofia.fmi.valentinalatinova.app.utils.HttpClient;
@@ -27,12 +31,12 @@ import java.util.List;
 
 public class ResultsFragment extends CustomFragment {
 
-    public static final String RESULT_EXTRA = "MobileResultsValue";
     private final int MENU_GROUP_ID = 201;
     private final int MENU_EDIT_ID = 211;
     private final int MENU_DELETE_ID = 212;
     private final int RESULT_ADD = 221;
-    private final int RESULT_EDIT = 222;
+    private final int RESULT_VALUE_ADD = 231;
+    private final int RESULT_VALUE_EDIT = 232;
     private List<MobileResults> allResults;
     private MobileResults currentResult;
     private MobileResultsValue currentResultValue;
@@ -100,10 +104,9 @@ public class ResultsFragment extends CustomFragment {
         if (MENU_GROUP_ID == item.getGroupId()) {
             switch (item.getItemId()) {
                 case MENU_EDIT_ID:
-                    //Intent intent = new Intent(rootView.getContext(), ManageScheduleActivity.class);
-                    //intent.putExtra(RESULT_EXTRA, currentResultValue);
-                    //startActivityForResult(intent, RESULT_EDIT);
-                    MainActivity.createErrorDialog(rootView.getContext(), "Edit menu clicked!");
+                    Intent intent = new Intent(rootView.getContext(), ManageResultsValueActivity.class);
+                    intent.putExtra(ManageResultsValueActivity.RESULT_EXTRA, currentResultValue);
+                    startActivityForResult(intent, RESULT_VALUE_EDIT);
                     break;
                 case MENU_DELETE_ID:
                     generateDeleteConfirmationDialog(formatValueString(currentResultValue),
@@ -119,7 +122,44 @@ public class ResultsFragment extends CustomFragment {
         return false;
     }
 
+    /**
+     * Called when launched activity exits giving the code you started the activity with.
+     *
+     * @param requestCode code supplied to startActivityForResult() method
+     * @param resultCode result code returned from activity
+     * @param data data that is transferred from exiting activity to current activity
+     */
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // In case of OK result
+        if (resultCode == Activity.RESULT_OK) {
+            Bundle result = data.getExtras();
+            // In case of Add result
+            if (requestCode == RESULT_ADD) {
+                currentResult = (MobileResults) result.getSerializable(ManageResultActivity.RESULT_EXTRA);
+                allResults.add(currentResult);
+                currentResultValue = null;
+                refreshResultsTable(0);
+                // In case of Add or Edit result value
+            } else if (requestCode == RESULT_VALUE_EDIT || requestCode == RESULT_VALUE_ADD) {
+                currentResultValue = (MobileResultsValue) result
+                        .getSerializable(ManageResultsValueActivity.RESULT_EXTRA);
+                // Remove before add in case of Edit Schedule
+                if (requestCode == RESULT_VALUE_EDIT) {
+                    // equals() depend on 'id' only
+                    currentResult.setId(currentResultValue.getResultsId());
+                    currentResult = allResults.get(allResults.indexOf(currentResult));
+                    currentResult.getValues().remove(currentResultValue);
+                }
+                currentResult.getValues().add(currentResultValue);
+                drawResultsTable(currentResult);
+            }
+        }
+    }
+
     // Private methods
+
     private void registerOnClickListenersNavigationButtons() {
         // Previous
         Button prev = (Button) rootView.findViewById(R.id.results_button_prev);
@@ -168,7 +208,8 @@ public class ResultsFragment extends CustomFragment {
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.createErrorDialog(rootView.getContext(), "Add button clicked!");
+                Intent intent = new Intent(rootView.getContext(), ManageResultActivity.class);
+                startActivityForResult(intent, RESULT_ADD);
             }
         });
     }
@@ -178,7 +219,9 @@ public class ResultsFragment extends CustomFragment {
         add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.createErrorDialog(rootView.getContext(), "Add value button clicked!");
+                Intent intent = new Intent(rootView.getContext(), ManageResultsValueActivity.class);
+                intent.putExtra(ManageResultsValueActivity.RESULT_ID, currentResult.getId());
+                startActivityForResult(intent, RESULT_VALUE_ADD);
             }
         });
     }
@@ -222,7 +265,7 @@ public class ResultsFragment extends CustomFragment {
         TableLayout resultsTable = clearResultsTable();
         // Add header
         TableRow header = generateTableRow(null);
-        String unit = table.getUnit() != null && !"".equals(table.getUnit()) ? " (" + table.getUnit() + ")" : "";
+        String unit = table.getUnits() != null && !"".equals(table.getUnits()) ? " (" + table.getUnits() + ")" : "";
         TextView cell = generateTextView(table.getName() + unit);
         header.addView(cell);
         resultsTable.addView(header);
@@ -230,7 +273,7 @@ public class ResultsFragment extends CustomFragment {
         for (final MobileResultsValue value : table.getValues()) {
             final TableRow row = generateTableRow(value);
             // Add date time
-            TextView date = generateTextView(value.getMeasurementDate().toString());
+            TextView date = generateTextView(DateUtils.formatDateTime(value.getMeasurementDate()));
             row.addView(date);
             // Add separator
             TextView separator = generateTableSeparator();
@@ -277,8 +320,7 @@ public class ResultsFragment extends CustomFragment {
     }
 
     private String formatValueString(MobileResultsValue value) {
-        return DateUtils.formatDay(value.getMeasurementDate().toDate()) + " "
-                + DateUtils.formatTime(value.getMeasurementDate()) + ": " + value.getMeasurement();
+        return DateUtils.formatDateTime(value.getMeasurementDate()) + ": " + value.getMeasurement();
     }
 
     private class GetAllResults extends AsyncTask<String, String, List<MobileResults>> {

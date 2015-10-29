@@ -21,11 +21,18 @@
     <string name="delete_dialog_text">Are you sure you want to delete \'%s\'?</string>
     <string name="delete_dialog_yes">Yes</string>
     <string name="delete_dialog_no">No</string>
-    <string name="schedules_add_window">Add Schedule</string>
-    <string name="schedules_edit_window">Edit Schedule</string>
     <string name="schedules_view_for">Schedules for %s</string>
+    <string name="manage_schedule_add_window">Add schedule</string>
+    <string name="manage_schedule_edit_window">Edit schedule</string>
     <string name="manage_schedule_description_label">Schedule description: </string>
     <string name="manage_schedule_datetime_label">Start from: </string>
     <string name="manage_schedule_duration_label">How long: </string>
     <string name="manage_schedule_frequency_label">At what intervals: </string>
+    <string name="manage_results_window">Add results type</string>
+    <string name="manage_result_name_label">Results name</string>
+    <string name="manage_result_units_label">Results units</string>
+    <string name="manage_results_value_add_window">Add results value</string>
+    <string name="manage_results_value_edit_window">Edit results value</string>
+    <string name="manage_results_value_datetime_label">Measured at: </string>
+    <string name="manage_results_value_measurement_label">Value: </string>
 </resources>
