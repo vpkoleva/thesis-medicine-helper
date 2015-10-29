@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+    <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        <Button
+                android:id="@+id/results_button_prev"
+                style="@style/button"
+                android:background="@drawable/prev"/>
+
+        <Button
+                android:id="@+id/results_button_next"
+                style="@style/button"
+                android:background="@drawable/next"
+                android:layout_toEndOf="@+id/results_button_prev"/>
+
+        <Button
+                android:id="@+id/results_button_delete"
+                style="@style/button"
+                android:background="@drawable/delete"
+                android:layout_centerInParent="true"/>
+
+        <Button
+                android:id="@+id/results_button_refresh"
+                style="@style/button"
+                android:background="@drawable/refresh"
+                android:layout_toStartOf="@+id/results_button_add"/>
+
+        <Button
+                android:id="@+id/results_button_add"
+                style="@style/button"
+                android:background="@drawable/add"
+                android:layout_alignParentEnd="true"/>
+
+    </RelativeLayout>
+
+    <ScrollView
+            android:id="@+id/result_values_scroll"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+        <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+            <TableLayout
+                    android:id="@+id/results_list"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"/>
+
+            <Button
+                    android:id="@+id/result_values_button_add"
+                    style="@style/button"
+                    android:background="@drawable/add"/>
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

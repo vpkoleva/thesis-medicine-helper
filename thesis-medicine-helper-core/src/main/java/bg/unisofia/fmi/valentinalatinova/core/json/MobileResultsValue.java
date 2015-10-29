@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.joda.time.DateTime;
 
-public class MobileTableValue extends BaseJson {
+public class MobileResultsValue extends BaseJson {
     @JsonProperty
     private String measurement;
     @JsonProperty
@@ -15,19 +15,19 @@ public class MobileTableValue extends BaseJson {
     @JsonDeserialize(using = JsonDateTimeUtils.DateTimeDeserializer.class)
     private DateTime measurementDate;
     @JsonProperty
-    private long tableId;
+    private long resultsId;
     @JsonIgnore
     private long userId;
 
-    public MobileTableValue() {
+    public MobileResultsValue() {
         // Needed by Jackson deserialization
     }
 
-    public MobileTableValue(long id, String measurement, DateTime measurementDate, long tableId) {
+    public MobileResultsValue(long id, String measurement, DateTime measurementDate, long resultsId) {
         this.id = id;
         this.measurement = measurement;
         this.measurementDate = measurementDate;
-        this.tableId = tableId;
+        this.resultsId = resultsId;
     }
 
     public String getMeasurement() {
@@ -46,12 +46,12 @@ public class MobileTableValue extends BaseJson {
         this.measurementDate = measurementDate;
     }
 
-    public long getTableId() {
-        return tableId;
+    public long getResultsId() {
+        return resultsId;
     }
 
-    public void setTableId(long tableId) {
-        this.tableId = tableId;
+    public void setResultsId(long resultsId) {
+        this.resultsId = resultsId;
     }
 
     public long getUserId() {

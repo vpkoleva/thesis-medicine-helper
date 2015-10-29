@@ -17,7 +17,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public static final int RESULT_LOGIN = 1;
     private static HttpClient httpClient;
     private ViewPager viewPager;
-    private String[] tabs = {"Schedules", "Tables"};
+    private String[] tabs = {"Schedules", "Results"};
 
     /**
      * Called when activity is first created.

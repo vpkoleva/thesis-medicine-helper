@@ -19,8 +19,8 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
                 // Schedules fragment activity
                 return new SchedulesFragment();
             case 1:
-                // Tables fragment activity
-                return new TablesFragment();
+                // Results fragment activity
+                return new ResultsFragment();
             default:
                 // Invalid fragment
                 return null;

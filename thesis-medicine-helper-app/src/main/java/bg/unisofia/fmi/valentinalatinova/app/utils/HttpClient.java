@@ -20,6 +20,7 @@ import java.net.URLConnection;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
+import java.util.Locale;
 
 public class HttpClient implements Serializable {
 
@@ -128,7 +129,7 @@ public class HttpClient implements Serializable {
     private URLConnection openUrlConnection(String endpointUrl)
             throws IOException, NoSuchAlgorithmException, KeyManagementException {
         URL url = new URL(endpointUrl);
-        if (endpointUrl.toLowerCase().startsWith("https")) {
+        if (endpointUrl.toLowerCase(Locale.ENGLISH).startsWith("https")) {
             HttpsURLConnection result = (HttpsURLConnection) url.openConnection();
             // Accept of all certificates
             if (acceptAllCertificates) {

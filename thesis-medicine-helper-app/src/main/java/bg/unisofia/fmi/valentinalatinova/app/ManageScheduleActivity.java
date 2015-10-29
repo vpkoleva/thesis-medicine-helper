@@ -40,7 +40,7 @@ public class ManageScheduleActivity extends Activity {
         // If schedule is passed then this is an Edit Action so capture its ID
         if (currentSchedule != null) {
             currentScheduleId = currentSchedule.getId();
-            setTitle(R.string.schedules_menu_edit);
+            setTitle(R.string.schedules_edit_window);
         } else {
             setTitle(R.string.schedules_add_window);
         }

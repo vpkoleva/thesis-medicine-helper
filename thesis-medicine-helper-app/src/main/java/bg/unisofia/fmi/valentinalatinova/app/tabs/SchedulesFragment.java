@@ -1,12 +1,10 @@
 package bg.unisofia.fmi.valentinalatinova.app.tabs;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -14,8 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -29,7 +25,6 @@ import bg.unisofia.fmi.valentinalatinova.core.json.MobileSchedule;
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 import com.roomorama.caldroid.CaldroidFragment;
 import com.roomorama.caldroid.CaldroidListener;
-import org.joda.time.format.DateTimeFormat;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,7 +33,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-public class SchedulesFragment extends Fragment {
+public class SchedulesFragment extends CustomFragment {
 
     public static final String RESULT_EXTRA = "MobileSchedule";
     private final int MENU_GROUP_ID = 101;
@@ -46,8 +41,6 @@ public class SchedulesFragment extends Fragment {
     private final int MENU_DELETE_ID = 112;
     private final int RESULT_ADD = 121;
     private final int RESULT_EDIT = 122;
-    private final int PAD = 30;
-    private View rootView;
     private CaldroidFragment schedulesCalendar;
     private MobileSchedule currentSchedule;
     private List<MobileSchedule> allSchedules;
@@ -65,15 +58,7 @@ public class SchedulesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_schedules, container, false);
         initialiseCalendar();
-        // Padding
-        RelativeLayout layout = (RelativeLayout) rootView.findViewById(R.id.button_layout);
-        layout.setPadding(0, PAD, 0, 0);
-        // Padding
-        ScrollView scroll = (ScrollView) rootView.findViewById(R.id.schedules_scroll);
-        scroll.setPadding(0, PAD, 0, 0);
-        // Register listeners
-        registerOnClickListenerButtonRefresh();
-        registerOnClickListenerButtonAdd();
+        registerOnClickListeners();
         invokeGetSchedules();
         return rootView;
     }
@@ -102,8 +87,8 @@ public class SchedulesFragment extends Fragment {
         MobileSchedule schedule = (MobileSchedule) view.getTag();
         currentSchedule = schedule;
         menu.setHeaderTitle(schedule.getDescription());
-        menu.add(MENU_GROUP_ID, MENU_EDIT_ID, MENU_EDIT_ID, R.string.schedules_menu_edit);
-        menu.add(MENU_GROUP_ID, MENU_DELETE_ID, MENU_DELETE_ID, R.string.schedules_menu_delete);
+        menu.add(MENU_GROUP_ID, MENU_EDIT_ID, MENU_EDIT_ID, R.string.menu_edit);
+        menu.add(MENU_GROUP_ID, MENU_DELETE_ID, MENU_DELETE_ID, R.string.menu_delete);
     }
 
     /**
@@ -122,11 +107,17 @@ public class SchedulesFragment extends Fragment {
                     startActivityForResult(intent, RESULT_EDIT);
                     break;
                 case MENU_DELETE_ID:
-                    registerOnDeleteConfirmationDialog();
+                    generateDeleteConfirmationDialog(currentSchedule.getDescription(),
+                            new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    new DeleteSchedule().execute(currentSchedule.getId());
+                                }
+                            });
                     break;
             }
         }
-        return true;
+        return false;
     }
 
     /**
@@ -157,40 +148,24 @@ public class SchedulesFragment extends Fragment {
         new GetSchedules().execute();
     }
 
-    private void registerOnClickListenerButtonRefresh() {
-        Button button = (Button) rootView.findViewById(R.id.schedules_button_refresh);
-        button.setOnClickListener(new View.OnClickListener() {
+    private void registerOnClickListeners() {
+        // Refresh button
+        Button refresh = (Button) rootView.findViewById(R.id.schedules_button_refresh);
+        refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 invokeGetSchedules();
             }
         });
-    }
-
-    private void registerOnClickListenerButtonAdd() {
-        Button button = (Button) rootView.findViewById(R.id.schedules_button_add);
-        button.setOnClickListener(new View.OnClickListener() {
+        // Add button
+        Button add = (Button) rootView.findViewById(R.id.schedules_button_add);
+        add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(rootView.getContext(), ManageScheduleActivity.class);
                 startActivityForResult(intent, RESULT_ADD);
             }
         });
-    }
-
-    private void registerOnDeleteConfirmationDialog() {
-        new AlertDialog.Builder(rootView.getContext())
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .setTitle(R.string.schedules_dialog_name)
-                .setMessage(R.string.schedules_dialog_text)
-                .setPositiveButton(R.string.schedules_dialog_yes, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        new DeleteSchedule().execute(currentSchedule.getId());
-                    }
-                })
-                .setNegativeButton(R.string.schedules_dialog_no, null)
-                .show();
     }
 
     private void initialiseCalendar() {
@@ -304,13 +279,10 @@ public class SchedulesFragment extends Fragment {
             for (MobileSchedule result : schedules) {
                 TableRow row = generateTableRow(result);
                 // Add hour
-                String hour = DateTimeFormat.forPattern("HH:mm").print(result.getStartDate());
-                TextView date = generateTextView(hour);
+                TextView date = generateTextView(DateUtils.formatTime(result.getStartDate()));
                 row.addView(date);
                 // Add separator
-                TextView separator = generateTextView("");
-                separator.setBackgroundResource(R.drawable.border);
-                separator.setPadding(3, PAD, 3, PAD);
+                TextView separator = generateTableSeparator();
                 row.addView(separator);
                 // Add description
                 TextView description = generateTextView(result.getDescription());
@@ -319,24 +291,6 @@ public class SchedulesFragment extends Fragment {
                 schedulesTable.addView(row);
             }
         }
-    }
-
-    private TableRow generateTableRow(MobileSchedule schedule) {
-        TableRow row = new TableRow(rootView.getContext());
-        row.setLayoutParams(new TableLayout.LayoutParams());
-        row.setBackgroundResource(R.drawable.border);
-        if (schedule != null) {
-            row.setTag(schedule);
-            registerForContextMenu(row);
-        }
-        return row;
-    }
-
-    private TextView generateTextView(String content) {
-        TextView cell = new TextView(rootView.getContext());
-        cell.setText(content);
-        cell.setPadding(PAD, PAD, PAD, PAD);
-        return cell;
     }
 
     private class GetSchedules extends AsyncTask<String, String, List<MobileSchedule>> {

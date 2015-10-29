@@ -7,8 +7,9 @@ import bg.unisofia.fmi.valentinalatinova.rest.persistence.UserDao;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.AccessTokenDaoImpl;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.UserDaoImpl;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.CorsResponseFilter;
+import bg.unisofia.fmi.valentinalatinova.rest.resources.MobileResultsService;
+import bg.unisofia.fmi.valentinalatinova.rest.resources.MobileResultsValueService;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.MobileScheduleService;
-import bg.unisofia.fmi.valentinalatinova.rest.resources.MobileTableService;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.OAuth2Service;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthFactory;
@@ -43,9 +44,13 @@ public class MedicineApp extends Application<MedicineConfig> {
         final MobileScheduleService mobileScheduleService = new MobileScheduleService();
         environment.jersey().register(mobileScheduleService);
 
-        // Register mobile table service
-        final MobileTableService mobileTableService = new MobileTableService();
-        environment.jersey().register(mobileTableService);
+        // Register mobile results service
+        final MobileResultsService mobileResultsService = new MobileResultsService();
+        environment.jersey().register(mobileResultsService);
+
+        // Register mobile results value service
+        final MobileResultsValueService mobileResultsValueService = new MobileResultsValueService();
+        environment.jersey().register(mobileResultsValueService);
 
         // Register health check
         final MedicineCheck healthCheck = new MedicineCheck();
