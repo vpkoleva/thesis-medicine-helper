@@ -43,31 +43,14 @@ public class DataBaseCommander {
                 }
             }
         } catch (SQLException | InstantiationException | IllegalAccessException ex) {
-            LOGGER.error("Error during SELECT of '" + sql + "':", ex);
+            LOGGER.error("Error during SELECT of '" + sql + "': ", ex);
         } finally {
-            close(preparedStatement, resultSet);
+            close(resultSet, preparedStatement);
         }
         return result;
     }
 
-    public <T extends DataBaseObject> boolean insert(String sql, Object... statementData) {
-        PreparedStatement preparedStatement = createPreparedStatement(sql, statementData);
-        try {
-            if (preparedStatement != null) {
-                preparedStatement.executeUpdate();
-                return true;
-            } else {
-                return false;
-            }
-        } catch (SQLException sqlEx) {
-            LOGGER.error("Error during INSERT of '" + sql + "':", sqlEx);
-        } finally {
-            close(preparedStatement, null);
-        }
-        return false;
-    }
-
-    private PreparedStatement createPreparedStatement(String sql, Object... statementData) {
+    public PreparedStatement createPreparedStatement(String sql, Object... statementData) {
         PreparedStatement preparedStatement = null;
         try {
             preparedStatement = connection.prepareStatement(sql);
@@ -77,25 +60,55 @@ public class DataBaseCommander {
                 }
             }
         } catch (SQLException sqlEx) {
-            LOGGER.error("Error during prepared statement creation:", sqlEx);
+            LOGGER.error("Error during prepared statement creation: ", sqlEx);
         }
         return preparedStatement;
     }
 
-    private void close(PreparedStatement preparedStatement, ResultSet resultSet) {
+    public <T extends DataBaseObject> boolean insert(PreparedStatement... preparedStatements) {
+        String sql = "";
+        try {
+            connection.setAutoCommit(false);
+            for (PreparedStatement preparedStatement : preparedStatements) {
+                sql = preparedStatement.toString();
+                preparedStatement.executeUpdate();
+            }
+            connection.commit();
+            return true;
+        } catch (SQLException sqlEx) {
+            LOGGER.error("Error during INSERT of '" + sql + "': ", sqlEx);
+            try {
+                connection.rollback();
+            } catch (SQLException e) {
+                LOGGER.error("Error during rollback: ", sqlEx);
+            }
+        } finally {
+            close(null, preparedStatements);
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                LOGGER.error("Error setAutoCommit(true): ", e);
+            }
+        }
+        return false;
+    }
+
+    private void close(ResultSet resultSet, PreparedStatement... preparedStatements) {
         if (resultSet != null) {
             try {
                 resultSet.close();
             } catch (SQLException sqlEx) {
-                LOGGER.warn("Warning during closing of result set:", sqlEx);
+                LOGGER.warn("Warning during closing of result set: ", sqlEx);
             }
         }
 
-        if (preparedStatement != null) {
-            try {
-                preparedStatement.close();
-            } catch (SQLException sqlEx) {
-                LOGGER.warn("Warning during closing of prepared statement:", sqlEx);
+        if (preparedStatements != null) {
+            for (PreparedStatement preparedStatement : preparedStatements) {
+                try {
+                    preparedStatement.close();
+                } catch (SQLException sqlEx) {
+                    LOGGER.warn("Warning during closing of prepared statement: ", sqlEx);
+                }
             }
         }
     }
