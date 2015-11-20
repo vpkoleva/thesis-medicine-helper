@@ -1,15 +1,17 @@
 package bg.unisofia.fmi.valentinalatinova.rest.data;
 
-public class User {
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+public class User extends DataBaseObject {
     private long id;
     private String username;
     private String password;
     private String firstName;
     private String lastName;
-    private static User noAuthUser = new User();
+    private static User noAuthUser;
 
-    private User() {
-        this.id = 1;
+    public User() {
     }
 
     public User(long id, String username, String password, String firstName, String lastName) {
@@ -21,7 +23,24 @@ public class User {
     }
 
     public static User getNoAuthUser() {
+        if (noAuthUser == null) {
+            noAuthUser = new User();
+            noAuthUser.id = 1;
+        }
         return noAuthUser;
+    }
+
+    @Override
+    public void load(ResultSet resultSet) {
+        try {
+            id = resultSet.getInt("ID");
+            username = resultSet.getString("userName");
+            password = resultSet.getString("passwordHash");
+            firstName = resultSet.getString("firstName");
+            lastName = resultSet.getString("lastName");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public long getId() {

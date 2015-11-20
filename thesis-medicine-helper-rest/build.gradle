@@ -17,6 +17,7 @@ dependencies {
     compile project(':thesis-medicine-helper-core')
     compile 'io.dropwizard:dropwizard-core:0.8.0'
     compile 'io.dropwizard:dropwizard-auth:0.8.0'
+    compile 'mysql:mysql-connector-java:5.1.6'
 }
 
 shadowJar {

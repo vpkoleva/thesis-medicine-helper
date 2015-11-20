@@ -13,8 +13,16 @@ public class MedicineConfig extends Configuration {
     @JsonProperty
     private OAuth authentication = new OAuth();
 
+    @NotNull
+    @JsonProperty
+    private Database database = new Database();
+
     public OAuth getOAuth() {
         return authentication;
+    }
+
+    public Database getDatabase() {
+        return database;
     }
 
     public static class OAuth {
@@ -22,6 +30,7 @@ public class MedicineConfig extends Configuration {
         @JsonProperty
         private ImmutableList<String> allowedGrantTypes;
 
+        @NotEmpty
         @JsonProperty
         private int accessTokenExpireTimeMinutes;
 
@@ -38,6 +47,48 @@ public class MedicineConfig extends Configuration {
 
         public boolean isDisabled() {
             return disabled;
+        }
+    }
+
+    public static class Database {
+        @NotEmpty
+        @JsonProperty
+        private String host;
+
+        @NotEmpty
+        @JsonProperty
+        private String port;
+
+        @NotEmpty
+        @JsonProperty
+        private String database;
+
+        @NotEmpty
+        @JsonProperty
+        private String username;
+
+        @NotEmpty
+        @JsonProperty
+        private String password;
+
+        public String getHost() {
+            return host;
+        }
+
+        public String getPort() {
+            return port;
+        }
+
+        public String getDatabase() {
+            return database;
+        }
+
+        public String getUsername() {
+            return username;
+        }
+
+        public String getPassword() {
+            return password;
         }
     }
 }
