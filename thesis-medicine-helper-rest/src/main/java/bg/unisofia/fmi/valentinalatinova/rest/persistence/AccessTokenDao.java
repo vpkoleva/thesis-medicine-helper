@@ -17,7 +17,7 @@ public interface AccessTokenDao {
     Optional<AccessToken> findAccessTokenById(final UUID accessTokenId);
 
     /**
-     * Generates access token for given user with currect date time.
+     * Generates access token for given user with correct date time.
      *
      * @param user
      * @return AccessToken if found or absent if not

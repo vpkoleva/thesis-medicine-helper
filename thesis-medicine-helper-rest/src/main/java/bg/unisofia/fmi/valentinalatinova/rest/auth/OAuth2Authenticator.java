@@ -24,11 +24,6 @@ public class OAuth2Authenticator implements Authenticator<String, User> {
 
     @Override
     public Optional<User> authenticate(String accessTokenId) throws AuthenticationException {
-        // Bypass authentication based on configuration
-        if (authDisabled) {
-            return Optional.of(User.getNoAuthUser());
-        }
-
         // Check input, must be a valid UUID
         UUID accessTokenUUID;
         try {
@@ -40,7 +35,12 @@ public class OAuth2Authenticator implements Authenticator<String, User> {
         // Get the access token from the database
         Optional<AccessToken> accessToken = accessTokenDao.findAccessTokenById(accessTokenUUID);
         if (accessToken == null || !accessToken.isPresent()) {
-            return Optional.absent();
+            // Bypass authentication based on configuration
+            if (authDisabled) {
+                return Optional.of(User.getNoAuthUser());
+            } else {
+                return Optional.absent();
+            }
         }
 
         // Check if the last access time is not too far in the past (the access token is expired)

@@ -93,6 +93,38 @@ public class DataBaseCommander {
         return false;
     }
 
+    public <T extends DataBaseObject> long insertWithReturnNewID(PreparedStatement preparedStatement) {
+        String sql = "";
+        try {
+            connection.setAutoCommit(false);
+
+                sql = preparedStatement.toString();
+                preparedStatement.executeUpdate();
+                ResultSet rs =  preparedStatement.getGeneratedKeys();
+             long id=-1;
+              if(rs.next()) {
+                   id = rs.getLong(1);
+              }
+                connection.commit();
+            return id;
+        } catch (SQLException sqlEx) {
+            LOGGER.error("Error during INSERT of '" + sql + "': ", sqlEx);
+            try {
+                connection.rollback();
+            } catch (SQLException e) {
+                LOGGER.error("Error during rollback: ", sqlEx);
+            }
+        } finally {
+            close(null, preparedStatement);
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                LOGGER.error("Error setAutoCommit(true): ", e);
+            }
+        }
+        return -1;
+    }
+
     private void close(ResultSet resultSet, PreparedStatement... preparedStatements) {
         if (resultSet != null) {
             try {

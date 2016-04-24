@@ -39,7 +39,7 @@ public class User extends DataBaseObject {
             firstName = resultSet.getString("firstName");
             lastName = resultSet.getString("lastName");
         } catch (SQLException e) {
-            e.printStackTrace();
+            getLogger().error(e.getMessage());
         }
     }
 

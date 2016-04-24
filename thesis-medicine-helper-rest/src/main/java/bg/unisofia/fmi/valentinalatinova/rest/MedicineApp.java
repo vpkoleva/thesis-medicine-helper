@@ -12,6 +12,9 @@ import bg.unisofia.fmi.valentinalatinova.rest.resources.MobileResultsService;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.MobileResultsValueService;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.MobileScheduleService;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.OAuth2Service;
+import bg.unisofia.fmi.valentinalatinova.rest.resources.WebDiagnoseService;
+import bg.unisofia.fmi.valentinalatinova.rest.resources.WebPatientsService;
+import bg.unisofia.fmi.valentinalatinova.rest.resources.WebScheduleService;
 import io.dropwizard.Application;
 import io.dropwizard.auth.AuthFactory;
 import io.dropwizard.auth.oauth.OAuthFactory;
@@ -59,6 +62,18 @@ public class MedicineApp extends Application<MedicineConfig> {
         // Register mobile schedule service
         final MobileScheduleService mobileScheduleService = new MobileScheduleService();
         environment.jersey().register(mobileScheduleService);
+
+        // Register mobile schedule service
+        final WebPatientsService patientService = new WebPatientsService(dataBaseCommander);
+        environment.jersey().register(patientService);
+
+        // Register mobile diagnose service
+        final WebDiagnoseService diagnoseService = new WebDiagnoseService(dataBaseCommander);
+        environment.jersey().register(diagnoseService);
+
+        // Register web schedule service
+        final WebScheduleService webScheduleService = new WebScheduleService(dataBaseCommander);
+        environment.jersey().register(webScheduleService);
 
         // Register mobile results service
         final MobileResultsService mobileResultsService = new MobileResultsService();

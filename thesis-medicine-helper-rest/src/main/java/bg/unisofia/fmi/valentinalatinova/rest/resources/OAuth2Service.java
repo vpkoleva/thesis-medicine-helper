@@ -46,10 +46,6 @@ public class OAuth2Service {
             @FormParam("username") String username,
             @FormParam("password") String password) {
 
-        if (isAuthenticationDisabled) {
-            return new AuthToken(UUID.randomUUID(), User.getNoAuthUser().getFirstName(),
-                    User.getNoAuthUser().getLastName(), DateTime.now().plusMonths(1));
-        }
         // Check if the grant type is allowed
         if (!allowedGrantTypes.contains(grantType)) {
             Response response = Response.status(Response.Status.METHOD_NOT_ALLOWED).build();
@@ -59,7 +55,12 @@ public class OAuth2Service {
         // Try to find a user with the supplied credentials.
         Optional<User> optUser = userDao.findByUsernameAndPassword(username, password);
         if (optUser == null || !optUser.isPresent()) {
-            throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
+            if (isAuthenticationDisabled) {
+                return new AuthToken(UUID.randomUUID(), User.getNoAuthUser().getFirstName(),
+                        User.getNoAuthUser().getLastName(), DateTime.now().plusMonths(1));
+            } else {
+                throw new WebApplicationException(Response.status(Response.Status.UNAUTHORIZED).build());
+            }
         }
 
         // User was found, generate a token and return it.

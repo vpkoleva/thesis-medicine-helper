@@ -2,14 +2,14 @@ authentication:
   allowedGrantTypes:
     - password
   accessTokenExpireTimeMinutes: 60
-  disabled: true
+  disabled: false
 
 database:
   host: localhost
   port: 3306
   database: medicinehelper
   username: root
-  password: root
+  password:
 
 # Change default server ports
 server:
