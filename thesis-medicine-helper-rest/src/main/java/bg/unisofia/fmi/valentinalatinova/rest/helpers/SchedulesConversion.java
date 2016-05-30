@@ -6,18 +6,14 @@ import bg.unisofia.fmi.valentinalatinova.core.utils.Duration;
 import bg.unisofia.fmi.valentinalatinova.rest.data.WebScheduleDO;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
-import org.joda.time.Interval;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Valentina on 2/11/2016.
- */
 public class SchedulesConversion {
 
-    public List<WebScheduleDO> convertBOtoDO(List<WebScheduleBO> listWithSchedules) {
+    public List<WebScheduleDO> convertBOtoDO(WebScheduleBO... listWithSchedules) {
         List<WebScheduleDO> result = new ArrayList<>();
 
         for (WebScheduleBO schedule : listWithSchedules) {
@@ -31,6 +27,7 @@ public class SchedulesConversion {
                 dataObj.setPatientId(schedule.getPatientId());
             }
 
+            dataObj.setId(schedule.getId());
             dataObj.setDescription(schedule.getDescription());
             dataObj.setDiagnoseId(schedule.getDiagnoseId());
             dataObj.setDoctorId(schedule.getDoctorId());
@@ -39,7 +36,11 @@ public class SchedulesConversion {
             dataObj.setStartDate(new Timestamp(start.getMillis()));
             dataObj.setEndDate(new Timestamp(end.getMillis()));
             dataObj.setFrequencyValue(schedule.getFrequency());
-            dataObj.setFrequencyType(schedule.getFrequencyType().getValue());
+            dataObj.setFrequencyType(Duration.fromValue(schedule.getFrequencyType().getValue()));
+            dataObj.setEndAfterType(schedule.getDurationType());
+            dataObj.setEndAfterValue(schedule.getDuration());
+            dataObj.setStartAfterType(schedule.getStartAfterType());
+            dataObj.setStartAfterValue(schedule.getStartAfter());
             result.add(dataObj);
         }
         return result;
@@ -50,7 +51,7 @@ public class SchedulesConversion {
 
         for (WebScheduleDO schedule : listWithSchedules) {
 
-           DateTime start = setStartDate(schedule, startDateFromReq);
+            DateTime start = setStartDate(schedule, startDateFromReq);
             while (start.isBefore(new DateTime(endDateFromReq)) && start.isBefore(schedule.getEndDate().getTime())) {
                 WebScheduleListBO dataObj = new WebScheduleListBO();
                 dataObj.setId(schedule.getId());
@@ -58,23 +59,34 @@ public class SchedulesConversion {
                 dataObj.setStartDate(start);
                 dataObj.setEndDate(start.plusHours(1));
                 result.add(dataObj);
-                start = Duration.fromValue(schedule.getFrequencyType()).calculateDateTime(start, schedule.getFrequencyValue());
+                start = schedule.getFrequencyType().calculateDateTime(start, schedule.getFrequencyValue());
             }
         }
         return result;
     }
-    public DateTime setStartDate(WebScheduleDO schedule, String startDateFromReq)
-    {
+
+    public WebScheduleBO convertDOtoBO(WebScheduleDO scheduleFromDB) {
+
+        WebScheduleBO result = new WebScheduleBO();
+        result.setId(scheduleFromDB.getId());
+        result.setDescription(scheduleFromDB.getDescription());
+        result.setFrequencyType(scheduleFromDB.getFrequencyType());
+        result.setFrequency(scheduleFromDB.getFrequencyValue());
+
+
+        return result;
+    }
+
+    public DateTime setStartDate(WebScheduleDO schedule, String startDateFromReq) {
         DateTime start = new DateTime(schedule.getStartDate().getTime());
         DateTime startFromReq = new DateTime(startDateFromReq);
-        int daysFromStartToStartReq =  Days.daysBetween(start, startFromReq).getDays();
-        double daysFromDur =  Duration.fromValue(schedule.getFrequencyType()).durationToDays(schedule.getFrequencyValue());
-        Double diff = daysFromStartToStartReq/daysFromDur;
-        DateTime startNew = Duration.fromValue(schedule.getFrequencyType()).calculateDateTime(start, schedule.getFrequencyValue()*diff.intValue());
+        int daysFromStartToStartReq = Days.daysBetween(start, startFromReq).getDays();
+        double daysFromDur = schedule.getFrequencyType().durationToDays(schedule.getFrequencyValue());
+        Double diff = daysFromStartToStartReq / daysFromDur;
+        DateTime startNew = schedule.getFrequencyType().calculateDateTime(start, schedule.getFrequencyValue() * diff.intValue());
         startNew = startNew.minusMonths(1);
-        if(start.isBefore(startNew))
-        {
-            start=startNew;
+        if (start.isBefore(startNew)) {
+            start = startNew;
         }
         return start;
     }

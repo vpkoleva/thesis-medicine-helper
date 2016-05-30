@@ -21,7 +21,7 @@ public class WebScheduleDO extends DataBaseObject {
     @JsonProperty
     private int frequencyValue;
     @JsonProperty
-    private int frequencyType;
+    private Duration frequencyType;
     @JsonProperty
     private long patientId;
     @JsonProperty
@@ -30,11 +30,18 @@ public class WebScheduleDO extends DataBaseObject {
     private long diagnoseId;
     @JsonProperty
     private String description;
-
+    @JsonProperty
+    private Duration startAfterType;
+    @JsonProperty
+    private int startAfterValue;
+    @JsonProperty
+    private Duration endAfterType;
+    @JsonProperty
+    private int endAfterValue;
     public WebScheduleDO() {
     }
 
-    public WebScheduleDO(long id, Timestamp startDate, Timestamp endDate, String description, long doctorId, int frequency, int frequencyType, long diagnoseId) {
+    public WebScheduleDO(long id, Timestamp startDate, Timestamp endDate, String description, long doctorId, int frequency, Duration frequencyType, long diagnoseId) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -53,9 +60,13 @@ public class WebScheduleDO extends DataBaseObject {
             endDate = resultSet.getTimestamp("endDate");
             description = resultSet.getString("Description");
             frequencyValue = resultSet.getInt("frequencyValue");
-            frequencyType = resultSet.getInt("frequencyTypes");
-            doctorId = resultSet.getLong("Doctor_ID");
-            doctorId = resultSet.getLong("Diagnoses_ID");
+            frequencyType = Duration.fromValue(resultSet.getInt("frequencyTypes"));
+            startAfterValue = resultSet.getInt("startAfterValue");
+            startAfterType = Duration.fromValue(resultSet.getInt("startAfterType"));
+            endAfterValue = resultSet.getInt("endAfterValue");
+            endAfterType = Duration.fromValue(resultSet.getInt("endAfterType"));
+            doctorId = resultSet.getLong("Doctors_ID");
+            diagnoseId = resultSet.getLong("Diagnoses_ID");
         } catch (SQLException e) {
             getLogger().error(e.getMessage());
         }
@@ -95,11 +106,11 @@ public class WebScheduleDO extends DataBaseObject {
         this.frequencyValue = frequencyValue;
     }
 
-    public int getFrequencyType() {
+    public Duration getFrequencyType() {
         return frequencyType;
     }
 
-    public void setFrequencyType(int frequencyType) {
+    public void setFrequencyType(Duration frequencyType) {
         this.frequencyType = frequencyType;
     }
 
@@ -113,6 +124,38 @@ public class WebScheduleDO extends DataBaseObject {
 
     public long getDoctorId() {
         return doctorId;
+    }
+
+    public Duration getStartAfterType() {
+        return startAfterType;
+    }
+
+    public void setStartAfterType(Duration startAfterType) {
+        this.startAfterType = startAfterType;
+    }
+
+    public int getStartAfterValue() {
+        return startAfterValue;
+    }
+
+    public void setStartAfterValue(int startAfterValue) {
+        this.startAfterValue = startAfterValue;
+    }
+
+    public Duration getEndAfterType() {
+        return endAfterType;
+    }
+
+    public void setEndAfterType(Duration endAfterType) {
+        this.endAfterType = endAfterType;
+    }
+
+    public int getEndAfterValue() {
+        return endAfterValue;
+    }
+
+    public void setEndAfterValue(int endAfterValue) {
+        this.endAfterValue = endAfterValue;
     }
 
     public void setDoctorId(long doctorId) {

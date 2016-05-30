@@ -65,12 +65,30 @@ public class DataBaseCommander {
         return preparedStatement;
     }
 
-    public <T extends DataBaseObject> boolean insert(PreparedStatement... preparedStatements) {
+    public long insert(String sql, Object... statementData) {
+        PreparedStatement preparedStatement = createPreparedStatement(sql, statementData);
+        try {
+            preparedStatement.executeUpdate();
+            ResultSet resultSet = preparedStatement.getGeneratedKeys();
+            long id = -1;
+            if (resultSet.next()) {
+                id = resultSet.getLong(1);
+            }
+            return id;
+        } catch (SQLException sqlEx) {
+            LOGGER.error("Error during INSERT of '" + preparedStatement.toString() + "': ", sqlEx);
+        } finally {
+            close(null, preparedStatement);
+        }
+        return -1;
+    }
+
+    public boolean execute(PreparedStatement... preparedStatements) {
         String sql = "";
         try {
             connection.setAutoCommit(false);
             for (PreparedStatement preparedStatement : preparedStatements) {
-                sql = preparedStatement.toString();
+                sql += preparedStatement.toString();
                 preparedStatement.executeUpdate();
             }
             connection.commit();
@@ -93,37 +111,6 @@ public class DataBaseCommander {
         return false;
     }
 
-    public <T extends DataBaseObject> long insertWithReturnNewID(PreparedStatement preparedStatement) {
-        String sql = "";
-        try {
-            connection.setAutoCommit(false);
-
-                sql = preparedStatement.toString();
-                preparedStatement.executeUpdate();
-                ResultSet rs =  preparedStatement.getGeneratedKeys();
-             long id=-1;
-              if(rs.next()) {
-                   id = rs.getLong(1);
-              }
-                connection.commit();
-            return id;
-        } catch (SQLException sqlEx) {
-            LOGGER.error("Error during INSERT of '" + sql + "': ", sqlEx);
-            try {
-                connection.rollback();
-            } catch (SQLException e) {
-                LOGGER.error("Error during rollback: ", sqlEx);
-            }
-        } finally {
-            close(null, preparedStatement);
-            try {
-                connection.setAutoCommit(true);
-            } catch (SQLException e) {
-                LOGGER.error("Error setAutoCommit(true): ", e);
-            }
-        }
-        return -1;
-    }
 
     private void close(ResultSet resultSet, PreparedStatement... preparedStatements) {
         if (resultSet != null) {

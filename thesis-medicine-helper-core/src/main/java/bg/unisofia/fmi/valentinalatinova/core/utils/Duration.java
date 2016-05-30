@@ -42,17 +42,16 @@ public enum Duration {
         return null;
     }
 
-    public double durationToDays(int durValue)
-    {
+    public double durationToDays(int durValue) {
         switch (this) {
             case HOUR:
-                return 24/durValue;
+                return 24 / durValue;
             case DAY:
                 return durValue;
             case MONTH:
-                return 30*durValue;
+                return 30 * durValue;
             case YEAR:
-                return 365*durValue;
+                return 365 * durValue;
             default:
                 return 0;
         }

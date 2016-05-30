@@ -1,5 +1,6 @@
 package bg.unisofia.fmi.valentinalatinova.rest.resources;
 
+import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
 import bg.unisofia.fmi.valentinalatinova.rest.data.bo.DiagnoseBO;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.DataBaseCommander;
@@ -34,7 +35,7 @@ public class WebDiagnoseService {
     @Timed
     @Path("/add")
     @Produces(MediaType.APPLICATION_JSON)
-    public long addNewDiagnose(@Auth User user, DiagnoseBO diagnose) {
+    public Result addNewDiagnose(@Auth User user, DiagnoseBO diagnose) {
         return diagnoseDao.addDiagnosesByUserId(diagnose.getDiagnoseName(), user.getId());
     }
 }
