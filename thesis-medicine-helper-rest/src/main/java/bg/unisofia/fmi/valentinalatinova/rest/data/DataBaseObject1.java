@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.ResultSet;
 
-public abstract class DataBaseObject {
+public abstract class DataBaseObject1 {
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public abstract void load(ResultSet resultSet);
