@@ -7,11 +7,11 @@ import bg.unisofia.fmi.valentinalatinova.rest.persistence.DataBaseCommander;
 import java.sql.PreparedStatement;
 import java.util.List;
 
-public class WebScheduleDAO {
+public class WebScheduleDAO1 {
 
     private DataBaseCommander dataBaseCommander;
 
-    public WebScheduleDAO(DataBaseCommander dataBaseCommander) {
+    public WebScheduleDAO1(DataBaseCommander dataBaseCommander) {
         this.dataBaseCommander = dataBaseCommander;
     }
 
