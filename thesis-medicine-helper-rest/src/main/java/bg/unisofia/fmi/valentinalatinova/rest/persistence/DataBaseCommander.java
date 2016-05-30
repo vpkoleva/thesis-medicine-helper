@@ -29,6 +29,21 @@ public class DataBaseCommander {
                         + "?user=" + database.getUsername() + "&password=" + database.getPassword());
     }
 
+    public PreparedStatement createPreparedStatement(String sql, Object... statementData) {
+        PreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = connection.prepareStatement(sql);
+            if (statementData != null && statementData.length > 0) {
+                for (int i = 0; i < statementData.length; i++) {
+                    preparedStatement.setObject(i + 1, statementData[i]);
+                }
+            }
+        } catch (SQLException sqlEx) {
+            LOGGER.error("Error during prepared statement creation: ", sqlEx);
+        }
+        return preparedStatement;
+    }
+
     public <T extends DataBaseObject> List<T> select(Class<T> clazz, String sql, Object... statementData) {
         ResultSet resultSet = null;
         List<T> result = new ArrayList<>();
@@ -48,21 +63,6 @@ public class DataBaseCommander {
             close(resultSet, preparedStatement);
         }
         return result;
-    }
-
-    public PreparedStatement createPreparedStatement(String sql, Object... statementData) {
-        PreparedStatement preparedStatement = null;
-        try {
-            preparedStatement = connection.prepareStatement(sql);
-            if (statementData != null && statementData.length > 0) {
-                for (int i = 0; i < statementData.length; i++) {
-                    preparedStatement.setObject(i + 1, statementData[i]);
-                }
-            }
-        } catch (SQLException sqlEx) {
-            LOGGER.error("Error during prepared statement creation: ", sqlEx);
-        }
-        return preparedStatement;
     }
 
     public long insert(String sql, Object... statementData) {
