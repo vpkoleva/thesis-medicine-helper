@@ -28,7 +28,11 @@ public class WebPatientsService {
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     public List<PatientBO> getPatientsByDoctorId(@Auth User user) {
-        return patientDao.getPatientsByDoctorId(user.getId());
+        try {
+            return patientDao.getPatientsByDoctorId(user.getId());
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @POST
@@ -36,6 +40,10 @@ public class WebPatientsService {
     @Path("/add")
     @Produces(MediaType.APPLICATION_JSON)
     public Result addPatient(@Auth User user, PatientBO pat) {
-        return patientDao.addPatient(user.getId(), pat.getFirstName(), pat.getLastName(), pat.getDiagnoseId());
+        try {
+            return patientDao.addPatient(user.getId(), pat.getFirstName(), pat.getLastName(), pat.getDiagnoseId());
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

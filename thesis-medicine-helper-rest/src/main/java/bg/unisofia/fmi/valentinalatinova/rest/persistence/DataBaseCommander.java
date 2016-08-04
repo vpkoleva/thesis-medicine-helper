@@ -83,6 +83,18 @@ public class DataBaseCommander {
         return -1;
     }
 
+    public int delete(String sql, Object... statementData) {
+        PreparedStatement preparedStatement = createPreparedStatement(sql, statementData);
+        try {
+            return preparedStatement.executeUpdate();
+        } catch (SQLException sqlEx) {
+            LOGGER.error("Error during DELETE of '" + preparedStatement.toString() + "': ", sqlEx);
+        } finally {
+            close(null, preparedStatement);
+        }
+        return 0;
+    }
+
     public boolean execute(PreparedStatement... preparedStatements) {
         String sql = "";
         try {

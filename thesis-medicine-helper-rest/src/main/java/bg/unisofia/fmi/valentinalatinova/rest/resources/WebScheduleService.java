@@ -5,6 +5,7 @@ import bg.unisofia.fmi.valentinalatinova.core.json.WebScheduleBO;
 import bg.unisofia.fmi.valentinalatinova.core.json.WebScheduleListBO;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
 import bg.unisofia.fmi.valentinalatinova.rest.data.WebScheduleDO;
+import bg.unisofia.fmi.valentinalatinova.rest.data.bo.PatientBO;
 import bg.unisofia.fmi.valentinalatinova.rest.helpers.SchedulesConversion;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.DataBaseCommander;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.dao.WebScheduleDAO;
@@ -36,8 +37,25 @@ public class WebScheduleService {
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     public List<WebScheduleListBO> getWebSchedules(@Auth User user, @QueryParam("diagnoseId") int diagnoseId, @QueryParam("start") String start, @QueryParam("end") String end) {
-        List<WebScheduleDO> schedulesFromDB = webScheduleDao.getScheduleByDiagnoseIdWithLimits(diagnoseId, start, end, user.getId());
-        return convert.convertDOtoBOList(schedulesFromDB, start, end);
+        try {
+            List<WebScheduleDO> schedulesFromDB = webScheduleDao.getScheduleByDiagnoseIdWithLimits(diagnoseId, start, end, user.getId());
+            return convert.convertDOtoBOList(schedulesFromDB, start, end);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @GET
+    @Timed
+    @Path("/allFromPatients")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<WebScheduleListBO> getWebSchedulesforPatiens(@Auth User user, @QueryParam("patientId") int patientId, @QueryParam("start") String start, @QueryParam("end") String end) {
+        try {
+            List<WebScheduleDO> schedulesFromDB = webScheduleDao.getScheduleByPatientIdWithLimits(patientId, start, end, user.getId());
+            return convert.convertDOtoBOList(schedulesFromDB, start, end);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @POST
@@ -45,8 +63,13 @@ public class WebScheduleService {
     @Path("/saveFromDefault")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes({MediaType.APPLICATION_JSON})
-    public void saveWebScheduleFromDefault(@Auth User user, @QueryParam("diagnoseId") int diagnoseId, @QueryParam("startDate") String startDate, @QueryParam("patientId") String patientId) {
-        webScheduleDao.addScheduleToPatientFromDefaultDiagnose(diagnoseId, startDate, patientId, user.getId());
+    public void saveWebScheduleFromDefault(@Auth User user, PatientBO patient) {
+        try {
+            webScheduleDao.addScheduleToPatientFromDefaultDiagnose(patient.getStartDay().toString(), String.valueOf(patient.getId()), user.getId());
+
+        } catch (Exception e) {
+
+        }
     }
 
     @POST
@@ -54,9 +77,13 @@ public class WebScheduleService {
     @Path("/save")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes({MediaType.APPLICATION_JSON})
-    public Result saveMobileSchedule(@Auth User user, WebScheduleBO schedule) {
-        WebScheduleDO webScheduleDO = convert.convertBOtoDO(schedule).get(0);
-        return webScheduleDao.addScheduleByUserId(webScheduleDO, user.getId());
+    public Result saveWebSchedule(@Auth User user, WebScheduleBO schedule) {
+        try {
+            WebScheduleDO webScheduleDO = convert.convertBOtoDO(schedule).get(0);
+            return webScheduleDao.addScheduleByUserId(webScheduleDO, user.getId());
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @POST
@@ -64,17 +91,39 @@ public class WebScheduleService {
     @Path("/update")
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes({MediaType.APPLICATION_JSON})
-    public Result updateMobileSchedule(@Auth User user, WebScheduleBO schedule) {
-        WebScheduleDO webScheduleDO = convert.convertBOtoDO(schedule).get(0);
-        return webScheduleDao.updateScheduleByUserId(webScheduleDO, user.getId());
+    public Result updateWebSchedule(@Auth User user, WebScheduleBO schedule) {
+        try {
+            WebScheduleDO webScheduleDO = convert.convertBOtoDO(schedule).get(0);
+            return webScheduleDao.updateScheduleByUserId(webScheduleDO, user.getId());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @POST
+    @Timed
+    @Path("/delete")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes({MediaType.APPLICATION_JSON})
+    public Result deleteSchedule(@Auth User user, WebScheduleBO schedule) {
+
+        try {
+            return webScheduleDao.deleteScheduleById(schedule.getId(), user.getId());
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @GET
     @Timed
     @Path("/delete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Result deleteMobileSchedule(@Auth User user, @PathParam("id") long id) {
-        return null;
+    public Result deleteWebSchedule(@Auth User user, @PathParam("id") long id) {
+        try {
+            return webScheduleDao.deleteScheduleById(id, user.getId());
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @GET
@@ -82,6 +131,10 @@ public class WebScheduleService {
     @Path("/get/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public WebScheduleDO getWebScheduleById(@Auth User user, @PathParam("id") long id) {
-        return webScheduleDao.getWebScheduleByID(id).get(0);
+        try {
+            return webScheduleDao.getWebScheduleByID(id).get(0);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

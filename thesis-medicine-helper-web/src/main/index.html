@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Медицински помощник</title>
+      <!-- Bootstrap core CSS -->
+      <link href="css/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+      <!-- Bootstrap theme -->
+      <link href="css/Bootstrap//bootstrap-theme.min.css" rel="stylesheet">
+      <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+      <link href="css/Bootstrap/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script>
+      <link href="css/theme.css" rel="stylesheet">
+      <script src="css/Bootstrap/assets/js/ie-emulation-modes-warning.js"></script>
+      <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+   </head>
+   <body role="document">
+      <!-- Fixed navbar -->
+      <nav class="navbar navbar-inverse navbar-fixed-top">
+         <div class="container">
+            <div class="navbar-header">
+               <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+               </button>
+               <a class="navbar-brand" href="index.html">Начало</a>
+            </div>
+         </div>
+      </nav>
+      <div class="container theme-showcase" role="main" ng-app="myApp">
+         <!-- Main jumbotron for a primary marketing message or call to action -->
+         <div class="jumbotron">
+            <h1> Медицински помощник</h1>
+            <p>Приложение в помощ на лекари и пациенти за по-лесно менажиране на диагнози и тяхното идентично лечение</p>
+         </div>
+         <div class="page-header">
+         </div>
+         <p>
+            <button type="button" class="btn btn-lg btn-default"  data-toggle="modal" data-target="#addPatient">Добави пациент</button>
+            <button type="button" class="btn btn-lg btn-default" data-toggle="modal" data-target="#addDiagnose">Добави диагноза</button>
+            <!-- Modal -->
+         <div class="modal fade" id="addDiagnose" role="dialog">
+            <div class="modal-dialog">
+               <!-- Modal content-->
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <button type="button" class="close" data-dismiss="modal">&times;</button>
+                     <h4 class="modal-title">Добави диагноза</h4>
+                  </div>
+                  <div class="modal-body" data-ng-controller="addDiagnoseController">
+                     <form role="form" name="diagnoseForm">
+                        <div class="form-group">
+                           <label for="diagnoseName">Име:</label>
+                           <input type="text" id="diagnoseName" name="diagnoseName" data-ng-model="diagnoseName" class="form-control" />
+                        </div>
+                     </form>
+                     <div class="modal-footer">
+                        <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Затвори</button>
+                        <button type="submit" class="btn btn-default pull-right" data-ng-click="submitDiagnose(diagnoseForm)">Добави</button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <div class="modal fade" id="addPatient" role="dialog">
+            <div class="modal-dialog">
+               <div class="modal-content"  data-ng-controller="addPatientController">
+                  <div class="modal-header">
+                     <button type="button" class="close" data-dismiss="modal">&times;</button>
+                     <h4 class="modal-title">Добави пациент</h4>
+                  </div>
+                  <div class="modal-body">
+                     <form role="form" name="patientForm">
+                        <div class="form-group">
+                           <label for="patientFirstName">Име:</label>
+                           <input type="text" id="patientFirstName" name="patientFirstName" data-ng-model="patientFirstName" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                           <label for="patientLastName">Фамилия:</label>
+                           <input type="text" id="patientLastName" name="patientLastName" data-ng-model="patientLastName" class="form-control" />
+                        </div>
+                        <label for="selectDiagnose">Избери диагноза:</label>
+                        <select  class="form-control" id="selectDiagnose" ng-model="selectDiagnose" ng-options="x.diagnoseName for x in myData track by x.id">
+                           <option value="">Диагноза</option>
+                        </select>
+                     </form>
+                  </div>
+                  <div class="modal-footer">
+                     <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Затвори</button>
+                     <button type="submit" class="btn btn-default pull-right" data-ng-click="submitPatient(patientForm)">Добави</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+         </p>
+         <h2>Промени пациент</h2>
+         <div id="result"></div>
+         <div  ng-controller="patientCtrl">
+            <div class="form-group">
+               <label for="searchPatient">Търси пациент:</label>
+               <input  id="searchPatient" class="form-control" type="search" ng-model="p" placeholder="филтрирай пациентите..." aria-label="filter patients" />
+            </div>
+            <ul class="example-animate-container list-group nav-list">
+               <li class="animate-repeat list-group-item" ng-repeat="x in myData | filter:p as results">
+                  {{ x.firstName + ', ' + x.diagnoseName }}
+                  <button type="button" ng-click="getIndex(x.id)" class="btn-primary btn-sm pull-right">Промени</button>
+               </li>
+               <li class="animate-repeat" ng-if="results.length == 0">
+                  <strong>Не са намерени резултати...</strong>
+               </li>
+            </ul>
+         </div>
+         <hr>
+         <h2>Промени диагноза</h2>
+         <div ng-controller="diagnoseCtrl">
+            <div class="form-group">
+               <label for="searchDiagnose">Търси диагноза:</label>
+               <input  id="searchDiagnose" class="form-control" type="search" ng-model="q" placeholder="филтрирай диагнозите..." aria-label="filter diagnoses" />
+            </div>
+            <ul class="example-animate-container list-group nav-list">
+               <li class="animate-repeat list-group-item" ng-repeat="y in myData | filter:q as results">
+                  {{y.diagnoseName}} with id {{y.id}}
+                  <button type="button" ng-click="getIndex(y.id)" class="btn-primary btn-sm pull-right">Промени</button>
+               </li>
+               <li class="animate-repeat" ng-if="results.length == 0">
+                  <strong>Не са намерени резултати...</strong>
+               </li>
+            </ul>
+         </div>
+      </div>
+      <!-- /container -->
+      <script type="text/javascript" src="js/indexJS.js"></script>
+      <!-- Bootstrap core JavaScript
+         ================================================== -->
+      <!-- Placed at the end of the document so the pages load faster -->
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+      <script>window.jQuery || document.write('<script src="Bootstrap/assets/js/vendor/jquery.min.js"><\/script>')</script>
+      <script src="css/Bootstrap/js/bootstrap.min.js"></script>
+      <script src="css/Bootstrap/assets/js/docs.min.js"></script>
+      <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+      <script src="css/Bootstrap/assets/js/ie10-viewport-bug-workaround.js"></script>
+   </body>
+</html>

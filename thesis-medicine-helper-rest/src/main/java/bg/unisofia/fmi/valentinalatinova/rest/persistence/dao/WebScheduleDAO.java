@@ -37,14 +37,19 @@ public class WebScheduleDAO {
         return dataBaseCommander.select(WebScheduleDO.class, sql, diagnoseId, userId);
     }
 
+    public List<WebScheduleDO> getScheduleByPatientIdWithLimits(final int patientID, final String start, final String end, final long userId) {
+        String sql = "SELECT * FROM `schedulesunited` Where `Patients_ID`=? AND `Doctors_ID`=(Select `Doctor_ID` from `Users` where `ID`=?)";
+        return dataBaseCommander.select(WebScheduleDO.class, sql, patientID, userId);
+    }
+
     public List<WebScheduleDO> getScheduleByDiagnoseId(final int diagnoseId, final long userId) {
         String sql = "SELECT * FROM `schedulesunited` Where `Diagnoses_ID`=? AND `Doctors_ID`=(Select `Doctor_ID` from `Users` where `ID`=?)";
         return dataBaseCommander.select(WebScheduleDO.class, sql, diagnoseId, userId);
     }
 
-    public Result addScheduleToPatientFromDefaultDiagnose(final int diagnoseId, final String startDate, final String patientId, final long userId) {
-        String sql = "insert into schedulesunited (startDate, endDate, Description, frequencyValue, frequencyTypes, Patients_ID, Doctors_ID, Diagnoses_ID) select ?, date_add(?, interval datediff(startDate, endDate) day), Description, frequencyValue, frequencyTypes, ?, Doctors_ID, null from schedulesunited where Diagnoses_ID=?";
-        final long result = dataBaseCommander.insert(sql, startDate, startDate, patientId, diagnoseId);
+    public Result addScheduleToPatientFromDefaultDiagnose(final String startDate, final String patientId, final long userId) {
+        String sql = "insert into schedulesunited (startDate, endDate, Description, frequencyValue, frequencyTypes,Patients_ID, Doctors_ID, Diagnoses_ID, startAfterValue, startAfterType, endAfterValue, endAfterType) select ?, date_add(?, interval datediff(endDate, startDate) day), Description, frequencyValue, frequencyTypes, ?, Doctors_ID, null, startAfterValue, startAfterType, endAfterValue, endAfterType from schedulesunited where Diagnoses_ID=(select Diagnose_ID from patients where ID=?)";
+        final long result = dataBaseCommander.insert(sql, startDate, startDate, patientId, patientId);
         if (result > 0) {
             return Result.createSuccess(result);
         } else {
@@ -55,6 +60,16 @@ public class WebScheduleDAO {
     public List<WebScheduleDO> getWebScheduleByID(final long scheduleId) {
         String sql = "SELECT * FROM `schedulesunited` Where `ID`=?";
         return dataBaseCommander.select(WebScheduleDO.class, sql, scheduleId);
+    }
+
+    public Result deleteScheduleById(final long scheduleId, final long userId) {
+        String sql = "DELETE FROM `schedulesunited` Where `ID`=?";
+        final int result = dataBaseCommander.delete(sql, scheduleId);
+        if (result > 0) {
+            return Result.createSuccess(result);
+        } else {
+            return Result.createError("Cannot create schedule");
+        }
     }
 
     public Result updateScheduleByUserId(final WebScheduleDO scheduleToUpdate, final long userId) {

@@ -28,7 +28,12 @@ public class WebDiagnoseService {
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     public List<DiagnoseBO> getPatientsByDoctorId(@Auth User user) {
-        return diagnoseDao.getDiagnosesByUserId(user.getId());
+        try {
+            return diagnoseDao.getDiagnosesByUserId(user.getId());
+        } catch (Exception e) {
+            return null;
+        }
+
     }
 
     @POST
@@ -36,6 +41,10 @@ public class WebDiagnoseService {
     @Path("/add")
     @Produces(MediaType.APPLICATION_JSON)
     public Result addNewDiagnose(@Auth User user, DiagnoseBO diagnose) {
-        return diagnoseDao.addDiagnosesByUserId(diagnose.getDiagnoseName(), user.getId());
+        try {
+            return diagnoseDao.addDiagnosesByUserId(diagnose.getDiagnoseName(), user.getId());
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

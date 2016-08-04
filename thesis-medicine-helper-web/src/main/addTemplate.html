@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-ng-app="myApp">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Add Diagnose Template</title>
+	
+	
+	
+
+    <!-- Bootstrap core CSS -->
+    <link href="Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap theme -->
+    <link href="Bootstrap//bootstrap-theme.min.css" rel="stylesheet">
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="Bootstrap/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="theme.css" rel="stylesheet">
+	
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script>
+  
+    <script src="Bootstrap/assets/js/ie-emulation-modes-warning.js"></script>
+
+   
+  </head>
+
+  <body role="document">
+
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Bootstrap theme</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="#">Home</a></li>
+            <li><a href="#about">Add</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Add <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">Diagnose</a></li>
+                <li><a href="#">Patient</a></li>
+              </ul>
+            </li>
+			 <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Edit <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">Diagnose</a></li>
+                <li><a href="#">Patient</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+
+    <div class="container theme-showcase" role="main">
+
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron">
+        <h1>Theme example</h1>
+        <p>This is a template showcasing the optional theme stylesheet included in Bootstrap. Use it as a starting point to create something more unique by building on or modifying it.</p>
+      </div>
+
+
+<div id="result"></div>
+<div ng-app="myApp">
+      <div  ng-controller="patientCtrl"> 
+
+<!-- <ul>
+  <li ng-repeat="x in myData">
+    {{ x.firstName + ', ' + x.diagnoseName }}
+  </li>
+  </ul> -->
+  <div class="form-group">
+  <label for="searchPatient">Search Patients:</label>
+  <input  id="searchPatient" class="form-control" type="search" ng-model="p" placeholder="filter patients..." aria-label="filter patients" />
+</div>
+  
+  <ul class="example-animate-container list-group nav-list">
+    <li class="animate-repeat list-group-item" ng-repeat="x in myData | filter:p as results">
+      {{ x.firstName + ', ' + x.diagnoseName }}
+	  <button type="button" class="btn-primary btn-sm pull-right">Edit</button>
+    </li>
+    <li class="animate-repeat" ng-if="results.length == 0">
+      <strong>No results found...</strong>
+    </li>
+  </ul>
+
+
+</div>
+<hr>
+      <div ng-controller="diagnoseCtrl"> 
+	  
+	   <div class="form-group">
+  <label for="searchDiagnose">Search Diagnoses:</label>
+  <input  id="searchDiagnose" class="form-control" type="search" ng-model="q" placeholder="filter diagnoses..." aria-label="filter diagnoses" />
+</div>
+ <ul class="example-animate-container list-group nav-list">
+    <li class="animate-repeat list-group-item" ng-repeat="y in myData | filter:q as results">
+      {{y.diagnoseName}} with id {{y.id}}
+	  <button type="button" ng-click="getIndex(y.id)" class="btn-primary btn-sm pull-right">Edit</button>
+    </li>
+    <li class="animate-repeat" ng-if="results.length == 0">
+      <strong>No results found...</strong>
+    </li>
+  </ul>
+<!--<ul>
+  <li ng-repeat="y in myData">
+    {{ y.diagnoseName }}
+  </li>
+</ul>
+-->
+
+</div>
+</div>
+    </div> <!-- /container -->
+
+	<script type="text/javascript" src="angularFunc2.js"></script>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="Bootstrap/assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="Bootstrap/js/bootstrap.min.js"></script>
+    <script src="Bootstrap/assets/js/docs.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="Bootstrap/assets/js/ie10-viewport-bug-workaround.js"></script>
+  </body>
+</html>

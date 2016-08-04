@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 public class PatientBO extends DataBaseObject {
     @JsonProperty
@@ -15,6 +16,17 @@ public class PatientBO extends DataBaseObject {
     private String lastName;
     @JsonProperty
     private long doctorId;
+
+    public Timestamp getStartDay() {
+        return startDay;
+    }
+
+    public void setStartDay(Timestamp startDay) {
+        this.startDay = startDay;
+    }
+
+    @JsonProperty
+    private Timestamp startDay;
 
 
 

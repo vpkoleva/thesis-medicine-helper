@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en" data-ng-app="myApp">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+      <title>Данни за диагноза</title>
+      <!-- Bootstrap core CSS -->
+      <link href="css/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
+      <!-- Bootstrap theme -->
+      <link href="css/Bootstrap//bootstrap-theme.min.css" rel="stylesheet">
+      <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+      <link href="css/Bootstrap/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+      <!-- Custom styles for this template -->
+      <link href="css/theme.css" rel="stylesheet">
+      <script src='js/lib/jquery.min.js'></script>
+      <script src='js/lib/moment.min.js'></script>
+      <script src='calendar/fullcalendar.min.js'></script>
+      <script src='calendar/lang/bg.js'></script>
+      <link href='calendar/fullcalendar.css' rel='stylesheet' />
+      <link href='calendar/fullcalendar.print.css' rel='stylesheet' media='print' />
+      <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+      <script type="text/javascript" src="js/addDiagnoseJS.js"></script>
+      <script src="css/Bootstrap/assets/js/ie-emulation-modes-warning.js"></script>
+   </head>
+   <body role="document">
+      <!-- Fixed navbar -->
+      <nav class="navbar navbar-inverse navbar-fixed-top">
+         <div class="container">
+            <div class="navbar-header">
+               <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+               </button>
+               <a class="navbar-brand" href="index.html">Начало</a>
+            </div>
+         </div>
+      </nav>
+      <div class="container theme-showcase" role="main">
+         <!-- Main jumbotron for a primary marketing message or call to action -->
+         <div class="jumbotron">
+            <h1>Данни за диагноза</h1>
+            <p>Добави лечебен план за диагноза</p>
+         </div>
+         <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Добави нов лечебен план</button>
+         <!-- Modal -->
+         <div class="modal fade" id="myModal" role="dialog">
+            <div class="modal-dialog">
+               <!-- Modal content-->
+               <div class="modal-content" data-ng-controller="formController">
+                  <div class="modal-header">
+                     <button type="button" class="close" data-dismiss="modal">&times;</button>
+                     <h4 class="modal-title">Лечебен план</h4>
+                  </div>
+                  <div class="modal-body">
+                     <form role="form" name="testForm">
+                        <input type="hidden" name="scheduleId" data-ng-model="scheduleId" class="form-control" />
+                        <div class="form-group">
+                           <label for="action">Действие:</label>
+                           <input type="text" id="action" name="action" data-ng-model="action" class="form-control" />
+                        </div>
+                        <div class="row">
+                           <div class="form-group col-sm-6" >
+                              <label for="startAfter">Започни след:</label>
+                              <input type="startAfter" data-ng-model="startAfter" class="form-control" id="startAfter">
+                           </div>
+                           <div class="form-group col-sm-6">
+                              <label for="selectStartAfter">Избери:</label>
+                              <select class="form-control" id="selectStartAfter" data-ng-model="startAfterType">
+                                 <option value="DAY">Ден</option>
+                                 <option value="MONTH">Месец</option>
+                                 <option value="YEAR">Година</option>
+                              </select>
+                           </div>
+                        </div>
+                        <div class="row">
+                           <div class="form-group col-sm-6">
+                              <label for="frequency">Честота:</label>
+                              <input type="frequency" data-ng-model="frequency" class="form-control" id="frequency">
+                           </div>
+                           <div class="form-group col-sm-6">
+                              <label for="selectFrequency">Избери:</label>
+                              <select class="form-control" data-ng-model="frequencyType" id="selectFrequency">
+                                 <option value="DAY">Ден</option>
+                                 <option value="MONTH">Месец</option>
+                                 <option value="YEAR">Година</option>
+                              </select>
+                           </div>
+                        </div>
+                        <div class="row">
+                           <div class="form-group col-sm-6">
+                              <label for="duration" >Продължителност:</label>
+                              <input type="duration" data-ng-model="duration" class="form-control" id="duration">
+                           </div>
+                           <div class="form-group col-sm-6">
+                              <label for="selectDuration">Избери:</label>
+                              <select class="form-control" data-ng-model="durationType" id="selectDuration">
+                                 <option value="DAY">Ден</option>
+                                 <option value="MONTH">Месец</option>
+                                 <option value="YEAR">Година</option>
+                              </select>
+                           </div>
+                        </div>
+                     </form>
+                  </div>
+                  <div class="modal-footer">
+                     <button type="button" class="btn btn-default pull-left" data-ng-click="delete()">Изртий</button>
+                     <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Затвори</button>
+                     <button type="submit" class="btn btn-default pull-right" data-ng-click="submit(testForm)">Запази</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+         <!-- End Modal -->
+         <br/>
+         <br/>
+         <br/>
+         <div id='calendar'></div>
+      </div>
+      <!-- /container -->
+      <!-- Bootstrap core JavaScript
+         ================================================== -->
+      <!-- Placed at the end of the document so the pages load faster -->
+      <script src="css/Bootstrap/js/bootstrap.min.js"></script>
+      <script src="css/Bootstrap/assets/js/docs.min.js"></script>
+      <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+      <script src="css/Bootstrap/assets/js/ie10-viewport-bug-workaround.js"></script>
+   </body>
+</html>
