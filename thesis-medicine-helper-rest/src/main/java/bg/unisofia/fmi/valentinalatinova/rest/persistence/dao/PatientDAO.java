@@ -4,6 +4,8 @@ import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 import bg.unisofia.fmi.valentinalatinova.rest.data.bo.PatientBO;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.DataBaseCommander;
 
+
+import java.sql.PreparedStatement;
 import java.util.List;
 
 public class PatientDAO {
@@ -28,6 +30,26 @@ public class PatientDAO {
             return Result.createSuccess(result);
         } else {
             return Result.createError("Cannot create diagnose");
+        }
+    }
+
+    public Result linkPatientToMobileUser(final long userId, final long patientID, final String code) {
+        String sql = "SELECT ID from `mobileusers` where code=?;";
+        final Long mUserId = Long.valueOf(dataBaseCommander.select(sql, code).toString());
+        if (mUserId > 0) {
+            String sqlForUpdate = "UPDATE `users` SET patient_ID=? WHERE mobileusers_ID=?;";
+           PreparedStatement pr = dataBaseCommander.createPreparedStatement(sqlForUpdate, patientID, mUserId);
+            final Boolean result = dataBaseCommander.execute(pr);
+            if(result) {
+                return Result.createSuccess(1);
+            }
+            else
+            {
+                return Result.createError("Cannot create link");
+            }
+
+        } else {
+            return Result.createError("Cannot create link");
         }
     }
 }

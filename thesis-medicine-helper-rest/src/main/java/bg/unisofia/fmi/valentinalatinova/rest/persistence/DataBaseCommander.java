@@ -65,6 +65,27 @@ public class DataBaseCommander {
         return result;
     }
 
+
+    public Object select( String sql, Object... statementData) {
+        ResultSet resultSet = null;
+        Object result = new Object();
+        PreparedStatement preparedStatement = createPreparedStatement(sql, statementData);
+        try {
+            if (preparedStatement != null) {
+                resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                   result=resultSet.first();
+                }
+            }
+        } catch (SQLException ex) {
+            LOGGER.error("Error during SELECT of '" + sql + "': ", ex);
+        } finally {
+            close(resultSet, preparedStatement);
+        }
+        return result;
+    }
+
+
     public long insert(String sql, Object... statementData) {
         PreparedStatement preparedStatement = createPreparedStatement(sql, statementData);
         try {

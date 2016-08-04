@@ -105,6 +105,34 @@ app.controller('patientCtrl', function($scope, $http) {
 	   window.location="addPatient.html";
 			
 	}
+	$scope.addMobileUser = function(index) {
+       sessionStorage.setItem("patientID", index);
+	   $("#linkMobileUserToPatientModal").modal("show");
+	   
+	   $('#linkMobileUserToPatientModal').on('shown.bs.modal', function(e) {
+			var req = {
+				method: 'POST',
+				url: 'http://localhost:9000/web/patient/link/',
+				headers: {
+					'Authorization': 'Bearer '+sessionStorage.getItem("authToken")
+				}
+				data: { patientId: sessionStorage.getItem("patientID"), code: $scope.code
+				}
+			}
+			$http(req).success(function(data, status) {
+				sessionStorage.setItem("patientID", "0");
+				$('#linkMobileUserToPatientModal').modal('hide');
+				alert("Потребителя беше свързан успешно!");
+				console.debug(data);
+			}).error(function(data, status) {
+			//	alert(data.error);
+			sessionStorage.setItem("patientID", "0");
+			});
+		
+	});
+			
+	}
+
 });
 
 app.controller('diagnoseCtrl', function($scope, $http) {

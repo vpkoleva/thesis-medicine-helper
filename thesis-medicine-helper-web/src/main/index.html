@@ -108,11 +108,39 @@
                <li class="animate-repeat list-group-item" ng-repeat="x in myData | filter:p as results">
                   {{ x.firstName + ', ' + x.diagnoseName }}
                   <button type="button" ng-click="getIndex(x.id)" class="btn-primary btn-sm pull-right">Промени</button>
+				  <button type="button" ng-click="addMobileUser(x.id)" class="btn-primary btn-sm pull-right">Свържи</button>
                </li>
                <li class="animate-repeat" ng-if="results.length == 0">
                   <strong>Не са намерени резултати...</strong>
                </li>
             </ul>
+			
+			<!-- Modal -->
+         <div class="modal fade" id="linkMobileUserToPatientModal" role="dialog">
+            <div class="modal-dialog">
+               <!-- Modal content-->
+               <div class="modal-content">
+                  <div class="modal-header">
+                     <button type="button" class="close" data-dismiss="modal">&times;</button>
+                     <h4 class="modal-title">Свързване на мобилен потребител с пациент:</h4>
+                  </div>
+                  <div class="modal-body" >
+                     <form role="form" name="linkForm">
+                        <div class="form-group">
+                           <label for="code">Код за свързване:</label>
+                           <input type="text" id="code" name="code" data-ng-model="code" class="form-control" />
+                        </div>
+                     </form>
+                  </div>
+                  <div class="modal-footer">
+                     <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Затвори</button>
+                     <button type="submit" class="btn btn-default pull-right" data-ng-click="submit(linkForm)">Свържи</button>
+                  </div>
+               </div>
+            </div>
+         </div>
+			
+			
          </div>
          <hr>
          <h2>Промени диагноза</h2>
