@@ -1,10 +1,5 @@
 package bg.unisofia.fmi.valentinalatinova.rest.persistence;
 
-import bg.unisofia.fmi.valentinalatinova.rest.MedicineConfig;
-import bg.unisofia.fmi.valentinalatinova.rest.data.DataBaseObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -12,6 +7,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import bg.unisofia.fmi.valentinalatinova.rest.MedicineConfig;
+import bg.unisofia.fmi.valentinalatinova.rest.data.DataBaseObject;
 
 public class DataBaseCommander {
 
@@ -65,16 +66,15 @@ public class DataBaseCommander {
         return result;
     }
 
-
-    public Object select( String sql, Object... statementData) {
+    public long select(String sql, Object... statementData) {
         ResultSet resultSet = null;
-        Object result = new Object();
+        long result = -1;
         PreparedStatement preparedStatement = createPreparedStatement(sql, statementData);
         try {
             if (preparedStatement != null) {
                 resultSet = preparedStatement.executeQuery();
                 while (resultSet.next()) {
-                   result=resultSet.first();
+                    result = resultSet.getLong(1);
                 }
             }
         } catch (SQLException ex) {
@@ -84,7 +84,6 @@ public class DataBaseCommander {
         }
         return result;
     }
-
 
     public long insert(String sql, Object... statementData) {
         PreparedStatement preparedStatement = createPreparedStatement(sql, statementData);
@@ -143,7 +142,6 @@ public class DataBaseCommander {
         }
         return false;
     }
-
 
     private void close(ResultSet resultSet, PreparedStatement... preparedStatements) {
         if (resultSet != null) {

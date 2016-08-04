@@ -110,14 +110,14 @@ app.controller('patientCtrl', function($scope, $http) {
 	   $("#linkMobileUserToPatientModal").modal("show");
 	   
 	   $('#linkMobileUserToPatientModal').on('shown.bs.modal', function(e) {
+		$scope.submit = function(form) {
 			var req = {
 				method: 'POST',
 				url: 'http://localhost:9000/web/patient/link/',
 				headers: {
 					'Authorization': 'Bearer '+sessionStorage.getItem("authToken")
-				}
-				data: { patientId: sessionStorage.getItem("patientID"), code: $scope.code
-				}
+				},
+				data: { patientId: sessionStorage.getItem("patientID"), code: $scope.code }
 			}
 			$http(req).success(function(data, status) {
 				sessionStorage.setItem("patientID", "0");
@@ -128,7 +128,7 @@ app.controller('patientCtrl', function($scope, $http) {
 			//	alert(data.error);
 			sessionStorage.setItem("patientID", "0");
 			});
-		
+		}
 	});
 			
 	}
