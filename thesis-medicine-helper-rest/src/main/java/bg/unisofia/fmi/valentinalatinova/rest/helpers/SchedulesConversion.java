@@ -7,7 +7,7 @@ import java.util.List;
 import org.joda.time.DateTime;
 
 import bg.unisofia.fmi.valentinalatinova.core.json.Schedule;
-import bg.unisofia.fmi.valentinalatinova.core.json.ScheduleList;
+import bg.unisofia.fmi.valentinalatinova.core.json.ScheduleInfo;
 import bg.unisofia.fmi.valentinalatinova.core.utils.Duration;
 import bg.unisofia.fmi.valentinalatinova.rest.data.WebScheduleDO;
 
@@ -27,15 +27,15 @@ public class SchedulesConversion {
         return result;
     }
 
-    public List<ScheduleList> convertDOtoJsonList(List<WebScheduleDO> webSchedules, String startDate, String endDate) {
-        final List<ScheduleList> result = new ArrayList<>();
+    public List<ScheduleInfo> convertDOtoJsonList(List<WebScheduleDO> webSchedules, String startDate, String endDate) {
+        final List<ScheduleInfo> result = new ArrayList<>();
 
         for (WebScheduleDO webSchedule : webSchedules) {
             final Schedule schedule = webSchedule.getSchedule();
             final DateTime end = new DateTime(endDate);
             DateTime start = setStartDate(schedule, startDate);
             while (!start.isAfter(end) && start.isBefore(webSchedule.getEndDate().getTime())) {
-                ScheduleList dataObj = new ScheduleList();
+                ScheduleInfo dataObj = new ScheduleInfo();
                 dataObj.setId(schedule.getId());
                 dataObj.setTitle(schedule.getDescription());
                 dataObj.setStart(start);

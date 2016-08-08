@@ -59,7 +59,7 @@ public class MedicineApp extends Application<MedicineConfig> {
         environment.jersey().register(oAuth2Service);
 
         // Register mobile schedule service
-        final MobileScheduleService mobileScheduleService = new MobileScheduleService();
+        final MobileScheduleService mobileScheduleService = new MobileScheduleService(dataBaseCommander);
         environment.jersey().register(mobileScheduleService);
 
         // Register mobile schedule service

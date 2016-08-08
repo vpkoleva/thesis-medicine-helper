@@ -8,33 +8,41 @@ import org.joda.time.format.DateTimeFormat;
 
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 import bg.unisofia.fmi.valentinalatinova.core.json.Schedule;
+import bg.unisofia.fmi.valentinalatinova.rest.data.User;
 import bg.unisofia.fmi.valentinalatinova.rest.data.WebScheduleDO;
 
-public class WebScheduleDAO {
+public class SchedulesDAO {
 
     private DataBaseCommander dataBaseCommander;
 
-    public WebScheduleDAO(DataBaseCommander dataBaseCommander) {
+    public SchedulesDAO(DataBaseCommander dataBaseCommander) {
         this.dataBaseCommander = dataBaseCommander;
     }
 
-    public List<WebScheduleDO> getByDiagnoseId(final int diagnoseId, final long userId) {
+    public List<WebScheduleDO> findByDiagnoseId(final int diagnoseId, final long userId) {
         String sql = "SELECT * FROM `schedules` WHERE `diagnoses_ID`=? "
                 + "AND `patients_ID` IS NULL "
                 + "AND `doctors_ID`=(SELECT `doctor_ID` from `users` WHERE `ID`=?)";
         return dataBaseCommander.select(WebScheduleDO.class, sql, diagnoseId, userId);
     }
 
-    public List<WebScheduleDO> getByPatientId(final int patientID, final long userId) {
+    public List<WebScheduleDO> findByPatientId(final int patientID, final long userId) {
         String sql = "SELECT * FROM `schedules` WHERE `patients_ID`=? "
                 + "AND `doctors_ID`=(SELECT `doctor_ID` from `users` WHERE `ID`=?)";
         return dataBaseCommander.select(WebScheduleDO.class, sql, patientID, userId);
     }
 
-    public Schedule getById(final long scheduleId, final long userId) {
-        String sql = "SELECT * FROM `schedules` WHERE `ID`=? "
-                + "AND `doctors_ID`=(SELECT `doctor_ID` from `users` WHERE `ID`=?)";
-        List<WebScheduleDO> result = dataBaseCommander.select(WebScheduleDO.class, sql, scheduleId, userId);
+    public List<WebScheduleDO> findByMobileUserId(final long userId) {
+        String sql = "SELECT * FROM `schedules` "
+                + "WHERE `mobileusers_ID`=(SELECT `mobileuser_ID` from `users` WHERE `ID`=?) "
+                + "UNION SELECT * FROM `schedules` "
+                + "WHERE `patients_ID`=(SELECT `patient_ID` from `users` WHERE `ID`=?)";
+        return dataBaseCommander.select(WebScheduleDO.class, sql, userId, userId);
+    }
+
+    public Schedule getById(final long scheduleId, final User user) {
+        String sql = "SELECT * FROM `schedules` WHERE `ID`=? AND " + getUserOrDoctor(user);
+        List<WebScheduleDO> result = dataBaseCommander.select(WebScheduleDO.class, sql, scheduleId, user.getId());
         if (result != null && result.size() == 1) {
             return result.get(0).getSchedule();
         } else {
@@ -44,13 +52,15 @@ public class WebScheduleDAO {
 
     public Result save(final WebScheduleDO webSchedule, final long userId) {
         String sql = "INSERT INTO `schedules` (startDate, endDate, description, frequencyValue, frequencyTypes, " +
-                "patients_ID, doctors_ID, diagnoses_ID, startAfterType, startAfterValue, endAfterType, endAfterValue) "
-                + "VALUES(?,?,?,?,?,?,(SELECT `doctor_ID` FROM `Users` WHERE `ID`=?),?,?,?,?,?);";
+                "patients_ID, doctors_ID, mobileusers_ID, diagnoses_ID, startAfterType, startAfterValue, "
+                + "endAfterType, endAfterValue) "
+                + "VALUES(?,?,?,?,?,?,(SELECT `doctor_ID` FROM `users` WHERE `ID`=?),"
+                + "(SELECT `mobileuser_ID` FROM `users` WHERE `ID`=?),?,?,?,?,?);";
         Schedule schedule = webSchedule.getSchedule();
         final long result = dataBaseCommander.insert(sql, webSchedule.getStartDate(),
                 webSchedule.getEndDate(), schedule.getDescription(), schedule.getFrequency(),
-                schedule.getFrequencyType().getValue(), schedule.getPatientId(), userId, schedule.getDiagnoseId(),
-                schedule.getStartAfterType().getValue(), schedule.getStartAfter(),
+                schedule.getFrequencyType().getValue(), schedule.getPatientId(), userId, userId,
+                schedule.getDiagnoseId(), schedule.getStartAfterType().getValue(), schedule.getStartAfter(),
                 schedule.getDurationType().getValue(), schedule.getDuration());
         if (result > 0) {
             return Result.createSuccess(result);
@@ -77,20 +87,19 @@ public class WebScheduleDAO {
         }
     }
 
-    public Result update(final WebScheduleDO webSchedule, final long userId) {
+    public Result update(final WebScheduleDO webSchedule, final User user) {
         String sql = "UPDATE `schedules` SET startDate=?, endDate=?, description=?, "
                 + "frequencyValue=?, frequencyTypes=?, patients_ID=?, "
-                + "doctors_ID=(SELECT `Doctor_ID` from `Users` WHERE `ID`=?), "
                 + "diagnoses_ID=?, startAfterType=?, startAfterValue=?, endAfterType=?, endAfterValue=? "
-                + "WHERE `ID`=? AND `doctors_ID`=(SELECT `doctor_ID` FROM `users` WHERE `ID`=?)";
+                + "WHERE `ID`=? AND " + getUserOrDoctor(user);
         Schedule schedule = webSchedule.getSchedule();
         PreparedStatement preparedStatement = dataBaseCommander.createPreparedStatement(sql,
                 webSchedule.getStartDate(), webSchedule.getEndDate(),
                 schedule.getDescription(), schedule.getFrequency(), schedule.getFrequencyType().getValue(),
-                schedule.getPatientId(), userId, schedule.getDiagnoseId(),
+                schedule.getPatientId(), schedule.getDiagnoseId(),
                 schedule.getStartAfterType().getValue(), schedule.getStartAfter(),
                 schedule.getDurationType().getValue(), schedule.getDuration(),
-                schedule.getId(), userId);
+                schedule.getId(), user.getId());
         final boolean result = dataBaseCommander.execute(preparedStatement);
         if (result) {
             return Result.createSuccess(webSchedule.getId());
@@ -99,14 +108,18 @@ public class WebScheduleDAO {
         }
     }
 
-    public Result delete(final long scheduleId, long userId) {
-        String sql = "DELETE FROM `schedules` WHERE `ID`=? AND "
-                + "`doctors_ID`=(SELECT `doctor_ID` FROM `users` WHERE `ID`=?)";
-        final boolean result = dataBaseCommander.deleteOrUpdate(sql, scheduleId, userId);
+    public Result delete(final long scheduleId, final User user) {
+        String sql = "DELETE FROM `schedules` WHERE `ID`=? AND " + getUserOrDoctor(user);
+        final boolean result = dataBaseCommander.deleteOrUpdate(sql, scheduleId, user.getId());
         if (result) {
             return Result.createSuccess(-1);
         } else {
             return Result.createError("Cannot delete schedule");
         }
+    }
+
+    private String getUserOrDoctor(User user) {
+        return user.getIsDoctor() ? "`doctors_ID`=(SELECT `doctor_ID` from `users` WHERE `ID`=?)"
+                : "`mobileusers_ID`=(SELECT `mobileuser_ID` from `users` WHERE `ID`=?)";
     }
 }

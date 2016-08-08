@@ -27,11 +27,4 @@ public class JsonDateTimeUtils {
             return DateTime.parse(parser.getText());
         }
     }
-
-    public static class DateSerializer extends JsonSerializer<DateTime> implements Serializable {
-        @Override
-        public void serialize(DateTime dateTime, JsonGenerator generator, SerializerProvider arg2) throws IOException {
-            generator.writeString(dateTime.toString("yyyy-MM-dd"));
-        }
-    }
 }

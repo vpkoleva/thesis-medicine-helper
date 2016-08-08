@@ -53,11 +53,64 @@
         </LinearLayout>
 
         <TextView
+                android:id="@+id/manage_schedule_startAfter_label"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/manage_schedule_startAfter_label"
+                android:layout_below="@+id/manage_schedule_datetime"/>
+
+        <LinearLayout
+                android:id="@+id/manage_schedule_startAfter_group"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/manage_schedule_startAfter_label">
+
+
+            <NumberPicker
+                    android:id="@+id/manage_schedule_startAfter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/number"/>
+
+            <Spinner
+                    android:id="@+id/manage_schedule_startAfter_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="35dp"/>
+        </LinearLayout>
+
+        <TextView
+                android:id="@+id/manage_schedule_frequency_label"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/manage_schedule_frequency_label"
+                android:layout_below="@+id/manage_schedule_startAfter_group"/>
+
+        <LinearLayout
+                android:id="@+id/manage_schedule_frequency_group"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/manage_schedule_frequency_label">
+
+            <NumberPicker
+                    android:id="@+id/manage_schedule_frequency"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@style/number"/>
+
+            <Spinner
+                    android:id="@+id/manage_schedule_frequency_type"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="35dp"/>
+        </LinearLayout>
+
+        <TextView
                 android:id="@+id/manage_schedule_duration_label"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/manage_schedule_duration_label"
-                android:layout_below="@+id/manage_schedule_datetime"/>
+                android:layout_below="@+id/manage_schedule_frequency_group"/>
 
         <LinearLayout
                 android:id="@+id/manage_schedule_duration_group"
@@ -78,46 +131,19 @@
                     android:paddingTop="35dp"/>
         </LinearLayout>
 
-        <TextView
-                android:id="@+id/manage_schedule_frequency_label"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/manage_schedule_frequency_label"
-                android:layout_below="@+id/manage_schedule_duration_group"/>
-
-        <LinearLayout
-                android:id="@+id/manage_schedule_frequency_group"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/manage_schedule_frequency_label">
-
-
-            <NumberPicker
-                    android:id="@+id/manage_schedule_frequency"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    style="@style/number"/>
-
-            <Spinner
-                    android:id="@+id/manage_schedule_frequency_type"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="35dp"/>
-        </LinearLayout>
-
         <Button
                 android:id="@+id/manage_schedule_button_save"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_save"
-                android:layout_below="@+id/manage_schedule_frequency_group"/>
+                android:layout_below="@+id/manage_schedule_duration_group"/>
 
         <Button
                 android:id="@+id/manage_schedule_button_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_cancel"
-                android:layout_below="@+id/manage_schedule_frequency_group"
+                android:layout_below="@+id/manage_schedule_duration_group"
                 android:layout_alignParentEnd="true"/>
     </RelativeLayout>
 

@@ -1,23 +1,26 @@
 package bg.unisofia.fmi.valentinalatinova.core.json;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import org.joda.time.DateTime;
 
 import bg.unisofia.fmi.valentinalatinova.core.utils.JsonDateTimeUtils;
 
-public class ScheduleList extends BaseJson {
+public class ScheduleInfo extends BaseJson {
     @JsonProperty
     private String title;
     @JsonProperty
-    @JsonSerialize(using = JsonDateTimeUtils.DateSerializer.class)
+    @JsonSerialize(using = JsonDateTimeUtils.DateTimeSerializer.class)
+    @JsonDeserialize(using = JsonDateTimeUtils.DateTimeDeserializer.class)
     private DateTime start;
     @JsonProperty
-    @JsonSerialize(using = JsonDateTimeUtils.DateSerializer.class)
+    @JsonSerialize(using = JsonDateTimeUtils.DateTimeSerializer.class)
+    @JsonDeserialize(using = JsonDateTimeUtils.DateTimeDeserializer.class)
     private DateTime end;
 
-    public ScheduleList() {
+    public ScheduleInfo() {
         // Needed by Jackson deserialization
     }
 

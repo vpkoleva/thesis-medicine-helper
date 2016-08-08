@@ -1,6 +1,12 @@
 package bg.unisofia.fmi.valentinalatinova.app;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.joda.time.DateTime;
+
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -13,21 +19,20 @@ import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 import bg.unisofia.fmi.valentinalatinova.app.utils.HttpClient;
-import bg.unisofia.fmi.valentinalatinova.core.json.MobileSchedule;
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
+import bg.unisofia.fmi.valentinalatinova.core.json.Schedule;
 import bg.unisofia.fmi.valentinalatinova.core.utils.Duration;
-import org.joda.time.DateTime;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ManageScheduleActivity extends Activity {
 
-    public static final String RESULT_EXTRA = "MobileSchedule";
-    private final String PATH_SAVE_SCHEDULE = "/mobile/schedule/save";
-    private final String PATH_UPDATE_SCHEDULE = "/mobile/schedule/update";
-    private MobileSchedule currentSchedule;
+    public static final String SCHEDULE_ID = "ScheduleId";
+
+    private static final String PATH_SAVE_SCHEDULE = "/mobile/schedule/save";
+    private static final String PATH_UPDATE_SCHEDULE = "/mobile/schedule/update";
+
+    private Schedule currentSchedule;
     private long currentScheduleId = -1;
+    private ProgressDialog progress;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,16 +40,19 @@ public class ManageScheduleActivity extends Activity {
         setContentView(R.layout.activity_manage_schedule);
         // Get schedule object
         Intent intent = getIntent();
-        currentSchedule = (MobileSchedule) intent.getSerializableExtra(RESULT_EXTRA);
+        currentScheduleId = intent.getLongExtra(SCHEDULE_ID, -1);
         // If schedule is passed then this is an Edit Action so capture its ID
-        if (currentSchedule != null) {
-            currentScheduleId = currentSchedule.getId();
+        if (currentScheduleId != -1) {
             setTitle(R.string.manage_schedule_edit_window);
+            progress = new ProgressDialog(this);
+            new GetSchedule().execute(currentScheduleId);
+            progress.setTitle("Loading");
+            progress.setMessage("Wait while loading schedule data...");
+            progress.show();
         } else {
             setTitle(R.string.manage_schedule_add_window);
+            initialiseManageScheduleForm();
         }
-        // Fill form with existing data
-        initialiseManageScheduleForm();
         registerOnClickListeners();
     }
 
@@ -94,20 +102,25 @@ public class ManageScheduleActivity extends Activity {
         int minute = dateTime.getMinuteOfHour();
         time.setCurrentHour(hour);
         time.setCurrentMinute(minute);
-        // Duration
-        int duration = currentSchedule != null ? currentSchedule.getDuration() : 1;
-        createDurationNumberPicker(R.id.manage_schedule_duration, duration);
-        Duration durationType = currentSchedule != null ? currentSchedule.getDurationType() : Duration.DAY;
-        createDurationSpinner(R.id.manage_schedule_duration_type, durationType);
+        // StartAfter
+        int startAfter = currentSchedule != null ? currentSchedule.getStartAfter() : 1;
+        createDurationNumberPicker(R.id.manage_schedule_startAfter, startAfter);
+        Duration startAfterType = currentSchedule != null ? currentSchedule.getStartAfterType() : Duration.DAY;
+        createDurationSpinner(R.id.manage_schedule_startAfter_type, startAfterType);
         // Frequency
         int frequency = currentSchedule != null ? currentSchedule.getFrequency() : 1;
         createDurationNumberPicker(R.id.manage_schedule_frequency, frequency);
         Duration frequencyType = currentSchedule != null ? currentSchedule.getFrequencyType() : Duration.DAY;
         createDurationSpinner(R.id.manage_schedule_frequency_type, frequencyType);
+        // Duration
+        int duration = currentSchedule != null ? currentSchedule.getDuration() : 1;
+        createDurationNumberPicker(R.id.manage_schedule_duration, duration);
+        Duration durationType = currentSchedule != null ? currentSchedule.getDurationType() : Duration.DAY;
+        createDurationSpinner(R.id.manage_schedule_duration_type, durationType);
     }
 
     private void readManageScheduleForm() {
-        currentSchedule = new MobileSchedule();
+        currentSchedule = new Schedule();
         // Description
         EditText description = (EditText) findViewById(R.id.manage_schedule_description);
         currentSchedule.setDescription(description.getText().toString());
@@ -123,22 +136,27 @@ public class ManageScheduleActivity extends Activity {
         int minute = time.getCurrentMinute();
         DateTime dateTime = new DateTime(year, month, day, hour, minute);
         currentSchedule.setStartDate(dateTime);
-        // Duration
-        NumberPicker duration = (NumberPicker) findViewById(R.id.manage_schedule_duration);
-        currentSchedule.setDuration(duration.getValue());
-        Spinner durationType = (Spinner) findViewById(R.id.manage_schedule_duration_type);
-        currentSchedule.setDurationType(Duration.valueOf(durationType.getSelectedItem().toString()));
+        // StartAfter
+        NumberPicker startAfter = (NumberPicker) findViewById(R.id.manage_schedule_startAfter);
+        currentSchedule.setStartAfter(startAfter.getValue());
+        Spinner startAfterType = (Spinner) findViewById(R.id.manage_schedule_startAfter_type);
+        currentSchedule.setStartAfterType(Duration.valueOf(startAfterType.getSelectedItem().toString()));
         // Frequency
         NumberPicker frequency = (NumberPicker) findViewById(R.id.manage_schedule_frequency);
         currentSchedule.setFrequency(frequency.getValue());
         Spinner frequencyType = (Spinner) findViewById(R.id.manage_schedule_frequency_type);
         currentSchedule.setFrequencyType(Duration.valueOf(frequencyType.getSelectedItem().toString()));
+        // Duration
+        NumberPicker duration = (NumberPicker) findViewById(R.id.manage_schedule_duration);
+        currentSchedule.setDuration(duration.getValue());
+        Spinner durationType = (Spinner) findViewById(R.id.manage_schedule_duration_type);
+        currentSchedule.setDurationType(Duration.valueOf(durationType.getSelectedItem().toString()));
     }
 
     private void createDurationNumberPicker(int id, int value) {
         NumberPicker duration = (NumberPicker) findViewById(id);
         duration.setMinValue(1);
-        duration.setMaxValue(60);
+        duration.setMaxValue(30);
         duration.setValue(value);
     }
 
@@ -162,12 +180,40 @@ public class ManageScheduleActivity extends Activity {
     }
 
     private void assembleResponseAndFinish() {
-        Bundle resultData = new Bundle();
-        resultData.putSerializable(RESULT_EXTRA, currentSchedule);
         Intent intent = new Intent();
-        intent.putExtras(resultData);
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    private class GetSchedule extends AsyncTask<Long, String, Schedule> {
+
+        private final String PATH_SCHEDULE = "/mobile/schedule/get/";
+
+        /**
+         * Performs the action in background thread.
+         *
+         * @param params parameters of the task
+         * @return result
+         */
+        @Override
+        protected Schedule doInBackground(Long... params) {
+            HttpClient client = MainActivity.getAuthenticatedHttpClient();
+            return client.get(PATH_SCHEDULE + params[0], Schedule.class);
+        }
+
+        /**
+         * Runs the UI thread after doInBackground() method is executed.
+         *
+         * @param result result from doInBackground() method
+         */
+        @Override
+        protected void onPostExecute(Schedule result) {
+            currentSchedule = result;
+            if (progress != null) {
+                progress.dismiss();
+            }
+            initialiseManageScheduleForm();
+        }
     }
 
     private class ManageSchedule extends AsyncTask<String, String, Result> {

@@ -19,20 +19,20 @@ import javax.ws.rs.core.MediaType;
 
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 import bg.unisofia.fmi.valentinalatinova.core.json.Schedule;
-import bg.unisofia.fmi.valentinalatinova.core.json.ScheduleList;
+import bg.unisofia.fmi.valentinalatinova.core.json.ScheduleInfo;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
 import bg.unisofia.fmi.valentinalatinova.rest.data.WebScheduleDO;
 import bg.unisofia.fmi.valentinalatinova.rest.helpers.SchedulesConversion;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.DataBaseCommander;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.WebScheduleDAO;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.SchedulesDAO;
 
 @Path("/web/schedule")
 public class WebScheduleService {
-    private WebScheduleDAO webScheduleDao;
+    private SchedulesDAO schedulesDao;
     private SchedulesConversion convert;
 
     public WebScheduleService(DataBaseCommander dataBaseCommander) {
-        this.webScheduleDao = new WebScheduleDAO(dataBaseCommander);
+        this.schedulesDao = new SchedulesDAO(dataBaseCommander);
         convert = new SchedulesConversion();
     }
 
@@ -40,9 +40,9 @@ public class WebScheduleService {
     @Timed
     @Path("/all/diagnose/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ScheduleList> getWebSchedules(@Auth User user, @PathParam("id") int diagnoseId,
+    public List<ScheduleInfo> getWebSchedules(@Auth User user, @PathParam("id") int diagnoseId,
             @QueryParam("start") String start, @QueryParam("end") String end) {
-        List<WebScheduleDO> schedulesFromDB = webScheduleDao.getByDiagnoseId(diagnoseId, user.getId());
+        List<WebScheduleDO> schedulesFromDB = schedulesDao.findByDiagnoseId(diagnoseId, user.getId());
         return convert.convertDOtoJsonList(schedulesFromDB, start, end);
     }
 
@@ -50,9 +50,9 @@ public class WebScheduleService {
     @Timed
     @Path("/all/patient/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ScheduleList> getWebSchedulesForPatiens(@Auth User user, @PathParam("id") int patientId,
+    public List<ScheduleInfo> getWebSchedulesForPatiens(@Auth User user, @PathParam("id") int patientId,
             @QueryParam("start") String start, @QueryParam("end") String end) {
-        List<WebScheduleDO> schedulesFromDB = webScheduleDao.getByPatientId(patientId, user.getId());
+        List<WebScheduleDO> schedulesFromDB = schedulesDao.findByPatientId(patientId, user.getId());
         return convert.convertDOtoJsonList(schedulesFromDB, start, end);
     }
 
@@ -61,7 +61,7 @@ public class WebScheduleService {
     @Path("/get/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Schedule get(@Auth User user, @PathParam("id") long id) {
-        return webScheduleDao.getById(id, user.getId());
+        return schedulesDao.getById(id, user);
     }
 
     @POST
@@ -70,7 +70,7 @@ public class WebScheduleService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes({MediaType.APPLICATION_JSON})
     public Result saveWebScheduleFromDefault(@Auth User user, Map<String, String> values) {
-        return webScheduleDao.addScheduleToPatientFromDefaultDiagnose(values.get("startDate"), values.get("patientId"));
+        return schedulesDao.addScheduleToPatientFromDefaultDiagnose(values.get("startDate"), values.get("patientId"));
     }
 
     @POST
@@ -79,7 +79,7 @@ public class WebScheduleService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes({MediaType.APPLICATION_JSON})
     public Result saveWebSchedule(@Auth User user, Schedule schedule) {
-        return webScheduleDao.save(convert.convertJsonToDO(schedule), user.getId());
+        return schedulesDao.save(convert.convertJsonToDO(schedule), user.getId());
     }
 
     @POST
@@ -88,7 +88,7 @@ public class WebScheduleService {
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes({MediaType.APPLICATION_JSON})
     public Result updateWebSchedule(@Auth User user, Schedule schedule) {
-        return webScheduleDao.update(convert.convertJsonToDO(schedule), user.getId());
+        return schedulesDao.update(convert.convertJsonToDO(schedule), user);
     }
 
     @DELETE
@@ -96,6 +96,6 @@ public class WebScheduleService {
     @Path("/delete/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Result deleteWebSchedule(@Auth User user, @PathParam("id") long id) {
-        return webScheduleDao.delete(id, user.getId());
+        return schedulesDao.delete(id, user);
     }
 }

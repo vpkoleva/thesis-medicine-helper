@@ -1,5 +1,15 @@
 package bg.unisofia.fmi.valentinalatinova.app.tabs;
 
+import com.roomorama.caldroid.CaldroidFragment;
+import com.roomorama.caldroid.CaldroidListener;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,17 +31,8 @@ import bg.unisofia.fmi.valentinalatinova.app.R;
 import bg.unisofia.fmi.valentinalatinova.app.utils.DateUtils;
 import bg.unisofia.fmi.valentinalatinova.app.utils.HttpClient;
 import bg.unisofia.fmi.valentinalatinova.app.utils.Logger;
-import bg.unisofia.fmi.valentinalatinova.core.json.MobileSchedule;
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
-import com.roomorama.caldroid.CaldroidFragment;
-import com.roomorama.caldroid.CaldroidListener;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import bg.unisofia.fmi.valentinalatinova.core.json.ScheduleInfo;
 
 public class SchedulesFragment extends CustomFragment {
 
@@ -41,8 +42,8 @@ public class SchedulesFragment extends CustomFragment {
     private final int RESULT_ADD = 121;
     private final int RESULT_EDIT = 122;
     private CaldroidFragment schedulesCalendar;
-    private MobileSchedule currentSchedule;
-    private List<MobileSchedule> allSchedules;
+    private ScheduleInfo currentSchedule;
+    private List<ScheduleInfo> allSchedules;
     private List<Date> datesWithSchedules = new ArrayList<>();
 
     /**
@@ -83,9 +84,9 @@ public class SchedulesFragment extends CustomFragment {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, view, menuInfo);
-        MobileSchedule schedule = (MobileSchedule) view.getTag();
+        ScheduleInfo schedule = (ScheduleInfo) view.getTag();
         currentSchedule = schedule;
-        menu.setHeaderTitle(schedule.getDescription());
+        menu.setHeaderTitle(schedule.getTitle());
         menu.add(MENU_GROUP_ID, MENU_EDIT_ID, MENU_EDIT_ID, R.string.menu_edit);
         menu.add(MENU_GROUP_ID, MENU_DELETE_ID, MENU_DELETE_ID, R.string.menu_delete);
     }
@@ -102,11 +103,11 @@ public class SchedulesFragment extends CustomFragment {
             switch (item.getItemId()) {
                 case MENU_EDIT_ID:
                     Intent intent = new Intent(rootView.getContext(), ManageScheduleActivity.class);
-                    intent.putExtra(ManageScheduleActivity.RESULT_EXTRA, currentSchedule);
+                    intent.putExtra(ManageScheduleActivity.SCHEDULE_ID, currentSchedule.getId());
                     startActivityForResult(intent, RESULT_EDIT);
                     break;
                 case MENU_DELETE_ID:
-                    generateDeleteConfirmationDialog(currentSchedule.getDescription(),
+                    generateDeleteConfirmationDialog(currentSchedule.getTitle(),
                             new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -131,14 +132,7 @@ public class SchedulesFragment extends CustomFragment {
         super.onActivityResult(requestCode, resultCode, data);
         // In case of Add or Edit Schedule request and OK result
         if ((requestCode == RESULT_ADD || requestCode == RESULT_EDIT) && resultCode == Activity.RESULT_OK) {
-            Bundle result = data.getExtras();
-            currentSchedule = (MobileSchedule) result.getSerializable(ManageScheduleActivity.RESULT_EXTRA);
-            // Remove before add in case of Edit Schedule
-            if (requestCode == RESULT_EDIT) {
-                allSchedules.remove(currentSchedule);
-            }
-            allSchedules.add(currentSchedule);
-            refreshSchedulesFragment(currentSchedule.getStartDate().toDate());
+            invokeGetSchedules();
         }
     }
 
@@ -198,8 +192,8 @@ public class SchedulesFragment extends CustomFragment {
             // Initialise empty array
             datesWithSchedules = new ArrayList<>();
             // Iterate current dates
-            for (MobileSchedule schedule : allSchedules) {
-                Date date = schedule.getStartDate().toDate();
+            for (ScheduleInfo schedule : allSchedules) {
+                Date date = schedule.getStart().toDate();
                 // Save date with schedule
                 datesWithSchedules.add(date);
                 schedulesCalendar.setBackgroundResourceForDate(R.color.gray, date);
@@ -242,17 +236,17 @@ public class SchedulesFragment extends CustomFragment {
         }
     };
 
-    private List<MobileSchedule> getSchedulesByDate(Date date) {
-        List<MobileSchedule> result = new ArrayList<>();
-        for (MobileSchedule schedule : allSchedules) {
-            if (DateUtils.isSameDay(date, schedule.getStartDate().toDate())) {
+    private List<ScheduleInfo> getSchedulesByDate(Date date) {
+        List<ScheduleInfo> result = new ArrayList<>();
+        for (ScheduleInfo schedule : allSchedules) {
+            if (DateUtils.isSameDay(date, schedule.getStart().toDate())) {
                 result.add(schedule);
             }
         }
-        Collections.sort(result, new Comparator<MobileSchedule>() {
+        Collections.sort(result, new Comparator<ScheduleInfo>() {
             @Override
-            public int compare(MobileSchedule lhs, MobileSchedule rhs) {
-                return ((Long) lhs.getStartDate().getMillis()).compareTo(rhs.getStartDate().getMillis());
+            public int compare(ScheduleInfo lhs, ScheduleInfo rhs) {
+                return ((Long) lhs.getStart().getMillis()).compareTo(rhs.getStart().getMillis());
             }
         });
         return result;
@@ -265,26 +259,26 @@ public class SchedulesFragment extends CustomFragment {
         schedulesTable.removeAllViews();
     }
 
-    private void drawSchedulesTable(List<MobileSchedule> schedules) {
+    private void drawSchedulesTable(List<ScheduleInfo> schedules) {
         if (schedules != null && schedules.size() > 0) {
             // Generate header
             TextView label = (TextView) rootView.findViewById(R.id.schedules_view_for);
             label.setVisibility(TextView.VISIBLE);
             String format = getString(R.string.schedules_view_for);
-            String text = String.format(format, DateUtils.formatDay(schedules.get(0).getStartDate().toDate()));
+            String text = String.format(format, DateUtils.formatDay(schedules.get(0).getStart().toDate()));
             label.setText(text);
             // Generate records
             TableLayout schedulesTable = (TableLayout) rootView.findViewById(R.id.schedules_list);
-            for (MobileSchedule result : schedules) {
+            for (ScheduleInfo result : schedules) {
                 TableRow row = generateTableRow(result);
                 // Add hour
-                TextView date = generateTextView(DateUtils.formatTime(result.getStartDate()));
+                TextView date = generateTextView(DateUtils.formatTime(result.getStart()));
                 row.addView(date);
                 // Add separator
                 TextView separator = generateTableSeparator();
                 row.addView(separator);
                 // Add description
-                TextView description = generateTextView(result.getDescription());
+                TextView description = generateTextView(result.getTitle());
                 row.addView(description);
                 // Add row
                 schedulesTable.addView(row);
@@ -292,7 +286,7 @@ public class SchedulesFragment extends CustomFragment {
         }
     }
 
-    private class GetSchedules extends AsyncTask<String, String, List<MobileSchedule>> {
+    private class GetSchedules extends AsyncTask<String, String, List<ScheduleInfo>> {
 
         private final String PATH_SCHEDULES = "/mobile/schedule/all";
 
@@ -303,10 +297,10 @@ public class SchedulesFragment extends CustomFragment {
          * @return result
          */
         @Override
-        protected List<MobileSchedule> doInBackground(String... params) {
+        protected List<ScheduleInfo> doInBackground(String... params) {
             HttpClient client = MainActivity.getAuthenticatedHttpClient();
-            MobileSchedule[] schedulesArray = client.get(PATH_SCHEDULES, MobileSchedule[].class);
-            List<MobileSchedule> result = new ArrayList<>();
+            ScheduleInfo[] schedulesArray = client.get(PATH_SCHEDULES, ScheduleInfo[].class);
+            List<ScheduleInfo> result = new ArrayList<>();
             if (schedulesArray != null) {
                 Collections.addAll(result, schedulesArray);
             }
@@ -319,7 +313,7 @@ public class SchedulesFragment extends CustomFragment {
          * @param result result from doInBackground() method
          */
         @Override
-        protected void onPostExecute(List<MobileSchedule> result) {
+        protected void onPostExecute(List<ScheduleInfo> result) {
             allSchedules = result;
             refreshSchedulesFragment(Calendar.getInstance().getTime());
         }
@@ -339,8 +333,7 @@ public class SchedulesFragment extends CustomFragment {
         protected void onPostExecute(Result result) {
             if (result != null) {
                 if (result.isSuccess()) {
-                    allSchedules.remove(currentSchedule);
-                    refreshSchedulesFragment(currentSchedule.getStartDate().toDate());
+                    invokeGetSchedules();
                 } else {
                     MainActivity.createErrorDialog(rootView.getContext(), result.getError());
                 }

@@ -26,6 +26,7 @@
     <string name="manage_schedule_edit_window">Edit schedule</string>
     <string name="manage_schedule_description_label">Schedule description: </string>
     <string name="manage_schedule_datetime_label">Start from: </string>
+    <string name="manage_schedule_startAfter_label">Start after: </string>
     <string name="manage_schedule_duration_label">How long: </string>
     <string name="manage_schedule_frequency_label">At what intervals: </string>
     <string name="manage_results_window">Add results type</string>
