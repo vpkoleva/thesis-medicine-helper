@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Result extends BaseJson {
     @JsonProperty
-    private boolean success;
+    private Boolean success;
     @JsonProperty
     private String error;
 

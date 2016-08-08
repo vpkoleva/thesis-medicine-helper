@@ -1,93 +1,79 @@
 package bg.unisofia.fmi.valentinalatinova.rest.helpers;
 
-import bg.unisofia.fmi.valentinalatinova.core.json.WebScheduleBO;
-import bg.unisofia.fmi.valentinalatinova.core.json.WebScheduleListBO;
-import bg.unisofia.fmi.valentinalatinova.core.utils.Duration;
-import bg.unisofia.fmi.valentinalatinova.rest.data.WebScheduleDO;
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joda.time.DateTime;
+
+import bg.unisofia.fmi.valentinalatinova.core.json.Schedule;
+import bg.unisofia.fmi.valentinalatinova.core.json.ScheduleList;
+import bg.unisofia.fmi.valentinalatinova.core.utils.Duration;
+import bg.unisofia.fmi.valentinalatinova.rest.data.WebScheduleDO;
+
 public class SchedulesConversion {
 
-    public List<WebScheduleDO> convertBOtoDO(WebScheduleBO... listWithSchedules) {
-        List<WebScheduleDO> result = new ArrayList<>();
+    public WebScheduleDO convertJsonToDO(Schedule schedule) {
+        final WebScheduleDO result = new WebScheduleDO();
 
-        for (WebScheduleBO schedule : listWithSchedules) {
-            WebScheduleDO dataObj = new WebScheduleDO();
+        result.setId(schedule.getId());
+        result.setSchedule(schedule);
+        DateTime startDate = schedule.getStartDate() == null ? new DateTime(0) : schedule.getStartDate();
+        DateTime start = calculateDateTime(startDate, schedule.getStartAfter(), schedule.getStartAfterType());
+        DateTime end = calculateDateTime(start, schedule.getDuration(), schedule.getDurationType());
+        result.setEndDate(new Timestamp(end.getMillis()));
+        result.setStartDate(new Timestamp(startDate.getMillis()));
 
-            DateTime start;
-            if (schedule.getStartDate() == null) {
-                start = new DateTime(0);
-            } else {
-                start = schedule.getStartDate();
-                dataObj.setPatientId(schedule.getPatientId());
-            }
-
-            dataObj.setId(schedule.getId());
-            dataObj.setDescription(schedule.getDescription());
-            dataObj.setDiagnoseId(schedule.getDiagnoseId());
-            dataObj.setDoctorId(schedule.getDoctorId());
-            start = schedule.getStartAfterType().calculateDateTime(start, schedule.getStartAfter());
-            DateTime end = schedule.getDurationType().calculateDateTime(start, schedule.getDuration());
-            dataObj.setStartDate(new Timestamp(start.getMillis()));
-            dataObj.setEndDate(new Timestamp(end.getMillis()));
-            dataObj.setFrequencyValue(schedule.getFrequency());
-            dataObj.setFrequencyType(Duration.fromValue(schedule.getFrequencyType().getValue()));
-            dataObj.setEndAfterType(schedule.getDurationType());
-            dataObj.setEndAfterValue(schedule.getDuration());
-            dataObj.setStartAfterType(schedule.getStartAfterType());
-            dataObj.setStartAfterValue(schedule.getStartAfter());
-            result.add(dataObj);
-        }
         return result;
     }
 
-    public List<WebScheduleListBO> convertDOtoBOList(List<WebScheduleDO> listWithSchedules, String startDateFromReq, String endDateFromReq) {
-        List<WebScheduleListBO> result = new ArrayList<>();
+    public List<ScheduleList> convertDOtoJsonList(List<WebScheduleDO> webSchedules, String startDate, String endDate) {
+        final List<ScheduleList> result = new ArrayList<>();
 
-        for (WebScheduleDO schedule : listWithSchedules) {
-
-            DateTime start = setStartDate(schedule, startDateFromReq);
-            while (start.isBefore(new DateTime(endDateFromReq)) && start.isBefore(schedule.getEndDate().getTime())) {
-                WebScheduleListBO dataObj = new WebScheduleListBO();
+        for (WebScheduleDO webSchedule : webSchedules) {
+            final Schedule schedule = webSchedule.getSchedule();
+            final DateTime end = new DateTime(endDate);
+            DateTime start = setStartDate(schedule, startDate);
+            while (!start.isAfter(end) && start.isBefore(webSchedule.getEndDate().getTime())) {
+                ScheduleList dataObj = new ScheduleList();
                 dataObj.setId(schedule.getId());
-                dataObj.setDescription(schedule.getDescription());
-                dataObj.setStartDate(start);
-                dataObj.setEndDate(start.plusHours(1));
+                dataObj.setTitle(schedule.getDescription());
+                dataObj.setStart(start);
+                dataObj.setEnd(start.plusHours(1));
                 result.add(dataObj);
-                start = schedule.getFrequencyType().calculateDateTime(start, schedule.getFrequencyValue());
+                start = getNextStartDate(start, schedule);
             }
         }
-        return result;
-    }
-
-    public WebScheduleBO convertDOtoBO(WebScheduleDO scheduleFromDB) {
-
-        WebScheduleBO result = new WebScheduleBO();
-        result.setId(scheduleFromDB.getId());
-        result.setDescription(scheduleFromDB.getDescription());
-        result.setFrequencyType(scheduleFromDB.getFrequencyType());
-        result.setFrequency(scheduleFromDB.getFrequencyValue());
-
 
         return result;
     }
 
-    public DateTime setStartDate(WebScheduleDO schedule, String startDateFromReq) {
-        DateTime start = new DateTime(schedule.getStartDate().getTime());
-        DateTime startFromReq = new DateTime(startDateFromReq);
-        int daysFromStartToStartReq = Days.daysBetween(start, startFromReq).getDays();
-        double daysFromDur = schedule.getFrequencyType().durationToDays(schedule.getFrequencyValue());
-        Double diff = daysFromStartToStartReq / daysFromDur;
-        DateTime startNew = schedule.getFrequencyType().calculateDateTime(start, schedule.getFrequencyValue() * diff.intValue());
-        startNew = startNew.minusMonths(1);
-        if (start.isBefore(startNew)) {
-            start = startNew;
+    private DateTime getNextStartDate(DateTime start, Schedule schedule) {
+        return calculateDateTime(start, schedule.getFrequency(), schedule.getFrequencyType());
+    }
+
+    private DateTime setStartDate(Schedule schedule, String startDateFromReq) {
+        DateTime start = schedule.getStartDate();
+        start = calculateDateTime(start, schedule.getStartAfter(), schedule.getStartAfterType());
+        DateTime expectedStart = new DateTime(startDateFromReq);
+        while (start.isBefore(expectedStart)) {
+            start = getNextStartDate(start, schedule);
         }
         return start;
+    }
+
+    private DateTime calculateDateTime(DateTime dateTime, int value, Duration duration) {
+        switch (duration) {
+            case HOUR:
+                return dateTime.plusHours(value);
+            case DAY:
+                return dateTime.plusDays(value);
+            case MONTH:
+                return dateTime.plusMonths(value);
+            case YEAR:
+                return dateTime.plusYears(value);
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 }

@@ -34,19 +34,12 @@ public class MedicineConfig extends Configuration {
         @JsonProperty
         private int accessTokenExpireTimeMinutes;
 
-        @JsonProperty
-        private boolean disabled;
-
         public ImmutableList<String> getAllowedGrantTypes() {
             return allowedGrantTypes;
         }
 
         public int getAccessTokenExpireTimeMinutes() {
             return accessTokenExpireTimeMinutes;
-        }
-
-        public boolean isDisabled() {
-            return disabled;
         }
     }
 

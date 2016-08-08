@@ -1,18 +1,18 @@
 package bg.unisofia.fmi.valentinalatinova.rest.persistence.impl;
 
-import bg.unisofia.fmi.valentinalatinova.core.json.MobileResults;
-import bg.unisofia.fmi.valentinalatinova.core.json.MobileResultsValue;
-import bg.unisofia.fmi.valentinalatinova.core.json.Result;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.MobileResultsDao;
-import org.joda.time.DateTime;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class MobileResultsDaoImpl implements MobileResultsDao {
+import org.joda.time.DateTime;
+
+import bg.unisofia.fmi.valentinalatinova.core.json.MobileResults;
+import bg.unisofia.fmi.valentinalatinova.core.json.MobileResultsValue;
+import bg.unisofia.fmi.valentinalatinova.core.json.Result;
+
+public class MobileResultsDaoImpl {
     private static List<MobileResults> results = new ArrayList<>();
-    private static int uniqueIdResult = 1;
-    private static int uniqueIdValue = 1;
+    private static long uniqueIdResult = 1;
+    private static long uniqueIdValue = 1;
 
     static {
         List<MobileResultsValue> values1 = new ArrayList<>();
@@ -31,12 +31,10 @@ public class MobileResultsDaoImpl implements MobileResultsDao {
         results.add(new MobileResults(uniqueIdResult++, "Table3", null, values3, 1));
     }
 
-    @Override
     public List<MobileResults> getResults(long userId) {
         return results;
     }
 
-    @Override
     public Result createResult(MobileResults result) {
         try {
             result.setId(uniqueIdResult++);
@@ -47,7 +45,6 @@ public class MobileResultsDaoImpl implements MobileResultsDao {
         }
     }
 
-    @Override
     public Result deleteResult(long id, long userId) {
         try {
             for (MobileResults result : results) {
@@ -62,7 +59,6 @@ public class MobileResultsDaoImpl implements MobileResultsDao {
         }
     }
 
-    @Override
     public Result save(MobileResultsValue resultsValue) {
         try {
             resultsValue.setId(uniqueIdValue++);
@@ -77,7 +73,6 @@ public class MobileResultsDaoImpl implements MobileResultsDao {
         }
     }
 
-    @Override
     public Result update(MobileResultsValue resultsValue) {
         try {
             for (MobileResults result : results) {
@@ -92,7 +87,6 @@ public class MobileResultsDaoImpl implements MobileResultsDao {
         }
     }
 
-    @Override
     public Result delete(long id, long userId) {
         try {
             for (MobileResults result : results) {

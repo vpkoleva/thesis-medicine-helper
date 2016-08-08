@@ -1,5 +1,3 @@
-var app = angular.module('myApp', []);
-
 $(document).ready(function() {
 	$('#calendar').fullCalendar({
 		eventClick: function(event, element) {
@@ -12,21 +10,15 @@ $(document).ready(function() {
 		editable: true,
 		eventLimit: true, // allow "more" link when too many events
 		events: {
-			url: 'http://localhost:9000/web/schedule/all',
-			headers: {
-				'Authorization': 'Bearer '+sessionStorage.getItem("authToken")
-			},
+			url: baseUrl + urlWebScheduleAllDiagnose + sessionStorage.getItem("diagnoseID"),
+			headers: { 'Authorization': 'Bearer ' + sessionStorage.getItem("authToken") },
 			type: 'GET',
-			data: {
-				diagnoseId: sessionStorage.getItem("diagnoseID")
-			},
-			error: function (response, textStatus, errorThrown) {
-				alert(response.responseText);
-			}
+			error: handleErrorResponse
 		}
 	});
 });
 
+var app = angular.module('myApp', []);
 app.controller('formController', function($scope, $http) {
 	$('#myModal').on('hidden.bs.modal', function(e) {
 		sessionStorage.setItem("isForUpdate", false);
@@ -36,30 +28,20 @@ app.controller('formController', function($scope, $http) {
 		$scope.frequency = null;
 		$scope.duration = null;
 		$scope.$apply();
-		$('#calendar').fullCalendar( 'refetchEvents' );
-	
+		$('#calendar').fullCalendar('refetchEvents');
 	});
 	$('#myModal').on('shown.bs.modal', function(e) {
 		if(sessionStorage.getItem("isForUpdate") == 'true') {
-			var req = {
-				method: 'GET',
-				url: 'http://localhost:9000/web/schedule/get/' + sessionStorage.getItem("eventId"),
-				headers: {
-					'Authorization': 'Bearer '+sessionStorage.getItem("authToken")
-				}
-			}
-			$http(req).success(function(data, status) {
-				$scope.scheduleId = data.id;
-				$scope.action = data.description;
-				$scope.startAfter = data.startAfterValue;
-				$scope.startAfterType = data.startAfterType;
-				$scope.frequency = data.frequencyValue;
-				$scope.frequencyType = data.frequencyType;
-				$scope.duration = data.endAfterValue;
-				$scope.durationType = data.endAfterType;
-			}).error(function(data, status) {
-				alert(data.error);
-			});
+			$http(requestGet(urlWebScheduleGet + sessionStorage.getItem("eventId"))).then(function(response) {
+				$scope.scheduleId = response.data.id;
+				$scope.action = response.data.description;
+				$scope.startAfter = response.data.startAfter;
+				$scope.startAfterType = response.data.startAfterType;
+				$scope.frequency = response.data.frequency;
+				$scope.frequencyType = response.data.frequencyType;
+				$scope.duration = response.data.duration;
+				$scope.durationType = response.data.durationType;
+			}, handleErrorResponse);
 		} else {
 			$scope.startAfterType = "DAY";
 			$scope.frequencyType = "DAY";
@@ -67,61 +49,32 @@ app.controller('formController', function($scope, $http) {
 			$scope.$apply();
 		}
 	});
-	$scope.delete =function()
-	{
-		
-	var req = {
-			method: 'POST',
-			url: 'http://localhost:9000/web/schedule/delete',
-			headers: {
-				'Authorization': 'Bearer '+sessionStorage.getItem("authToken")
-			},
-			data: {
-				id: $scope.scheduleId
-			}
+	$scope.delete = function() {
+		if (confirm("Моля потвърдете изтриването")) {
+			$http(requestDelete(urlWebScheduleDelete + $scope.scheduleId)).then(handleWebScheduleResponse, handleErrorResponse);
 		}
-		$http(req).success(function(data, status) {
-			console.debug(data);
-			if (data.success) {
-				$('#myModal').modal('hide');
-			} else {
-				alert("else");
-				alert(data.error);
-			}
-		}).error(function(data, status) {
-			alert(data.message);
-		});
 	};
 	$scope.submit = function(form) {
-		var isUpdate = sessionStorage.getItem("isForUpdate") == 'true';
-		var req = {
-			method: 'POST',
-			url: isUpdate?'http://localhost:9000/web/schedule/update':'http://localhost:9000/web/schedule/save',
-			headers: {
-				'Authorization': 'Bearer '+sessionStorage.getItem("authToken")
-			},
-			data: {
-				id: $scope.scheduleId,
-				description: $scope.action,
-				startAfter: $scope.startAfter,
-				startAfterType: $scope.startAfterType,
-				frequency: $scope.frequency,
-				frequencyType: $scope.frequencyType,
-				duration: $scope.duration,
-				durationType: $scope.durationType,
-				diagnoseId: sessionStorage.getItem("diagnoseID")
-			}
+		var url = sessionStorage.getItem("isForUpdate") == 'true' ? urlWebScheduleUpdate : urlWebScheduleSave;
+		var data = {
+			id: $scope.scheduleId,
+			description: $scope.action,
+			startAfter: $scope.startAfter,
+			startAfterType: $scope.startAfterType,
+			frequency: $scope.frequency,
+			frequencyType: $scope.frequencyType,
+			duration: $scope.duration,
+			durationType: $scope.durationType,
+			diagnoseId: sessionStorage.getItem("diagnoseID")
 		}
-		$http(req).success(function(data, status) {
-			if (data.success) {
-				$('#myModal').modal('hide');
-			} else {
-				alert(data.error);
-			}
-		}).error(function(data, status) {
-			alert(data.message);
-		});
+		$http(requestPost(url, data)).then(handleWebScheduleResponse, handleErrorResponse);
 	}
 });
 
-    
+var handleWebScheduleResponse = function(response) {
+	if (response.data.success) {
+		$('#myModal').modal('hide');
+	} else {
+		alert(response.data.error);
+	}
+}

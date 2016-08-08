@@ -1,38 +1,28 @@
-package bg.unisofia.fmi.valentinalatinova.rest.data.bo;
+package bg.unisofia.fmi.valentinalatinova.rest.data.json;
 
-import bg.unisofia.fmi.valentinalatinova.rest.data.DataBaseObject;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class DiagnoseBO extends DataBaseObject {
-    @JsonProperty
-    private long id;
+import bg.unisofia.fmi.valentinalatinova.rest.data.DataBaseObject;
+
+public class Diagnose extends DataBaseObject {
     @JsonProperty
     private String diagnoseName;
 
-    public DiagnoseBO() {
-    }
-
-    public DiagnoseBO(long id, String diagnoseName) {
-        this.id = id;
-        this.diagnoseName = diagnoseName;
-
+    public Diagnose() {
+        // Needed by Jackson deserialization
     }
 
     @Override
     public void load(ResultSet resultSet) {
         try {
-            id = resultSet.getInt("ID");
-            diagnoseName = resultSet.getString("Diagnose");
+            id = resultSet.getLong("ID");
+            diagnoseName = resultSet.getString("diagnose");
         } catch (SQLException e) {
             getLogger().error(e.getMessage());
         }
-    }
-
-    public long getId() {
-        return id;
     }
 
     public String getDiagnoseName() {
@@ -42,5 +32,4 @@ public class DiagnoseBO extends DataBaseObject {
     public void setDiagnoseName(String diagnoseName) {
         this.diagnoseName = diagnoseName;
     }
-
 }

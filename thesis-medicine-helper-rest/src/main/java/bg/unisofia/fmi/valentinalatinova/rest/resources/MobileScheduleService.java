@@ -3,7 +3,6 @@ package bg.unisofia.fmi.valentinalatinova.rest.resources;
 import bg.unisofia.fmi.valentinalatinova.core.json.MobileSchedule;
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.MobileScheduleDao;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.MobileScheduleDaoImpl;
 import com.codahale.metrics.annotation.Timed;
 import io.dropwizard.auth.Auth;
@@ -19,7 +18,7 @@ import java.util.List;
 
 @Path("/mobile/schedule")
 public class MobileScheduleService {
-    private MobileScheduleDao mobileScheduleDao;
+    private MobileScheduleDaoImpl mobileScheduleDao;
 
     public MobileScheduleService() {
         this.mobileScheduleDao = new MobileScheduleDaoImpl();

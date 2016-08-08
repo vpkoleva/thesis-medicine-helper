@@ -1,16 +1,25 @@
 package bg.unisofia.fmi.valentinalatinova.rest.persistence;
 
-import bg.unisofia.fmi.valentinalatinova.rest.data.User;
 import com.google.common.base.Optional;
 
-public interface UserDao {
+import java.util.List;
 
-    /**
-     * Finds user by username and password.
-     *
-     * @param username
-     * @param password
-     * @return User if found or absent if not
-     */
-    Optional<User> findByUsernameAndPassword(final String username, final String password);
+import bg.unisofia.fmi.valentinalatinova.rest.data.User;
+
+public class UserDAO {
+
+    private DataBaseCommander dataBaseCommander;
+
+    public UserDAO(DataBaseCommander dataBaseCommander) {
+        this.dataBaseCommander = dataBaseCommander;
+    }
+
+    public Optional<User> findByUsernameAndPassword(final String username, final String password) {
+        String sql = "SELECT * FROM `users` WHERE `userName`=? AND `passwordHash`=?";
+        List<User> users = dataBaseCommander.select(User.class, sql, username, password);
+        if (users.size() == 1) {
+            return Optional.of(users.get(0));
+        }
+        return Optional.absent();
+    }
 }

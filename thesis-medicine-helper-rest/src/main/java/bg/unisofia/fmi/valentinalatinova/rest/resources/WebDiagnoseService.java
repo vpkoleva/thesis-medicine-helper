@@ -1,19 +1,24 @@
 package bg.unisofia.fmi.valentinalatinova.rest.resources;
 
-import bg.unisofia.fmi.valentinalatinova.core.json.Result;
-import bg.unisofia.fmi.valentinalatinova.rest.data.User;
-import bg.unisofia.fmi.valentinalatinova.rest.data.bo.DiagnoseBO;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.DataBaseCommander;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.dao.DiagnoseDAO;
 import com.codahale.metrics.annotation.Timed;
+
 import io.dropwizard.auth.Auth;
 
+import java.util.List;
+
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import java.util.List;
+
+import bg.unisofia.fmi.valentinalatinova.core.json.Result;
+import bg.unisofia.fmi.valentinalatinova.rest.data.User;
+import bg.unisofia.fmi.valentinalatinova.rest.data.json.Diagnose;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.DataBaseCommander;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.DiagnoseDAO;
 
 @Path("/web/diagnose")
 public class WebDiagnoseService {
@@ -27,24 +32,23 @@ public class WebDiagnoseService {
     @Timed
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<DiagnoseBO> getPatientsByDoctorId(@Auth User user) {
-        try {
-            return diagnoseDao.getDiagnosesByUserId(user.getId());
-        } catch (Exception e) {
-            return null;
-        }
-
+    public List<Diagnose> getDiagnoses(@Auth User user) {
+        return diagnoseDao.get(user.getId());
     }
 
     @POST
     @Timed
-    @Path("/add")
+    @Path("/save")
     @Produces(MediaType.APPLICATION_JSON)
-    public Result addNewDiagnose(@Auth User user, DiagnoseBO diagnose) {
-        try {
-            return diagnoseDao.addDiagnosesByUserId(diagnose.getDiagnoseName(), user.getId());
-        } catch (Exception e) {
-            return null;
-        }
+    public Result saveDiagnose(@Auth User user, Diagnose diagnose) {
+        return diagnoseDao.save(diagnose, user.getId());
+    }
+
+    @DELETE
+    @Timed
+    @Path("/delete/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Result deleteDiagnose(@Auth User user, @PathParam("id") long id) {
+        return diagnoseDao.delete(id, user.getId());
     }
 }

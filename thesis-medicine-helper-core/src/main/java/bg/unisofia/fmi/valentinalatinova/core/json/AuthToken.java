@@ -1,13 +1,15 @@
 package bg.unisofia.fmi.valentinalatinova.core.json;
 
-import bg.unisofia.fmi.valentinalatinova.core.utils.JsonDateTimeUtils;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.joda.time.DateTime;
 
 import java.io.Serializable;
 import java.util.UUID;
+
+import org.joda.time.DateTime;
+
+import bg.unisofia.fmi.valentinalatinova.core.utils.JsonDateTimeUtils;
 
 public class AuthToken implements Serializable {
     @JsonProperty
@@ -20,16 +22,11 @@ public class AuthToken implements Serializable {
     @JsonSerialize(using = JsonDateTimeUtils.DateTimeSerializer.class)
     @JsonDeserialize(using = JsonDateTimeUtils.DateTimeDeserializer.class)
     private DateTime expiryDate;
+    @JsonProperty
+    private Boolean isDoctor;
 
     public AuthToken() {
         // Needed by Jackson deserialization
-    }
-
-    public AuthToken(UUID authToken, String firstName, String lastName, DateTime expiryDate) {
-        this.authToken = authToken;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.expiryDate = expiryDate;
     }
 
     public String getFirstName() {
@@ -62,5 +59,13 @@ public class AuthToken implements Serializable {
 
     public void setExpiryDate(DateTime expiryDate) {
         this.expiryDate = expiryDate;
+    }
+
+    public boolean getIsDoctor() {
+        return isDoctor;
+    }
+
+    public void setIsDoctor(Boolean isDoctor) {
+        this.isDoctor = isDoctor;
     }
 }

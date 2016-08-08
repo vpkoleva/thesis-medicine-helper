@@ -1,7 +1,5 @@
 package bg.unisofia.fmi.valentinalatinova.core.utils;
 
-import org.joda.time.DateTime;
-
 public enum Duration {
     HOUR(1),
     DAY(2),
@@ -14,21 +12,6 @@ public enum Duration {
         this.value = value;
     }
 
-    public DateTime calculateDateTime(DateTime dateTime, int value) {
-        switch (this) {
-            case HOUR:
-                return dateTime.plusHours(value);
-            case DAY:
-                return dateTime.plusDays(value);
-            case MONTH:
-                return dateTime.plusMonths(value);
-            case YEAR:
-                return dateTime.plusYears(value);
-            default:
-                return null;
-        }
-    }
-
     public int getValue() {
         return value;
     }
@@ -39,21 +22,6 @@ public enum Duration {
                 return item;
             }
         }
-        return null;
-    }
-
-    public double durationToDays(int durValue) {
-        switch (this) {
-            case HOUR:
-                return 24 / durValue;
-            case DAY:
-                return durValue;
-            case MONTH:
-                return 30 * durValue;
-            case YEAR:
-                return 365 * durValue;
-            default:
-                return 0;
-        }
+        throw new IllegalArgumentException();
     }
 }

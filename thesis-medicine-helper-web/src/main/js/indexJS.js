@@ -1,165 +1,76 @@
-
 var app = angular.module('myApp', ['ngAnimate']);
 app.controller('addDiagnoseController', function($scope, $http) {
-	
-   $scope.submitDiagnose = function(form) {
-		var req = {
-		 method: 'POST',
-		 url: 'http://localhost:9000/web/diagnose/add',
-		 headers: {
-		    'Authorization': 'Bearer '+sessionStorage.getItem("authToken")
-		 },
-		 data: { diagnoseName: $scope.diagnoseName}
-		}
-		
-		console.debug($scope.diagnoseName);
-		
-		$http(req).then(function(response){
-			 $scope.greeting = response.data;
-			 if (response.status == '200') {
-				$scope.diagnoseName = null;
-				 console.debug(response.data);
-			sessionStorage.setItem("diagnoseID", response.data);
-			 }
-			 
-			 console.debug(response.status);
-			 window.location="addDiagnose.html"
-		});
-	}	
+	$scope.submitDiagnose = function(form) {
+		var data = { diagnoseName: $scope.diagnoseName }
+		$http(requestPost(urlWebDiagnoseSave, data)).then(function(response){
+			if (response.data.success) {
+				sessionStorage.setItem("diagnoseID", response.data.id)
+				window.location="addDiagnose.html"
+			} else {
+				alert(response.data.error)
+				location.reload()
+			}
+		}, handleErrorResponse);
+	}
+	clearFormOnClose("#addDiagnose")
 });
 
 app.controller('addPatientController', function($scope, $http) {
-
-var req = {
-		 method: 'GET',
-		 url: 'http://localhost:9000/web/diagnose/all',
-		 headers: {
-		   'Authorization': 'Bearer '+sessionStorage.getItem("authToken")
-		 }
-		}
-
-		
-		$http(req).then(function(response){
-			 if (response.status == '200') {
-				$scope.myData = response.data;
-				console.debug(response.data);
-			 }
-		},function(response){
-		 console.debug(response);
-	});
-
-
-   $scope.submitPatient = function(form) {
-		var req = {
-		 method: 'POST',
-		 url: 'http://localhost:9000/web/patient/add',
-		 headers: {
-		   'Authorization': 'Bearer '+sessionStorage.getItem("authToken")
-		 },
-		 data: {
-					firstName: $scope.patientFirstName, lastName: $scope.patientLastName, diagnoseId: $scope.selectDiagnose.id
-				}
-		}
-		console.debug($scope.selectDiagnose.id);
-		$http(req).then(function(response){
-			 if (response.status == '200') {
-				console.debug($scope.selectDiagnose);
-				console.debug(response.data);
-				
-				sessionStorage.setItem("patientID", response.data.id);
-				sessionStorage.setItem("diagnoseID", $scope.selectDiagnose.id);
+	$http(requestGet(urlWebDiagnoseAll)).then(function(response) {
+		$scope.myData = response.data;
+	}, handleErrorResponse)
+	$scope.submitPatient = function(form) {
+		var data = { firstName: $scope.patientFirstName, lastName: $scope.patientLastName, diagnoseId: $scope.selectDiagnose.id }
+		$http(requestPost(urlWebPatientSave, data)).then(function(response) {
+			if (response.data.success) {
+				sessionStorage.setItem("patientID", response.data.id)
+				sessionStorage.setItem("diagnoseID", $scope.selectDiagnose.id)
 				window.location="addPatient.html"
-			 }
-			 if(response.status=='401')
-			 {
-				 alert("Грешно потребителско име/парола");
-			 }
-			 
-		},function(response){
-		 console.debug(response);
+			} else {
+				alert(response.data.error)
+				location.reload()
+			}
+		}, handleErrorResponse);
+	}
+	clearFormOnClose("#addPatient")
+});
+
+app.controller('linkMobileUserController', function($scope, $http) {
+	$('#linkMobileUser').on('show.bs.modal', function(e) {
+		var patientId = $(e.relatedTarget).data('patient-id');
+		$scope.submitLink = function(form) {
+			var data = { patientId: patientId, code: $scope.code }
+			$http(requestPost(urlWebPatientLink, data)).then(function(response) {
+				if (response.data.success) {
+					$('#linkMobileUserToPatientModal').modal('hide');
+					alert("Потребителя беше свързан успешно!");
+				} else {
+					alert(response.data.error)
+					location.reload()
+				}
+			}, handleErrorResponse);
+		}
 	});
-   }
-   
+	
+	clearFormOnClose("#linkMobileUser")
 });
 
 app.controller('patientCtrl', function($scope, $http) {
-  	var req = {
-		 method: 'GET',
-		 url: 'http://localhost:9000/web/patient/all',
-		 headers: {
-		   'Authorization': 'Bearer '+sessionStorage.getItem("authToken")
-		 }
-		}
-
-		
-		$http(req).then(function(response){
-			 if (response.status == '200') {
-				$scope.myData = response.data;
-				console.debug(response.data);
-			 }
-		},function(response){
-		 console.debug(response);
-	});
+	$http(requestGet(urlWebPatientAll)).then(function(response) {
+		 $scope.myData = response.data;
+	}, handleErrorResponse);
 	$scope.getIndex = function(index) {
-       sessionStorage.setItem("patientID", index);
-	   window.location="addPatient.html";
-			
+		sessionStorage.setItem("patientID", index);
+		window.location="addPatient.html";
 	}
-	$scope.addMobileUser = function(index) {
-       sessionStorage.setItem("patientID", index);
-	   $("#linkMobileUserToPatientModal").modal("show");
-	   
-	   $('#linkMobileUserToPatientModal').on('shown.bs.modal', function(e) {
-		$scope.submit = function(form) {
-			var req = {
-				method: 'POST',
-				url: 'http://localhost:9000/web/patient/link/',
-				headers: {
-					'Authorization': 'Bearer '+sessionStorage.getItem("authToken")
-				},
-				data: { patientId: sessionStorage.getItem("patientID"), code: $scope.code }
-			}
-			$http(req).success(function(data, status) {
-				sessionStorage.setItem("patientID", "0");
-				$('#linkMobileUserToPatientModal').modal('hide');
-				alert("Потребителя беше свързан успешно!");
-				console.debug(data);
-			}).error(function(data, status) {
-			//	alert(data.error);
-			sessionStorage.setItem("patientID", "0");
-			});
-		}
-	});
-			
-	}
-
 });
 
 app.controller('diagnoseCtrl', function($scope, $http) {
-  	var req = {
-		 method: 'GET',
-		 url: 'http://localhost:9000/web/diagnose/all',
-		 headers: {
-		   'Authorization': 'Bearer '+sessionStorage.getItem("authToken")
-		 }
-		}
-
-		
-		$http(req).then(function(response){
-			 if (response.status == '200') {
-				$scope.myData = response.data;
-				console.debug(response.data);
-			 }
-		},function(response){
-		 console.debug(response);
-	});
-	
+	$http(requestGet(urlWebDiagnoseAll)).then(function(response) {
+		$scope.myData = response.data;
+	}, handleErrorResponse)
 	$scope.getIndex = function(index) {
-       sessionStorage.setItem("diagnoseID", index);
-	   window.location="addDiagnose.html";
+		sessionStorage.setItem("diagnoseID", index);
+		window.location="addDiagnose.html";
 	}
 });
-
-
-
-

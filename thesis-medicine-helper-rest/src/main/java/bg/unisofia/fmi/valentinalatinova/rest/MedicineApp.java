@@ -1,12 +1,20 @@
 package bg.unisofia.fmi.valentinalatinova.rest;
 
+import io.dropwizard.Application;
+import io.dropwizard.auth.AuthFactory;
+import io.dropwizard.auth.oauth.OAuthFactory;
+import io.dropwizard.setup.Environment;
+
+import java.sql.SQLException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import bg.unisofia.fmi.valentinalatinova.rest.auth.OAuth2Authenticator;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.AccessTokenDao;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.AccessTokenDAO;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.DataBaseCommander;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.UserDao;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.AccessTokenDaoImpl;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.UserDaoImpl;
+import bg.unisofia.fmi.valentinalatinova.rest.persistence.UserDAO;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.CorsResponseFilter;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.MobileResultsService;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.MobileResultsValueService;
@@ -15,14 +23,6 @@ import bg.unisofia.fmi.valentinalatinova.rest.resources.OAuth2Service;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.WebDiagnoseService;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.WebPatientsService;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.WebScheduleService;
-import io.dropwizard.Application;
-import io.dropwizard.auth.AuthFactory;
-import io.dropwizard.auth.oauth.OAuthFactory;
-import io.dropwizard.setup.Environment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.sql.SQLException;
 
 public class MedicineApp extends Application<MedicineConfig> {
 
@@ -34,7 +34,6 @@ public class MedicineApp extends Application<MedicineConfig> {
 
     @Override
     public void run(MedicineConfig config, Environment environment) throws Exception {
-        final boolean isAuthDisabled = config.getOAuth().isDisabled();
         final int tokenExpiryMinutes = config.getOAuth().getAccessTokenExpireTimeMinutes();
 
         // App will not start if DataBaseCommander cannot be instantiated
@@ -47,16 +46,16 @@ public class MedicineApp extends Application<MedicineConfig> {
         }
 
         // Create DAOs
-        AccessTokenDao accessTokenDao = new AccessTokenDaoImpl();
-        UserDao userDao = new UserDaoImpl(dataBaseCommander);
+        AccessTokenDAO accessTokenDao = new AccessTokenDAO();
+        UserDAO userDao = new UserDAO(dataBaseCommander);
 
         // Register CORS Response filter
         CorsResponseFilter filter = new CorsResponseFilter();
         environment.jersey().register(filter);
 
         // Register oauth2 service
-        final OAuth2Service oAuth2Service = new OAuth2Service(config.getOAuth().getAllowedGrantTypes(), accessTokenDao,
-                userDao, isAuthDisabled, tokenExpiryMinutes);
+        final OAuth2Service oAuth2Service = new OAuth2Service(config.getOAuth().getAllowedGrantTypes(),
+                accessTokenDao, userDao, tokenExpiryMinutes);
         environment.jersey().register(oAuth2Service);
 
         // Register mobile schedule service
@@ -89,7 +88,7 @@ public class MedicineApp extends Application<MedicineConfig> {
         environment.jersey().register(healthCheck);
 
         // Register security component
-        OAuth2Authenticator authenticator = new OAuth2Authenticator(accessTokenDao, isAuthDisabled, tokenExpiryMinutes);
+        OAuth2Authenticator authenticator = new OAuth2Authenticator(accessTokenDao, tokenExpiryMinutes);
         environment.jersey().register(
                 AuthFactory.binder(new OAuthFactory<>(authenticator, "oauth2-provider", User.class)));
     }

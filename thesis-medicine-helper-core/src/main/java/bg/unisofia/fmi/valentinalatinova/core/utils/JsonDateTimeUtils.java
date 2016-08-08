@@ -6,12 +6,14 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import org.joda.time.DateTime;
 
 import java.io.IOException;
 import java.io.Serializable;
 
+import org.joda.time.DateTime;
+
 public class JsonDateTimeUtils {
+
     public static class DateTimeSerializer extends JsonSerializer<DateTime> implements Serializable {
         @Override
         public void serialize(DateTime dateTime, JsonGenerator generator, SerializerProvider arg2) throws IOException {
@@ -23,6 +25,13 @@ public class JsonDateTimeUtils {
         @Override
         public DateTime deserialize(JsonParser parser, DeserializationContext context) throws IOException {
             return DateTime.parse(parser.getText());
+        }
+    }
+
+    public static class DateSerializer extends JsonSerializer<DateTime> implements Serializable {
+        @Override
+        public void serialize(DateTime dateTime, JsonGenerator generator, SerializerProvider arg2) throws IOException {
+            generator.writeString(dateTime.toString("yyyy-MM-dd"));
         }
     }
 }

@@ -8,13 +8,13 @@ import java.io.Serializable;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public abstract class BaseJson implements Serializable {
     @JsonProperty
-    protected long id;
+    protected Long id;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -27,7 +27,7 @@ public abstract class BaseJson implements Serializable {
             return false;
         }
         BaseJson that = (BaseJson) o;
-        return this.id == that.id;
+        return this.id.longValue() == that.id.longValue();
     }
 
     @Override

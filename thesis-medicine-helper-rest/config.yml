@@ -2,7 +2,6 @@ authentication:
   allowedGrantTypes:
     - password
   accessTokenExpireTimeMinutes: 60
-  disabled: false
 
 database:
   host: localhost

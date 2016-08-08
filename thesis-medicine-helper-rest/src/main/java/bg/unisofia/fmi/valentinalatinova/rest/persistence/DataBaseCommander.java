@@ -66,25 +66,6 @@ public class DataBaseCommander {
         return result;
     }
 
-    public long select(String sql, Object... statementData) {
-        ResultSet resultSet = null;
-        long result = -1;
-        PreparedStatement preparedStatement = createPreparedStatement(sql, statementData);
-        try {
-            if (preparedStatement != null) {
-                resultSet = preparedStatement.executeQuery();
-                while (resultSet.next()) {
-                    result = resultSet.getLong(1);
-                }
-            }
-        } catch (SQLException ex) {
-            LOGGER.error("Error during SELECT of '" + sql + "': ", ex);
-        } finally {
-            close(resultSet, preparedStatement);
-        }
-        return result;
-    }
-
     public long insert(String sql, Object... statementData) {
         PreparedStatement preparedStatement = createPreparedStatement(sql, statementData);
         try {
@@ -103,16 +84,16 @@ public class DataBaseCommander {
         return -1;
     }
 
-    public int delete(String sql, Object... statementData) {
+    public boolean delete(String sql, Object... statementData) {
         PreparedStatement preparedStatement = createPreparedStatement(sql, statementData);
         try {
-            return preparedStatement.executeUpdate();
+            return preparedStatement.executeUpdate() > 0;
         } catch (SQLException sqlEx) {
             LOGGER.error("Error during DELETE of '" + preparedStatement.toString() + "': ", sqlEx);
         } finally {
             close(null, preparedStatement);
         }
-        return 0;
+        return false;
     }
 
     public boolean execute(PreparedStatement... preparedStatements) {

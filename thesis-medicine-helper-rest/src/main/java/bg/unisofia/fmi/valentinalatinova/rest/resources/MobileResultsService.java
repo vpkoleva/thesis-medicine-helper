@@ -3,7 +3,6 @@ package bg.unisofia.fmi.valentinalatinova.rest.resources;
 import bg.unisofia.fmi.valentinalatinova.core.json.MobileResults;
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.MobileResultsDao;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.impl.MobileResultsDaoImpl;
 import com.codahale.metrics.annotation.Timed;
 import io.dropwizard.auth.Auth;
@@ -19,7 +18,7 @@ import java.util.List;
 
 @Path("/mobile/results")
 public class MobileResultsService {
-    private MobileResultsDao mobileResultsDao;
+    private MobileResultsDaoImpl mobileResultsDao;
 
     public MobileResultsService() {
         mobileResultsDao = new MobileResultsDaoImpl();

@@ -15,9 +15,9 @@ public class MobileResultsValue extends BaseJson {
     @JsonDeserialize(using = JsonDateTimeUtils.DateTimeDeserializer.class)
     private DateTime measurementDate;
     @JsonProperty
-    private long resultsId;
+    private Long resultsId;
     @JsonIgnore
-    private long userId;
+    private Long userId;
 
     public MobileResultsValue() {
         // Needed by Jackson deserialization
@@ -46,19 +46,19 @@ public class MobileResultsValue extends BaseJson {
         this.measurementDate = measurementDate;
     }
 
-    public long getResultsId() {
+    public Long getResultsId() {
         return resultsId;
     }
 
-    public void setResultsId(long resultsId) {
+    public void setResultsId(Long resultsId) {
         this.resultsId = resultsId;
     }
 
-    public long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 }

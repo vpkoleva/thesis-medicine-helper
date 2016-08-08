@@ -1,33 +1,36 @@
 package bg.unisofia.fmi.valentinalatinova.rest.persistence;
 
-import bg.unisofia.fmi.valentinalatinova.rest.data.AccessToken;
-import bg.unisofia.fmi.valentinalatinova.rest.data.User;
 import com.google.common.base.Optional;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
-public interface AccessTokenDao {
+import org.joda.time.DateTime;
 
-    /**
-     * Finds access token by id.
-     *
-     * @param accessTokenId
-     * @return AccessToken
-     */
-    Optional<AccessToken> findAccessTokenById(final UUID accessTokenId);
+import bg.unisofia.fmi.valentinalatinova.rest.data.AccessToken;
+import bg.unisofia.fmi.valentinalatinova.rest.data.User;
 
-    /**
-     * Generates access token for given user with correct date time.
-     *
-     * @param user
-     * @return AccessToken if found or absent if not
-     */
-    AccessToken generateAccessToken(final User user);
+public class AccessTokenDAO {
+    private static Map<UUID, AccessToken> accessTokenTable = new HashMap<>();
 
-    /**
-     * Updates last access time to be current time of the given access token UUID.
-     *
-     * @param accessTokenUUID
-     */
-    void updateLastAccessTime(final UUID accessTokenUUID);
+    public Optional<AccessToken> findAccessTokenById(final UUID accessTokenId) {
+        AccessToken accessToken = accessTokenTable.get(accessTokenId);
+        if (accessToken == null) {
+            return Optional.absent();
+        }
+        return Optional.of(accessToken);
+    }
+
+    public AccessToken generateAccessToken(final User user) {
+        AccessToken accessToken = new AccessToken(UUID.randomUUID(), user, new DateTime());
+        accessTokenTable.put(accessToken.getAccessTokenId(), accessToken);
+        return accessToken;
+    }
+
+    public void updateLastAccessTime(final UUID accessTokenUUID) {
+        AccessToken accessToken = accessTokenTable.get(accessTokenUUID);
+        accessToken = new AccessToken(accessToken.getAccessTokenId(), accessToken.getUser(), new DateTime());
+        accessTokenTable.put(accessTokenUUID, accessToken);
+    }
 }

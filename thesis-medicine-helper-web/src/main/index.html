@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
    <head>
+      <script src="js/config.js"></script>
       <meta charset="utf-8">
       <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,7 +9,7 @@
       <!-- Bootstrap core CSS -->
       <link href="css/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
       <!-- Bootstrap theme -->
-      <link href="css/Bootstrap//bootstrap-theme.min.css" rel="stylesheet">
+      <link href="css/Bootstrap/css/bootstrap-theme.min.css" rel="stylesheet">
       <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
       <link href="css/Bootstrap/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
       <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
@@ -34,7 +35,7 @@
       <div class="container theme-showcase" role="main" ng-app="myApp">
          <!-- Main jumbotron for a primary marketing message or call to action -->
          <div class="jumbotron">
-            <h1> Медицински помощник</h1>
+            <h1>Медицински помощник</h1>
             <p>Приложение в помощ на лекари и пациенти за по-лесно менажиране на диагнози и тяхното идентично лечение</p>
          </div>
          <div class="page-header">
@@ -66,9 +67,10 @@
                </div>
             </div>
          </div>
+         <!-- Modal -->
          <div class="modal fade" id="addPatient" role="dialog">
             <div class="modal-dialog">
-               <div class="modal-content"  data-ng-controller="addPatientController">
+               <div class="modal-content" data-ng-controller="addPatientController">
                   <div class="modal-header">
                      <button type="button" class="close" data-dismiss="modal">&times;</button>
                      <h4 class="modal-title">Добави пациент</h4>
@@ -107,19 +109,18 @@
             <ul class="example-animate-container list-group nav-list">
                <li class="animate-repeat list-group-item" ng-repeat="x in myData | filter:p as results">
                   {{ x.firstName + ', ' + x.diagnoseName }}
-                  <button type="button" ng-click="getIndex(x.id)" class="btn-primary btn-sm pull-right">Промени</button>
-				  <button type="button" ng-click="addMobileUser(x.id)" class="btn-primary btn-sm pull-right">Свържи</button>
+                  <button type="button" class="btn-primary btn-sm pull-right" ng-click="getIndex(x.id)">Промени</button>
+                  <button type="button" class="btn-primary btn-sm pull-right" data-toggle="modal" data-target="#linkMobileUser" data-patient-id="{{x.id}}">Свържи</button>
                </li>
                <li class="animate-repeat" ng-if="results.length == 0">
                   <strong>Не са намерени резултати...</strong>
                </li>
             </ul>
-			
-			<!-- Modal -->
-         <div class="modal fade" id="linkMobileUserToPatientModal" role="dialog">
+         </div>
+         <!-- Modal -->
+         <div class="modal fade" id="linkMobileUser" role="dialog">
             <div class="modal-dialog">
-               <!-- Modal content-->
-               <div class="modal-content">
+               <div class="modal-content" data-ng-controller="linkMobileUserController">
                   <div class="modal-header">
                      <button type="button" class="close" data-dismiss="modal">&times;</button>
                      <h4 class="modal-title">Свързване на мобилен потребител с пациент:</h4>
@@ -134,13 +135,10 @@
                   </div>
                   <div class="modal-footer">
                      <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Затвори</button>
-                     <button type="submit" class="btn btn-default pull-right" data-ng-click="submit(linkForm)">Свържи</button>
+                     <button type="submit" class="btn btn-default pull-right" data-ng-click="submitLink(linkForm)">Свържи</button>
                   </div>
                </div>
             </div>
-         </div>
-			
-			
          </div>
          <hr>
          <h2>Промени диагноза</h2>

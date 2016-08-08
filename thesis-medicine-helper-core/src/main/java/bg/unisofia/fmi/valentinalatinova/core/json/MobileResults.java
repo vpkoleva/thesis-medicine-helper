@@ -14,7 +14,7 @@ public class MobileResults extends BaseJson {
     @JsonProperty
     private List<MobileResultsValue> values = new ArrayList<>();
     @JsonIgnore
-    private long userId;
+    private Long userId;
 
     public MobileResults() {
         // Needed by Jackson deserialization
@@ -52,11 +52,11 @@ public class MobileResults extends BaseJson {
         this.values = values;
     }
 
-    public long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(long userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 }

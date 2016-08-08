@@ -1,15 +1,15 @@
 package bg.unisofia.fmi.valentinalatinova.rest.persistence.impl;
 
-import bg.unisofia.fmi.valentinalatinova.core.json.MobileSchedule;
-import bg.unisofia.fmi.valentinalatinova.core.json.Result;
-import bg.unisofia.fmi.valentinalatinova.core.utils.Duration;
-import bg.unisofia.fmi.valentinalatinova.rest.persistence.MobileScheduleDao;
-import org.joda.time.DateTime;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class MobileScheduleDaoImpl implements MobileScheduleDao {
+import org.joda.time.DateTime;
+
+import bg.unisofia.fmi.valentinalatinova.core.json.MobileSchedule;
+import bg.unisofia.fmi.valentinalatinova.core.json.Result;
+import bg.unisofia.fmi.valentinalatinova.core.utils.Duration;
+
+public class MobileScheduleDaoImpl {
 
     private static List<MobileSchedule> schedules = new ArrayList<>();
     private static long uniqueId = 1;
@@ -19,12 +19,10 @@ public class MobileScheduleDaoImpl implements MobileScheduleDao {
         schedules.add(new MobileSchedule(uniqueId++, "Do2", DateTime.now(), 1, Duration.MONTH, 1, Duration.DAY, 5));
     }
 
-    @Override
     public List<MobileSchedule> getAll(long userId) {
         return schedules;
     }
 
-    @Override
     public Result save(MobileSchedule schedule) {
         try {
             schedule.setId(uniqueId++);
@@ -35,7 +33,6 @@ public class MobileScheduleDaoImpl implements MobileScheduleDao {
         }
     }
 
-    @Override
     public Result update(MobileSchedule schedule) {
         try {
             schedules.remove(schedule);
@@ -46,7 +43,6 @@ public class MobileScheduleDaoImpl implements MobileScheduleDao {
         }
     }
 
-    @Override
     public Result delete(long id, long userId) {
         try {
             for (MobileSchedule schedule : schedules) {
