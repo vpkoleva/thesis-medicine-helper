@@ -1,63 +1,40 @@
 $(document).ready(function() {
-	
-console.debug(sessionStorage.getItem("patientID"));
-		$('#calendar').fullCalendar({
-			defaultDate:  new Date().toJSON().slice(0,10),
-			editable: true,
-			eventLimit: true, // allow "more" link when too many events
-			eventClick: function(event, element) {
+	$('#calendar').fullCalendar({
+		eventClick: function(event, element) {
 			sessionStorage.setItem("eventId", event.id);
 			sessionStorage.setItem("isForUpdate", true);
 			$("#myModal").modal("show");
 			$('#calendar').fullCalendar('updateEvent', event);
 		},
-			events: {
-				url: 'http://localhost:9000/web/schedule/allFromPatients',
-				headers: {
-			   'Authorization': 'Bearer '+sessionStorage.getItem("authToken")
-						},
-				type: 'GET',
-				data: {
-						patientId: sessionStorage.getItem("patientID")
-						
-				},
-				error: function(response) {
-			
-					console.debug(response);
-				}
+		defaultDate:  new Date().toJSON().slice(0,10),
+		editable: true,
+		eventLimit: true, // allow "more" link when too many events
+		events: {
+			url: baseUrl + urlWebScheduleAllPatient + sessionStorage.getItem("patientID"),
+			headers: { 'Authorization': 'Bearer ' + sessionStorage.getItem("authToken") },
+			type: 'GET',
+			error: handleErrorResponse
 		}
-		});
-		
 	});
-	
+});
+
 var app = angular.module('myApp', []);
 app.controller('loadDefaultDiagnoseTmpl', function($scope, $http) {
-   $scope.submitDefault = function(form) {
-	   console.debug($scope.startDate);
-	   console.debug(sessionStorage.getItem("patientID"));
-	   console.debug(sessionStorage.getItem("diagnoseID"));
-		var req = {
-			method: 'POST',
-			url: 'http://localhost:9000/web/schedule/saveFromDefault',
-			headers: {
-				'Authorization': 'Bearer '+sessionStorage.getItem("authToken")
-			},
-			data: {
-				startDay: $scope.startDate,
-				id: sessionStorage.getItem("patientID"),
-				diagnoseId: sessionStorage.getItem("diagnoseID")
-			}
+	$scope.submitDefault = function(form) {
+		var data = {
+			startDate: $scope.startDate,
+			patientId: sessionStorage.getItem("patientID")
 		}
-		
-		$http(req).then(function(response){
-			 $scope.greeting = response.data;
-			 if (response.status == '200') {
-				$scope.action = null;
-			 }
-			 console.debug(response.status);
-			 window.location="index.html"
-		});
+		$http(requestPost(urlWebScheduleSaveDefault, data)).then(function(response) {
+			if (response.data.success) {
+				$('#loadDefaultTemplate').modal('hide');
+				$('#calendar').fullCalendar('refetchEvents');
+			} else {
+				alert(response.data.error);
+			}
+		}, handleErrorResponse);
 	}
+	clearFormOnClose("#loadDefaultTemplate")
 });
 
 
@@ -71,33 +48,21 @@ app.controller('scheduleController', function($scope, $http) {
 		$scope.duration = null;
 		$scope.startDate = null;
 		$scope.$apply();
-		$('#calendar').fullCalendar( 'refetchEvents' );
-	
+		$('#calendar').fullCalendar('refetchEvents');
 	});
 	$('#myModal').on('shown.bs.modal', function(e) {
 		if(sessionStorage.getItem("isForUpdate") == 'true') {
-			var req = {
-				method: 'GET',
-				url: 'http://localhost:9000/web/schedule/get/' + sessionStorage.getItem("eventId"),
-				headers: {
-					'Authorization': 'Bearer '+sessionStorage.getItem("authToken")
-				}
-			}
-			$http(req).success(function(data, status) {
-				$scope.scheduleId = data.id;
-				$scope.action = data.description;
-				$scope.startAfter = data.startAfterValue;
-				$scope.startAfterType = data.startAfterType;
-				$scope.frequency = data.frequencyValue;
-				$scope.frequencyType = data.frequencyType;
-				$scope.duration = data.endAfterValue;
-				$scope.durationType = data.endAfterType;
-				$scope.startDate = new Date(data.startDate);
-				
-				console.debug(data);
-			}).error(function(data, status) {
-			//	alert(data.error);
-			});
+			$http(requestGet(urlWebScheduleGet + sessionStorage.getItem("eventId"))).then(function(response) {
+				$scope.scheduleId = response.data.id;
+				$scope.action = response.data.description;
+				$scope.startAfter = response.data.startAfter;
+				$scope.startAfterType = response.data.startAfterType;
+				$scope.frequency = response.data.frequency;
+				$scope.frequencyType = response.data.frequencyType;
+				$scope.duration = response.data.duration;
+				$scope.durationType = response.data.durationType;
+				$scope.startDate = new Date(response.data.startDate);
+			}, handleErrorResponse);
 		} else {
 			$scope.startAfterType = "DAY";
 			$scope.frequencyType = "DAY";
@@ -105,88 +70,35 @@ app.controller('scheduleController', function($scope, $http) {
 			$scope.$apply();
 		}
 	});
-	$scope.delete =function()
-	{
-		
-	var req = {
-			method: 'POST',
-			url: 'http://localhost:9000/web/schedule/delete',
-			headers: {
-				'Authorization': 'Bearer '+sessionStorage.getItem("authToken")
-			},
-			data: {
-				id: $scope.scheduleId
-			}
+	$scope.delete = function() {
+		if (confirm("Моля потвърдете изтриването")) {
+			$http(requestDelete(urlWebScheduleDelete + $scope.scheduleId)).then(handleWebScheduleResponse, handleErrorResponse);
 		}
-		$http(req).success(function(data, status) {
-			console.debug(data);
-			if (data.success) {
-				$('#myModal').modal('hide');
-			} else {
-				alert("else");
-				alert(data.error);
-			}
-		}).error(function(data, status) {
-			alert(data.message);
-		});
 	};
+
 	$scope.submit = function(form) {
-		var isUpdate = sessionStorage.getItem("isForUpdate") == 'true';
-		var req = {
-			method: 'POST',
-			url: isUpdate?'http://localhost:9000/web/schedule/update':'http://localhost:9000/web/schedule/save',
-			headers: {
-				'Authorization': 'Bearer '+sessionStorage.getItem("authToken")
-			},
-			data: {
-				id: $scope.scheduleId,
-				description: $scope.action,
-				startAfter: $scope.startAfter,
-				startAfterType: $scope.startAfterType,
-				frequency: $scope.frequency,
-				frequencyType: $scope.frequencyType,
-				duration: $scope.duration,
-				durationType: $scope.durationType,
-				diagnoseId: sessionStorage.getItem("diagnoseID"),
-				startDate: $scope.startDate,
-				patientId: sessionStorage.getItem("patientID")
-			}
+		var url = sessionStorage.getItem("isForUpdate") == 'true' ? urlWebScheduleUpdate : urlWebScheduleSave;
+		var data = {
+			id: $scope.scheduleId,
+			description: $scope.action,
+			startDate: $scope.startDate,
+			startAfter: $scope.startAfter,
+			startAfterType: $scope.startAfterType,
+			frequency: $scope.frequency,
+			frequencyType: $scope.frequencyType,
+			duration: $scope.duration,
+			durationType: $scope.durationType,
+			diagnoseId: sessionStorage.getItem("diagnoseID"),
+			patientId: sessionStorage.getItem("patientID")
 		}
-		$http(req).success(function(data, status) {
-			if (data.success) {
-				$('#myModal').modal('hide');
-			} else {
-				alert(data.error);
-			}
-		}).error(function(data, status) {
-			alert(data.message);
-		});
+		$http(requestPost(url, data)).then(handleWebScheduleResponse, handleErrorResponse);
 	}
 });
-/*
-app.controller('scheduleController', function($scope, $http) {
-   $scope.submit = function(form) {
-		var req = {
-		 method: 'POST',
-		 url: 'http://localhost:9000/web/schedule/save',
-		 headers: {
-		   'Authorization': 'Bearer '+sessionStorage.getItem("authToken")
-		 },
-		 data: { description: $scope.action, startAfter: $scope.startAfter, startAfterType: $scope.startAfterType, duration: $scope.duration,
-		 durationType: $scope.durationType, frequency: $scope.frequency, frequencyType: $scope.frequencyType, diagnoseId: sessionStorage.getItem("diagnoseID")}
-		}
-		
-		console.debug($scope.action);
-		
-		$http(req).then(function(response){
-			 $scope.greeting = response.data;
-			 if (response.status == '200') {
-				$scope.action = null;
-			 }
-			 sessionStorage.setItem("lastname", "Smith");
-			 console.debug(response.status);
-			 window.location="index.html"
-		});
+
+var handleWebScheduleResponse = function(response) {
+	if (response.data.success) {
+		$('#myModal').modal('hide');
+	} else {
+		alert(response.data.error);
 	}
-});
-	*/
+}
