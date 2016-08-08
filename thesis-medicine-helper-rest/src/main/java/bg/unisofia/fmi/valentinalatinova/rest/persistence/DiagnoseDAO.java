@@ -1,5 +1,6 @@
 package bg.unisofia.fmi.valentinalatinova.rest.persistence;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
@@ -30,10 +31,11 @@ public class DiagnoseDAO {
     }
 
     public Result delete(final long diagnoseId, final long userId) {
-        // TODO delete templates associated with this diagnose
-        String sql = "DELETE FROM `diagnoses` HERE id=? AND "
-                + "`doctor_ID`=(SELECT `doctor_ID` FROM `users` WHERE `ID`=?)";
-        final boolean result = dataBaseCommander.delete(sql, diagnoseId, userId);
+        PreparedStatement deleteSchedules = dataBaseCommander
+                .createPreparedStatement("DELETE FROM `schedules` WHERE `diagnoses_ID`=?", diagnoseId);
+        PreparedStatement deleteDiagnose = dataBaseCommander.createPreparedStatement("DELETE FROM `diagnoses` WHERE "
+                + "id=? AND `doctor_ID`=(SELECT `doctor_ID` FROM `users` WHERE `ID`=?)", diagnoseId, userId);
+        final boolean result = dataBaseCommander.execute(deleteSchedules, deleteDiagnose);
         if (result) {
             return Result.createSuccess(-1);
         } else {

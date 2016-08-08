@@ -1,5 +1,6 @@
 package bg.unisofia.fmi.valentinalatinova.rest.persistence;
 
+import java.sql.PreparedStatement;
 import java.util.List;
 
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
@@ -15,7 +16,9 @@ public class PatientDAO {
     }
 
     public List<Patient> get(final long userId) {
-        String sql = "SELECT * FROM `patients` "
+        String sql = "SELECT `patients`.*, `diagnoses`.`diagnose`, "
+                + "(SELECT `ID` FROM `users` WHERE `patient_ID`=`patients`.`ID` LIMIT 1) as user_ID "
+                + "FROM `patients` "
                 + "INNER JOIN `diagnoses` ON `patients`.`diagnose_ID` = `diagnoses`.`ID` "
                 + "WHERE `patients`.`doctor_ID`=(SELECT `doctor_ID` FROM `users` WHERE `ID`=?)";
         return dataBaseCommander.select(Patient.class, sql, userId);
@@ -34,10 +37,13 @@ public class PatientDAO {
     }
 
     public Result delete(final long patientId, final long userId) {
-        // TODO delete associated records with this patient
-        String sql = "DELETE FROM `patients` WHERE id=? "
-                + "AND `doctor_ID`=(SELECT `doctor_ID` FROM `users` WHERE `ID`=?)";
-        final boolean result = dataBaseCommander.delete(sql, patientId, userId);
+        PreparedStatement unlink = dataBaseCommander
+                .createPreparedStatement("UPDATE `users` SET patient_ID=NULL WHERE patient_ID=?", patientId);
+        PreparedStatement deleteSchedules = dataBaseCommander
+                .createPreparedStatement("DELETE FROM `schedules` WHERE `patients_ID`=?", patientId);
+        PreparedStatement deletePatient = dataBaseCommander.createPreparedStatement("DELETE FROM `patients` WHERE id=? "
+                + "AND `doctor_ID`=(SELECT `doctor_ID` FROM `users` WHERE `ID`=?)", patientId, userId);
+        final boolean result = dataBaseCommander.execute(unlink, deleteSchedules, deletePatient);
         if (result) {
             return Result.createSuccess(-1);
         } else {
@@ -50,9 +56,13 @@ public class PatientDAO {
         List<DataBaseResult> dataBaseResults = dataBaseCommander.select(DataBaseResult.class, sql, code);
         if (dataBaseResults.size() == 1) {
             final long mUserId = Long.parseLong(dataBaseResults.get(0).getValue("ID"));
-            String sqlUpdate = "UPDATE `users` SET patient_ID=? WHERE mobileuser_ID=?";
-            dataBaseCommander.insert(sqlUpdate, patientId, mUserId);
-            return Result.createSuccess(-1);
+            String sqlUpdate = "UPDATE `users` SET patient_ID=? WHERE mobileuser_ID=? AND patient_ID IS NULL";
+            final boolean result = dataBaseCommander.deleteOrUpdate(sqlUpdate, patientId, mUserId);
+            if (result) {
+                return Result.createSuccess(-1);
+            } else {
+                return Result.createError("Cannot link users.");
+            }
         } else {
             return Result.createError("Cannot create link. Incorrect code.");
         }

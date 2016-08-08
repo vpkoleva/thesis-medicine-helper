@@ -42,12 +42,12 @@ app.controller('linkMobileUserController', function($scope, $http) {
 			var data = { patientId: patientId, code: $scope.code }
 			$http(requestPost(urlWebPatientLink, data)).then(function(response) {
 				if (response.data.success) {
-					$('#linkMobileUserToPatientModal').modal('hide');
+					$('#linkMobileUser').modal('hide');
 					alert("Потребителя беше свързан успешно!");
 				} else {
 					alert(response.data.error)
-					location.reload()
 				}
+				location.reload()
 			}, handleErrorResponse);
 		}
 	});
@@ -63,6 +63,11 @@ app.controller('patientCtrl', function($scope, $http) {
 		sessionStorage.setItem("patientID", index);
 		window.location="addPatient.html";
 	}
+	$scope.delete = function(index) {
+		if (confirm("Моля потвърдете изтриването")) {
+			$http(requestDelete(urlWebPatientDelete + index)).then(handleWebResponse, handleErrorResponse);
+		}
+	}
 });
 
 app.controller('diagnoseCtrl', function($scope, $http) {
@@ -73,4 +78,17 @@ app.controller('diagnoseCtrl', function($scope, $http) {
 		sessionStorage.setItem("diagnoseID", index);
 		window.location="addDiagnose.html";
 	}
+	$scope.delete = function(index) {
+		if (confirm("Моля потвърдете изтриването")) {
+			$http(requestDelete(urlWebDiagnoseDelete + index)).then(handleWebResponse, handleErrorResponse);
+		}
+	}
 });
+
+var handleWebResponse = function(response) {
+	if (response.data.success) {
+		location.reload()
+	} else {
+		alert(response.data.error);
+	}
+}

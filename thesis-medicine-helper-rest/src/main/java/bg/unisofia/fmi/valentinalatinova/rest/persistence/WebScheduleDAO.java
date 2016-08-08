@@ -102,7 +102,7 @@ public class WebScheduleDAO {
     public Result delete(final long scheduleId, long userId) {
         String sql = "DELETE FROM `schedules` WHERE `ID`=? AND "
                 + "`doctors_ID`=(SELECT `doctor_ID` FROM `users` WHERE `ID`=?)";
-        final boolean result = dataBaseCommander.delete(sql, scheduleId, userId);
+        final boolean result = dataBaseCommander.deleteOrUpdate(sql, scheduleId, userId);
         if (result) {
             return Result.createSuccess(-1);
         } else {

@@ -84,7 +84,7 @@ public class DataBaseCommander {
         return -1;
     }
 
-    public boolean delete(String sql, Object... statementData) {
+    public boolean deleteOrUpdate(String sql, Object... statementData) {
         PreparedStatement preparedStatement = createPreparedStatement(sql, statementData);
         try {
             return preparedStatement.executeUpdate() > 0;

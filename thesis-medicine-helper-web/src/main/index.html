@@ -110,7 +110,8 @@
                <li class="animate-repeat list-group-item" ng-repeat="x in myData | filter:p as results">
                   {{ x.firstName + ', ' + x.diagnoseName }}
                   <button type="button" class="btn-primary btn-sm pull-right" ng-click="getIndex(x.id)">Промени</button>
-                  <button type="button" class="btn-primary btn-sm pull-right" data-toggle="modal" data-target="#linkMobileUser" data-patient-id="{{x.id}}">Свържи</button>
+                  <button type="button" class="btn-primary btn-sm pull-right" ng-click="delete(x.id)">Изтрий</button>
+                  <button type="button" class="btn-primary btn-sm pull-right" ng-if="x.mobileUserId == 0" data-toggle="modal" data-target="#linkMobileUser" data-patient-id="{{x.id}}">Свържи</button>
                </li>
                <li class="animate-repeat" ng-if="results.length == 0">
                   <strong>Не са намерени резултати...</strong>
@@ -151,6 +152,7 @@
                <li class="animate-repeat list-group-item" ng-repeat="y in myData | filter:q as results">
                   {{y.diagnoseName}} with id {{y.id}}
                   <button type="button" ng-click="getIndex(y.id)" class="btn-primary btn-sm pull-right">Промени</button>
+                  <button type="button" class="btn-primary btn-sm pull-right" ng-click="delete(y.id)">Изтрий</button>
                </li>
                <li class="animate-repeat" ng-if="results.length == 0">
                   <strong>Не са намерени резултати...</strong>
