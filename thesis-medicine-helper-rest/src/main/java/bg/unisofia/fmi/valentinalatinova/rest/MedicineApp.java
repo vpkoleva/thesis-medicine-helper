@@ -17,7 +17,6 @@ import bg.unisofia.fmi.valentinalatinova.rest.persistence.DataBaseCommander;
 import bg.unisofia.fmi.valentinalatinova.rest.persistence.UserDAO;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.CorsResponseFilter;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.MobileResultsService;
-import bg.unisofia.fmi.valentinalatinova.rest.resources.MobileResultsValueService;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.MobileScheduleService;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.OAuth2Service;
 import bg.unisofia.fmi.valentinalatinova.rest.resources.WebDiagnoseService;
@@ -75,12 +74,8 @@ public class MedicineApp extends Application<MedicineConfig> {
         environment.jersey().register(webScheduleService);
 
         // Register mobile results service
-        final MobileResultsService mobileResultsService = new MobileResultsService();
+        final MobileResultsService mobileResultsService = new MobileResultsService(dataBaseCommander);
         environment.jersey().register(mobileResultsService);
-
-        // Register mobile results value service
-        final MobileResultsValueService mobileResultsValueService = new MobileResultsValueService();
-        environment.jersey().register(mobileResultsValueService);
 
         // Register health check
         final MedicineCheck healthCheck = new MedicineCheck();

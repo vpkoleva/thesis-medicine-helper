@@ -1,5 +1,9 @@
 package bg.unisofia.fmi.valentinalatinova.app.tabs;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,10 +28,6 @@ import bg.unisofia.fmi.valentinalatinova.app.utils.Logger;
 import bg.unisofia.fmi.valentinalatinova.core.json.MobileResults;
 import bg.unisofia.fmi.valentinalatinova.core.json.MobileResultsValue;
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class ResultsFragment extends CustomFragment {
 
@@ -292,10 +292,12 @@ public class ResultsFragment extends CustomFragment {
         if (size > 0) {
             toggleManageResultsButton(true);
             toggleNavigationButtons(size > 1);
-            // Get current index
-            if (currentResult != null) {
-                index = allResults.indexOf(currentResult);
+            // Get first result in case of deletion
+            if (currentResult == null) {
+                currentResult = allResults.get(0);
             }
+            // Get current index
+            index = allResults.indexOf(currentResult);
             // Move index to right or left
             if (value < 0) {
                 index--;
@@ -363,7 +365,7 @@ public class ResultsFragment extends CustomFragment {
         @Override
         protected Result doInBackground(Long... params) {
             HttpClient client = MainActivity.getAuthenticatedHttpClient();
-            return client.get(PATH_DELETE + params[0], Result.class);
+            return client.delete(PATH_DELETE + params[0], Result.class);
         }
 
         @Override
@@ -374,6 +376,7 @@ public class ResultsFragment extends CustomFragment {
                     MobileResults toRemove = new MobileResults();
                     toRemove.setId(result.getId());
                     allResults.remove(toRemove);
+                    currentResult = null;
                     refreshResultsTable(0);
                 } else {
                     MainActivity.createErrorDialog(rootView.getContext(), result.getError());
@@ -389,7 +392,7 @@ public class ResultsFragment extends CustomFragment {
         @Override
         protected Result doInBackground(Long... params) {
             HttpClient client = MainActivity.getAuthenticatedHttpClient();
-            return client.get(PATH_DELETE + params[0], Result.class);
+            return client.delete(PATH_DELETE + params[0], Result.class);
         }
 
         @Override

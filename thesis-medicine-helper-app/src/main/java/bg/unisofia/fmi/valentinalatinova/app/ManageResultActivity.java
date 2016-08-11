@@ -59,7 +59,7 @@ public class ManageResultActivity extends Activity {
 
     private class CreateResult extends AsyncTask<String, String, Result> {
 
-        private final String PATH_CREATE_RESULT = "/mobile/results/create";
+        private final String PATH_CREATE_RESULT = "/mobile/results/save";
 
         /**
          * Performs the action in background thread.

@@ -326,7 +326,7 @@ public class SchedulesFragment extends CustomFragment {
         @Override
         protected Result doInBackground(Long... params) {
             HttpClient client = MainActivity.getAuthenticatedHttpClient();
-            return client.get(PATH_DELETE + params[0], Result.class);
+            return client.delete(PATH_DELETE + params[0], Result.class);
         }
 
         @Override

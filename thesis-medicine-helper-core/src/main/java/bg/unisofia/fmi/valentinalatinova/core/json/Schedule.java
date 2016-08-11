@@ -18,17 +18,17 @@ public class Schedule extends BaseJson {
     @JsonDeserialize(using = JsonDateTimeUtils.DateTimeDeserializer.class)
     private DateTime startDate;
     @JsonProperty
-    private Integer duration;
+    private Integer startAfter;
     @JsonProperty
-    private Duration durationType;
+    private Duration startAfterType;
     @JsonProperty
     private Integer frequency;
     @JsonProperty
     private Duration frequencyType;
     @JsonProperty
-    private Integer startAfter;
+    private Integer duration;
     @JsonProperty
-    private Duration startAfterType;
+    private Duration durationType;
     private Long patientId;
     private Long doctorId;
     private Long mobileUserId;
@@ -54,20 +54,20 @@ public class Schedule extends BaseJson {
         this.startDate = startDate;
     }
 
-    public Integer getDuration() {
-        return duration;
+    public Integer getStartAfter() {
+        return startAfter;
     }
 
-    public void setDuration(Integer duration) {
-        this.duration = duration;
+    public void setStartAfter(Integer startAfter) {
+        this.startAfter = startAfter;
     }
 
-    public Duration getDurationType() {
-        return durationType;
+    public Duration getStartAfterType() {
+        return startAfterType;
     }
 
-    public void setDurationType(Duration durationType) {
-        this.durationType = durationType;
+    public void setStartAfterType(Duration startAfterType) {
+        this.startAfterType = startAfterType;
     }
 
     public Integer getFrequency() {
@@ -86,20 +86,20 @@ public class Schedule extends BaseJson {
         this.frequencyType = frequencyType;
     }
 
-    public Integer getStartAfter() {
-        return startAfter;
+    public Integer getDuration() {
+        return duration;
     }
 
-    public void setStartAfter(Integer startAfter) {
-        this.startAfter = startAfter;
+    public void setDuration(Integer duration) {
+        this.duration = duration;
     }
 
-    public Duration getStartAfterType() {
-        return startAfterType;
+    public Duration getDurationType() {
+        return durationType;
     }
 
-    public void setStartAfterType(Duration startAfterType) {
-        this.startAfterType = startAfterType;
+    public void setDurationType(Duration durationType) {
+        this.durationType = durationType;
     }
 
     @JsonIgnore

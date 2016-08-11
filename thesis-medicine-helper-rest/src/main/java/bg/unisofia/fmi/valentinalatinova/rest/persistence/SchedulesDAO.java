@@ -112,7 +112,7 @@ public class SchedulesDAO {
         String sql = "DELETE FROM `schedules` WHERE `ID`=? AND " + getUserOrDoctor(user);
         final boolean result = dataBaseCommander.deleteOrUpdate(sql, scheduleId, user.getId());
         if (result) {
-            return Result.createSuccess(-1);
+            return Result.createSuccess(scheduleId);
         } else {
             return Result.createError("Cannot delete schedule");
         }

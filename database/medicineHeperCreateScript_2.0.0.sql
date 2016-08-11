@@ -2,12 +2,15 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 
+DROP SCHEMA IF EXISTS `medicinehelper` ;
 CREATE SCHEMA IF NOT EXISTS `medicinehelper` DEFAULT CHARACTER SET utf8 ;
 USE `medicinehelper` ;
 
 -- -----------------------------------------------------
 -- Table `medicinehelper`.`specializations`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `medicinehelper`.`specializations` ;
+
 CREATE TABLE IF NOT EXISTS `medicinehelper`.`specializations` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `description` VARCHAR(45) NOT NULL,
@@ -19,6 +22,8 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 -- Table `medicinehelper`.`doctors`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `medicinehelper`.`doctors` ;
+
 CREATE TABLE IF NOT EXISTS `medicinehelper`.`doctors` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `specializations_ID` INT NOT NULL,
@@ -37,6 +42,8 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 -- Table `medicinehelper`.`diagnoses`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `medicinehelper`.`diagnoses` ;
+
 CREATE TABLE IF NOT EXISTS `medicinehelper`.`diagnoses` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `diagnose` VARCHAR(150) NULL DEFAULT NULL,
@@ -56,6 +63,8 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 -- Table `medicinehelper`.`mobileusers`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `medicinehelper`.`mobileusers` ;
+
 CREATE TABLE IF NOT EXISTS `medicinehelper`.`mobileusers` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `code` VARCHAR(45) NULL,
@@ -68,6 +77,8 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 -- Table `medicinehelper`.`doctorsbyuser`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `medicinehelper`.`doctorsbyuser` ;
+
 CREATE TABLE IF NOT EXISTS `medicinehelper`.`doctorsbyuser` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `firstName` VARCHAR(45) NULL DEFAULT NULL,
@@ -99,6 +110,8 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 -- Table `medicinehelper`.`durationtypes`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `medicinehelper`.`durationtypes` ;
+
 CREATE TABLE IF NOT EXISTS `medicinehelper`.`durationtypes` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `value` VARCHAR(45) NOT NULL,
@@ -111,9 +124,12 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 -- Table `medicinehelper`.`mtables`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `medicinehelper`.`mtables` ;
+
 CREATE TABLE IF NOT EXISTS `medicinehelper`.`mtables` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(45) NOT NULL,
+  `units` VARCHAR(45) NULL,
   `mobileuser_ID` INT NOT NULL,
   PRIMARY KEY (`id`),
   INDEX `fk_mtables_mobileuser_idx` (`mobileuser_ID` ASC),
@@ -129,16 +145,25 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 -- Table `medicinehelper`.`mtablevalues`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `medicinehelper`.`mtablevalues` ;
+
 CREATE TABLE IF NOT EXISTS `medicinehelper`.`mtablevalues` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `measurement` VARCHAR(45) NOT NULL,
   `date` DATETIME NOT NULL,
   `mtables_ID` INT NOT NULL,
+  `mobileuser_ID` INT NOT NULL,
   PRIMARY KEY (`ID`),
   INDEX `fk_mtablevalues_mtables_idx` (`mtables_ID` ASC),
+  INDEX `fk_mtablevalues_mobileuser_idx` (`mobileuser_ID` ASC),
   CONSTRAINT `fk_mtablevalues_mtables`
     FOREIGN KEY (`mtables_ID`)
     REFERENCES `medicinehelper`.`mtables` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_mtablevalues_mobileuser`
+    FOREIGN KEY (`mobileuser_ID`)
+    REFERENCES `medicinehelper`.`mobileusers` (`ID`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB
@@ -148,6 +173,8 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 -- Table `medicinehelper`.`muserdocuments`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `medicinehelper`.`muserdocuments` ;
+
 CREATE TABLE IF NOT EXISTS `medicinehelper`.`muserdocuments` (
   `mobileuser_ID` INT NOT NULL,
   INDEX `fk_muserdocuments_mobileusers_idx` (`mobileuser_ID` ASC),
@@ -163,6 +190,8 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 -- Table `medicinehelper`.`patients`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `medicinehelper`.`patients` ;
+
 CREATE TABLE IF NOT EXISTS `medicinehelper`.`patients` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `firstName` VARCHAR(45) NULL DEFAULT NULL,
@@ -190,6 +219,8 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 -- Table `medicinehelper`.`raitings`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `medicinehelper`.`raitings` ;
+
 CREATE TABLE IF NOT EXISTS `medicinehelper`.`raitings` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `raitingValue` DOUBLE NOT NULL,
@@ -218,6 +249,8 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 -- Table `medicinehelper`.`schedules`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `medicinehelper`.`schedules` ;
+
 CREATE TABLE IF NOT EXISTS `medicinehelper`.`schedules` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `description` VARCHAR(45) NOT NULL,
@@ -284,6 +317,8 @@ DEFAULT CHARACTER SET = utf8;
 -- -----------------------------------------------------
 -- Table `medicinehelper`.`users`
 -- -----------------------------------------------------
+DROP TABLE IF EXISTS `medicinehelper`.`users` ;
+
 CREATE TABLE IF NOT EXISTS `medicinehelper`.`users` (
   `ID` INT NOT NULL AUTO_INCREMENT,
   `userName` VARCHAR(45) NOT NULL,

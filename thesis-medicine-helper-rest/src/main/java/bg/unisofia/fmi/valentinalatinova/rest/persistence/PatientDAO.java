@@ -45,7 +45,7 @@ public class PatientDAO {
                 + "AND `doctor_ID`=(SELECT `doctor_ID` FROM `users` WHERE `ID`=?)", patientId, userId);
         final boolean result = dataBaseCommander.execute(unlink, deleteSchedules, deletePatient);
         if (result) {
-            return Result.createSuccess(-1);
+            return Result.createSuccess(patientId);
         } else {
             return Result.createError("Cannot delete patient");
         }

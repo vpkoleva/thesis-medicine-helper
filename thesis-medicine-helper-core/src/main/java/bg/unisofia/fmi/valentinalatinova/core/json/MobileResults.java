@@ -1,6 +1,5 @@
 package bg.unisofia.fmi.valentinalatinova.core.json;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
@@ -13,19 +12,9 @@ public class MobileResults extends BaseJson {
     private String units;
     @JsonProperty
     private List<MobileResultsValue> values = new ArrayList<>();
-    @JsonIgnore
-    private Long userId;
 
     public MobileResults() {
         // Needed by Jackson deserialization
-    }
-
-    public MobileResults(long id, String name, String units, List<MobileResultsValue> values, long userId) {
-        this.id = id;
-        this.name = name;
-        this.units = units;
-        this.values = values;
-        this.userId = userId;
     }
 
     public String getName() {
@@ -50,13 +39,5 @@ public class MobileResults extends BaseJson {
 
     public void setValues(List<MobileResultsValue> values) {
         this.values = values;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 }

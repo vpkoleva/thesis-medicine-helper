@@ -37,7 +37,7 @@ public class DiagnoseDAO {
                 + "id=? AND `doctor_ID`=(SELECT `doctor_ID` FROM `users` WHERE `ID`=?)", diagnoseId, userId);
         final boolean result = dataBaseCommander.execute(deleteSchedules, deleteDiagnose);
         if (result) {
-            return Result.createSuccess(-1);
+            return Result.createSuccess(diagnoseId);
         } else {
             return Result.createError("Cannot delete diagnose");
         }
