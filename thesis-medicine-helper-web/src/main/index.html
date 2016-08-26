@@ -36,7 +36,7 @@
          <!-- Main jumbotron for a primary marketing message or call to action -->
          <div class="jumbotron">
             <h1>Медицински помощник</h1>
-            <p>Приложение в помощ на лекари и пациенти за по-лесно менажиране на диагнози и тяхното идентично лечение</p>
+            <p>Приложение в помощ на лекари и пациенти за по-лесно управление на диагнози и тяхното идентично лечение</p>
          </div>
          <div class="page-header">
          </div>
@@ -108,8 +108,8 @@
             </div>
             <ul class="example-animate-container list-group nav-list">
                <li class="animate-repeat list-group-item" ng-repeat="x in myData | filter:p as results">
-                  {{ x.firstName + ', ' + x.diagnoseName }}
-                  <button type="button" class="btn-primary btn-sm pull-right" ng-click="getIndex(x.id)">Промени</button>
+                  {{ x.firstName + ' ' + x.lastName + ', ' + x.diagnoseName }}
+                  <button type="button" class="btn-primary btn-sm pull-right" ng-click="getIndex(x.id, x.firstName + ' ' + x.lastName)">Промени</button>
                   <button type="button" class="btn-primary btn-sm pull-right" ng-click="delete(x.id)">Изтрий</button>
                   <button type="button" class="btn-primary btn-sm pull-right" ng-if="x.mobileUserId == 0" data-toggle="modal" data-target="#linkMobileUser" data-patient-id="{{x.id}}">Свържи</button>
                </li>
@@ -150,8 +150,8 @@
             </div>
             <ul class="example-animate-container list-group nav-list">
                <li class="animate-repeat list-group-item" ng-repeat="y in myData | filter:q as results">
-                  {{y.diagnoseName}} with id {{y.id}}
-                  <button type="button" ng-click="getIndex(y.id)" class="btn-primary btn-sm pull-right">Промени</button>
+                  {{y.diagnoseName}}
+                  <button type="button" ng-click="getIndex(y.id, y.diagnoseName)" class="btn-primary btn-sm pull-right">Промени</button>
                   <button type="button" class="btn-primary btn-sm pull-right" ng-click="delete(y.id)">Изтрий</button>
                </li>
                <li class="animate-repeat" ng-if="results.length == 0">

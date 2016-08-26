@@ -1,10 +1,10 @@
 package bg.unisofia.fmi.valentinalatinova.app.utils;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-
 import java.text.DateFormat;
 import java.util.Date;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 
 public final class DateUtils {
 
@@ -12,7 +12,7 @@ public final class DateUtils {
     }
 
     public static String formatDay(Date date) {
-        return DateFormat.getDateInstance(DateFormat.SHORT).format(date);
+        return DateFormat.getDateInstance(DateFormat.MEDIUM).format(date);
     }
 
     public static String formatTime(DateTime date) {

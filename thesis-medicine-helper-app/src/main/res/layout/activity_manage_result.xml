@@ -1,6 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_height="fill_parent"
+                android:layout_margin="5dp">
 
     <TextView
             android:id="@+id/manage_result_name_label"
@@ -32,18 +33,13 @@
             android:inputType="text"/>
 
     <Button
-            android:id="@+id/manage_result_button_save"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_save"
+            android:id="@+id/manage_result_button_cancel"
+            style="@style/button_cancel"
             android:layout_below="@+id/manage_result_units"/>
 
     <Button
-            android:id="@+id/manage_result_button_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_cancel"
-            android:layout_below="@+id/manage_result_units"
-            android:layout_alignParentEnd="true"/>
+            android:id="@+id/manage_result_button_save"
+            style="@style/button_save"
+            android:layout_below="@+id/manage_result_units"/>
 
 </RelativeLayout>

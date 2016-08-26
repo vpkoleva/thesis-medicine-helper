@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import bg.unisofia.fmi.valentinalatinova.core.json.MobileResultsValue;
 
@@ -17,7 +18,8 @@ public class MobileValueDO extends DataBaseObject {
             mobileResultsValue = new MobileResultsValue();
             mobileResultsValue.setId(resultSet.getLong("ID"));
             mobileResultsValue.setMeasurement(resultSet.getString("measurement"));
-            mobileResultsValue.setMeasurementDate(new DateTime(resultSet.getTimestamp("date")));
+            mobileResultsValue
+                    .setMeasurementDate(new DateTime(resultSet.getTimestamp("date")).withZone(DateTimeZone.UTC));
             mobileResultsValue.setResultsId(resultSet.getLong("mtables_ID"));
             id = resultSet.getLong("ID");
             resultId = resultSet.getLong("mtables_ID");

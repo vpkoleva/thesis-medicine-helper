@@ -5,6 +5,7 @@ app.controller('addDiagnoseController', function($scope, $http) {
 		$http(requestPost(urlWebDiagnoseSave, data)).then(function(response){
 			if (response.data.success) {
 				sessionStorage.setItem("diagnoseID", response.data.id)
+				sessionStorage.setItem("diagnoseName", $scope.diagnoseName)
 				window.location="addDiagnose.html"
 			} else {
 				alert(response.data.error)
@@ -24,6 +25,7 @@ app.controller('addPatientController', function($scope, $http) {
 		$http(requestPost(urlWebPatientSave, data)).then(function(response) {
 			if (response.data.success) {
 				sessionStorage.setItem("patientID", response.data.id)
+				sessionStorage.setItem("patientName", $scope.patientFirstName + " " + $scope.patientLastName)
 				sessionStorage.setItem("diagnoseID", $scope.selectDiagnose.id)
 				window.location="addPatient.html"
 			} else {
@@ -59,8 +61,9 @@ app.controller('patientCtrl', function($scope, $http) {
 	$http(requestGet(urlWebPatientAll)).then(function(response) {
 		 $scope.myData = response.data;
 	}, handleErrorResponse);
-	$scope.getIndex = function(index) {
+	$scope.getIndex = function(index, name) {
 		sessionStorage.setItem("patientID", index);
+		sessionStorage.setItem("patientName", name);
 		window.location="addPatient.html";
 	}
 	$scope.delete = function(index) {
@@ -74,8 +77,9 @@ app.controller('diagnoseCtrl', function($scope, $http) {
 	$http(requestGet(urlWebDiagnoseAll)).then(function(response) {
 		$scope.myData = response.data;
 	}, handleErrorResponse)
-	$scope.getIndex = function(index) {
-		sessionStorage.setItem("diagnoseID", index);
+	$scope.getIndex = function(index, name) {
+		sessionStorage.setItem("diagnoseID", index)
+		sessionStorage.setItem("diagnoseName", name)
 		window.location="addDiagnose.html";
 	}
 	$scope.delete = function(index) {

@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import bg.unisofia.fmi.valentinalatinova.core.json.Schedule;
 import bg.unisofia.fmi.valentinalatinova.core.utils.Duration;
@@ -20,7 +21,7 @@ public class WebScheduleDO extends DataBaseObject {
             schedule = new Schedule();
             schedule.setId(resultSet.getLong("ID"));
             schedule.setDescription(resultSet.getString("Description"));
-            schedule.setStartDate(new DateTime(resultSet.getTimestamp("startDate")));
+            schedule.setStartDate(new DateTime(resultSet.getTimestamp("startDate")).withZone(DateTimeZone.UTC));
             schedule.setStartAfter(resultSet.getInt("startAfterValue"));
             schedule.setStartAfterType(Duration.fromValue(resultSet.getInt("startAfterType")));
             schedule.setDuration(resultSet.getInt("endAfterValue"));

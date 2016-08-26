@@ -10,6 +10,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateTimeZone;
+
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -30,7 +32,6 @@ import bg.unisofia.fmi.valentinalatinova.app.ManageScheduleActivity;
 import bg.unisofia.fmi.valentinalatinova.app.R;
 import bg.unisofia.fmi.valentinalatinova.app.utils.DateUtils;
 import bg.unisofia.fmi.valentinalatinova.app.utils.HttpClient;
-import bg.unisofia.fmi.valentinalatinova.app.utils.Logger;
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 import bg.unisofia.fmi.valentinalatinova.core.json.ScheduleInfo;
 
@@ -207,6 +208,7 @@ public class SchedulesFragment extends CustomFragment {
      * Implements CaldroidListener abstract class to handles calendar events.
      */
     private final CaldroidListener calendarListener = new CaldroidListener() {
+        private Date lastClicked = Calendar.getInstance().getTime();
 
         @Override
         public void onSelectDate(final Date date, View view) {
@@ -220,6 +222,10 @@ public class SchedulesFragment extends CustomFragment {
             if (events > 0) {
                 drawSchedulesTable(getSchedulesByDate(date));
             }
+            schedulesCalendar.clearTextColorForDate(lastClicked);
+            schedulesCalendar.setTextColorForDate(R.color.blue, date);
+            schedulesCalendar.refreshView();
+            lastClicked = date;
         }
 
         @Override
@@ -228,7 +234,6 @@ public class SchedulesFragment extends CustomFragment {
 
         @Override
         public void onLongClickDate(Date date, View view) {
-            Logger.debug("Date clicked" + date.toString());
         }
 
         @Override
@@ -265,14 +270,16 @@ public class SchedulesFragment extends CustomFragment {
             TextView label = (TextView) rootView.findViewById(R.id.schedules_view_for);
             label.setVisibility(TextView.VISIBLE);
             String format = getString(R.string.schedules_view_for);
-            String text = String.format(format, DateUtils.formatDay(schedules.get(0).getStart().toDate()));
+            String text = String.format(format, DateUtils
+                    .formatDay(schedules.get(0).getStart().withZone(DateTimeZone.getDefault()).toDate()));
             label.setText(text);
             // Generate records
             TableLayout schedulesTable = (TableLayout) rootView.findViewById(R.id.schedules_list);
             for (ScheduleInfo result : schedules) {
                 TableRow row = generateTableRow(result);
                 // Add hour
-                TextView date = generateTextView(DateUtils.formatTime(result.getStart()));
+                TextView date = generateTextView(DateUtils
+                        .formatTime(result.getStart().withZone(DateTimeZone.getDefault())));
                 row.addView(date);
                 // Add separator
                 TextView separator = generateTableSeparator();

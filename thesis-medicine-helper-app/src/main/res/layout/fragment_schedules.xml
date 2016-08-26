@@ -24,13 +24,13 @@
 
         <Button
                 android:id="@+id/schedules_button_refresh"
-                style="@style/button"
+                style="@style/button_icon"
                 android:background="@drawable/refresh"
                 android:layout_toStartOf="@+id/schedules_button_add"/>
 
         <Button
                 android:id="@+id/schedules_button_add"
-                style="@style/button"
+                style="@style/button_icon"
                 android:background="@drawable/add"
                 android:layout_alignParentEnd="true"/>
 

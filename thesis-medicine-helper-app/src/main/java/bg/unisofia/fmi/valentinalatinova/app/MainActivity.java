@@ -17,7 +17,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     public static final int RESULT_LOGIN = 1;
     private static HttpClient httpClient;
     private ViewPager viewPager;
-    private String[] tabs = {"Schedules", "Results"};
 
     /**
      * Called when activity is first created.
@@ -122,6 +121,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
         // Adding Tabs
+        String[] tabs = {getString(R.string.tab_schedules), getString(R.string.tab_results)};
         for (String tab_name : tabs) {
             actionBar.addTab(actionBar.newTab().setText(tab_name).setTabListener(this));
         }

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.joda.time.DateTimeZone;
+
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -273,7 +275,8 @@ public class ResultsFragment extends CustomFragment {
         for (final MobileResultsValue value : table.getValues()) {
             final TableRow row = generateTableRow(value);
             // Add date time
-            TextView date = generateTextView(DateUtils.formatDateTime(value.getMeasurementDate()));
+            TextView date = generateTextView(DateUtils
+                    .formatDateTime(value.getMeasurementDate().withZone(DateTimeZone.getDefault())));
             row.addView(date);
             // Add separator
             TextView separator = generateTableSeparator();
@@ -322,7 +325,8 @@ public class ResultsFragment extends CustomFragment {
     }
 
     private String formatValueString(MobileResultsValue value) {
-        return DateUtils.formatDateTime(value.getMeasurementDate()) + ": " + value.getMeasurement();
+        return DateUtils.formatDateTime(value.getMeasurementDate().withZone(DateTimeZone.getDefault()))
+                + ": " + value.getMeasurement();
     }
 
     private class GetAllResults extends AsyncTask<String, String, List<MobileResults>> {

@@ -11,30 +11,30 @@
 
         <Button
                 android:id="@+id/results_button_prev"
-                style="@style/button"
+                style="@style/button_icon"
                 android:background="@drawable/prev"/>
 
         <Button
                 android:id="@+id/results_button_next"
-                style="@style/button"
+                style="@style/button_icon"
                 android:background="@drawable/next"
                 android:layout_toEndOf="@+id/results_button_prev"/>
 
         <Button
                 android:id="@+id/results_button_delete"
-                style="@style/button"
+                style="@style/button_icon"
                 android:background="@drawable/delete"
                 android:layout_centerInParent="true"/>
 
         <Button
                 android:id="@+id/results_button_refresh"
-                style="@style/button"
+                style="@style/button_icon"
                 android:background="@drawable/refresh"
                 android:layout_toStartOf="@+id/results_button_add"/>
 
         <Button
                 android:id="@+id/results_button_add"
-                style="@style/button"
+                style="@style/button_icon"
                 android:background="@drawable/add"
                 android:layout_alignParentEnd="true"/>
 
@@ -57,7 +57,7 @@
 
             <Button
                     android:id="@+id/result_values_button_add"
-                    style="@style/button"
+                    style="@style/button_icon"
                     android:background="@drawable/add"/>
 
         </LinearLayout>

@@ -99,9 +99,9 @@ public class ManageScheduleActivity extends Activity {
         // Time
         TimePicker time = (TimePicker) findViewById(R.id.manage_schedule_time);
         int hour = dateTime.getHourOfDay();
-        int minute = dateTime.getMinuteOfHour();
-        time.setCurrentHour(hour);
-        time.setCurrentMinute(minute);
+        time.setIs24HourView(true);
+        time.setCurrentHour(hour + 1);
+        time.setCurrentMinute(0);
         // StartAfter
         int startAfter = currentSchedule != null ? currentSchedule.getStartAfter() : 1;
         createDurationNumberPicker(R.id.manage_schedule_startAfter, startAfter);
@@ -140,17 +140,17 @@ public class ManageScheduleActivity extends Activity {
         NumberPicker startAfter = (NumberPicker) findViewById(R.id.manage_schedule_startAfter);
         currentSchedule.setStartAfter(startAfter.getValue());
         Spinner startAfterType = (Spinner) findViewById(R.id.manage_schedule_startAfter_type);
-        currentSchedule.setStartAfterType(Duration.valueOf(startAfterType.getSelectedItem().toString()));
+        currentSchedule.setStartAfterType(toDuration(startAfterType.getSelectedItem().toString()));
         // Frequency
         NumberPicker frequency = (NumberPicker) findViewById(R.id.manage_schedule_frequency);
         currentSchedule.setFrequency(frequency.getValue());
         Spinner frequencyType = (Spinner) findViewById(R.id.manage_schedule_frequency_type);
-        currentSchedule.setFrequencyType(Duration.valueOf(frequencyType.getSelectedItem().toString()));
+        currentSchedule.setFrequencyType(toDuration(frequencyType.getSelectedItem().toString()));
         // Duration
         NumberPicker duration = (NumberPicker) findViewById(R.id.manage_schedule_duration);
         currentSchedule.setDuration(duration.getValue());
         Spinner durationType = (Spinner) findViewById(R.id.manage_schedule_duration_type);
-        currentSchedule.setDurationType(Duration.valueOf(durationType.getSelectedItem().toString()));
+        currentSchedule.setDurationType(toDuration(durationType.getSelectedItem().toString()));
     }
 
     private void createDurationNumberPicker(int id, int value) {
@@ -166,7 +166,7 @@ public class ManageScheduleActivity extends Activity {
         int selection = 0;
         for (int i = 0; i < Duration.values().length; i++) {
             Duration item = Duration.values()[i];
-            duration.add(item.toString());
+            duration.add(fromDuration(item));
             if (item.equals(selectedValue)) {
                 selection = i;
             }
@@ -183,6 +183,33 @@ public class ManageScheduleActivity extends Activity {
         Intent intent = new Intent();
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    private String fromDuration(Duration duration) {
+        switch (duration) {
+            case HOUR:
+                return getString(R.string.duration_hour);
+            case DAY:
+                return getString(R.string.duration_day);
+            case MONTH:
+                return getString(R.string.duration_month);
+            case YEAR:
+                return getString(R.string.duration_year);
+            default:
+                return getString(R.string.duration_day);
+        }
+    }
+
+    private Duration toDuration(String string) {
+        if (string.equals(getString(R.string.duration_hour))) {
+            return Duration.HOUR;
+        } else if (string.equals(getString(R.string.duration_month))) {
+            return Duration.MONTH;
+        } else if (string.equals(getString(R.string.duration_year))) {
+            return Duration.YEAR;
+        } else {
+            return Duration.DAY;
+        }
     }
 
     private class GetSchedule extends AsyncTask<Long, String, Schedule> {

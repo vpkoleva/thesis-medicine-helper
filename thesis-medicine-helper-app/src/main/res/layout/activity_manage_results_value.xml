@@ -1,6 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_height="fill_parent"
+                android:layout_margin="5dp">
 
     <TextView
             android:id="@+id/manage_results_value_datetime_label"
@@ -18,16 +19,10 @@
         <DatePicker
                 android:id="@+id/manage_results_value_date"
                 android:calendarViewShown="false"
-                android:layout_width="0dp"
-                android:layout_weight="0.5"
-                android:layout_height="wrap_content"
                 style="@style/datetime"/>
 
         <TimePicker
                 android:id="@+id/manage_results_value_time"
-                android:layout_width="0dp"
-                android:layout_weight="0.5"
-                android:layout_height="wrap_content"
                 style="@style/datetime"/>
     </LinearLayout>
 
@@ -47,18 +42,13 @@
             android:inputType="text"/>
 
     <Button
-            android:id="@+id/manage_results_value_button_save"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_save"
+            android:id="@+id/manage_results_value_button_cancel"
+            style="@style/button_cancel"
             android:layout_below="@+id/manage_results_value_measurement"/>
 
     <Button
-            android:id="@+id/manage_results_value_button_cancel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/button_cancel"
-            android:layout_below="@+id/manage_results_value_measurement"
-            android:layout_alignParentEnd="true"/>
+            android:id="@+id/manage_results_value_button_save"
+            style="@style/button_save"
+            android:layout_below="@+id/manage_results_value_measurement"/>
 
 </RelativeLayout>

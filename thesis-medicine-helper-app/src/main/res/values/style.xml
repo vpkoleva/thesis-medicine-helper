@@ -2,12 +2,15 @@
 <resources>
 
     <style name="scale">
+        <item name="android:layout_height">wrap_content</item>
         <item name="android:padding">-19dp</item>
         <item name="android:scaleX">0.5</item>
         <item name="android:scaleY">0.5</item>
     </style>
 
     <style name="datetime" parent="@style/scale">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">0.5</item>
         <item name="android:layout_marginTop">-65dp</item>
         <item name="android:layout_marginBottom">-65dp</item>
         <item name="android:layout_marginLeft">-30dp</item>
@@ -15,13 +18,37 @@
     </style>
 
     <style name="number" parent="@style/scale">
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_marginTop">-45dp</item>
         <item name="android:layout_marginBottom">-45dp</item>
     </style>
 
-    <style name="button">
+    <style name="spinner">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_alignParentEnd">true</item>
+        <item name="android:paddingTop">35dp</item>
+        <item name="android:paddingRight">-35dp</item>
+        <item name="android:scaleX">0.8</item>
+        <item name="android:scaleY">0.8</item>
+    </style>
+
+    <style name="button_icon">
         <item name="android:layout_width">30dp</item>
         <item name="android:layout_height">30dp</item>
         <item name="android:layout_margin">5dp</item>
+    </style>
+
+    <style name="button_cancel">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:text">@string/button_cancel</item>
+    </style>
+
+    <style name="button_save">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:text">@string/button_save</item>
+        <item name="android:layout_alignParentEnd">true</item>
     </style>
 </resources>

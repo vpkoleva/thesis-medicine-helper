@@ -27,7 +27,8 @@ public class DataBaseCommander {
         // Initialise connection
         connection = DriverManager.getConnection(
                 "jdbc:mysql://" + database.getHost() + ":" + database.getPort() + "/" + database.getDatabase()
-                        + "?user=" + database.getUsername() + "&password=" + database.getPassword());
+                        + "?user=" + database.getUsername() + "&password=" + database.getPassword()
+                        + "&characterEncoding=UTF-8&useLegacyDatetimeCode=false&serverTimezone=UTC");
     }
 
     public PreparedStatement createPreparedStatement(String sql, Object... statementData) {

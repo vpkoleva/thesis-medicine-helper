@@ -1,5 +1,7 @@
 package bg.unisofia.fmi.valentinalatinova.app;
 
+import org.joda.time.DateTime;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -12,7 +14,6 @@ import android.widget.TimePicker;
 import bg.unisofia.fmi.valentinalatinova.app.utils.HttpClient;
 import bg.unisofia.fmi.valentinalatinova.core.json.MobileResultsValue;
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
-import org.joda.time.DateTime;
 
 public class ManageResultsValueActivity extends Activity {
 
@@ -86,6 +87,7 @@ public class ManageResultsValueActivity extends Activity {
         TimePicker time = (TimePicker) findViewById(R.id.manage_results_value_time);
         int hour = dateTime.getHourOfDay();
         int minute = dateTime.getMinuteOfHour();
+        time.setIs24HourView(true);
         time.setCurrentHour(hour);
         time.setCurrentMinute(minute);
         // Measurement

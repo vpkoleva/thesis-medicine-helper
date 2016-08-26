@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.DateTimeZone;
+
 import bg.unisofia.fmi.valentinalatinova.core.json.MobileResults;
 import bg.unisofia.fmi.valentinalatinova.core.json.MobileResultsValue;
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
@@ -36,7 +38,8 @@ public class MobileResultsDAO {
         tableIds = tableIds.substring(0, tableIds.length() - 1);
 
         String sqlvalues = "SELECT * FROM `mtablevalues` WHERE mtables_ID IN (" + tableIds + ") "
-                + "AND `mobileuser_ID`=(SELECT `mobileuser_ID` FROM `users` WHERE `ID`=?)";
+                + "AND `mobileuser_ID`=(SELECT `mobileuser_ID` FROM `users` WHERE `ID`=?)"
+                + "ORDER BY `date`";
         List<MobileValueDO> values = dataBaseCommander.select(MobileValueDO.class, sqlvalues, userId);
         Map<Long, List<MobileResultsValue>> valuesMap = new HashMap<>();
 
@@ -75,7 +78,8 @@ public class MobileResultsDAO {
         String sql = "INSERT INTO `mtablevalues` (measurement, date, mtables_ID, mobileuser_ID) "
                 + "VALUES(?,?,?,(SELECT `mobileuser_ID` FROM `users` WHERE `ID`=?))";
         final long result = dataBaseCommander.insert(sql, resultsValue.getMeasurement(),
-                new Timestamp(resultsValue.getMeasurementDate().getMillis()), resultsValue.getResultsId(), userId);
+                new Timestamp(resultsValue.getMeasurementDate().withZone(DateTimeZone.UTC).getMillis()),
+                resultsValue.getResultsId(), userId);
         if (result > 0) {
             return Result.createSuccess(result);
         } else {
@@ -87,7 +91,8 @@ public class MobileResultsDAO {
         String sql = "UPDATE `mtablevalues` SET measurement=?, date=? "
                 + "WHERE ID=? AND mobileuser_ID=(SELECT `mobileuser_ID` FROM `users` WHERE `ID`=?)";
         final boolean result = dataBaseCommander.deleteOrUpdate(sql, resultsValue.getMeasurement(),
-                new Timestamp(resultsValue.getMeasurementDate().getMillis()), resultsValue.getId(), userId);
+                new Timestamp(resultsValue.getMeasurementDate().withZone(DateTimeZone.UTC).getMillis()),
+                resultsValue.getId(), userId);
         if (result) {
             return Result.createSuccess(resultsValue.getId());
         } else {

@@ -1,5 +1,7 @@
 package bg.unisofia.fmi.valentinalatinova.app;
 
+import java.util.Locale;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -32,6 +34,7 @@ public class LoginActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Locale.setDefault(new Locale("bg"));
         setContentView(R.layout.activity_login);
         httpClient = new HttpClient();
         reloadSettings();

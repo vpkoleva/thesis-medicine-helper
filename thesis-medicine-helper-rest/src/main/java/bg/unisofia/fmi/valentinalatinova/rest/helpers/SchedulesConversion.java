@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import bg.unisofia.fmi.valentinalatinova.core.json.Schedule;
 import bg.unisofia.fmi.valentinalatinova.core.json.ScheduleInfo;
@@ -19,6 +20,7 @@ public class SchedulesConversion {
         result.setId(schedule.getId());
         result.setSchedule(schedule);
         DateTime startDate = schedule.getStartDate() == null ? new DateTime(0) : schedule.getStartDate();
+        startDate = startDate.withZone(DateTimeZone.UTC);
         DateTime start = calculateDateTime(startDate, schedule.getStartAfter(), schedule.getStartAfterType());
         DateTime end = calculateDateTime(start, schedule.getDuration(), schedule.getDurationType());
         result.setEndDate(new Timestamp(end.getMillis()));

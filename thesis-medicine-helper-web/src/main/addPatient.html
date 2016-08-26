@@ -39,7 +39,7 @@
       <div class="container theme-showcase" role="main">
          <!-- Main jumbotron for a primary marketing message or call to action -->
          <div class="jumbotron">
-            <h1>Данни за пациент</h1>
+            <h1>Данни за пациент '<script>document.write(sessionStorage.getItem("patientName"))</script>'</h1>
             <p>Добавяне и промяна на данни за пациент</p>
          </div>
          <button type="button" data-toggle="modal" data-target="#loadDefaultTemplate" class="btn btn-lg btn-default">Добави стандартен лечебен план за текуща диагноза</button>
