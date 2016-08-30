@@ -61,7 +61,7 @@ app.controller('patientCtrl', function($scope, $http) {
 	$http(requestGet(urlWebPatientAll)).then(function(response) {
 		 $scope.myData = response.data;
 	}, handleErrorResponse);
-	$scope.getIndex = function(index, name) {
+	$scope.edit = function(index, name) {
 		sessionStorage.setItem("patientID", index);
 		sessionStorage.setItem("patientName", name);
 		window.location="addPatient.html";
@@ -77,7 +77,7 @@ app.controller('diagnoseCtrl', function($scope, $http) {
 	$http(requestGet(urlWebDiagnoseAll)).then(function(response) {
 		$scope.myData = response.data;
 	}, handleErrorResponse)
-	$scope.getIndex = function(index, name) {
+	$scope.edit = function(index, name) {
 		sessionStorage.setItem("diagnoseID", index)
 		sessionStorage.setItem("diagnoseName", name)
 		window.location="addDiagnose.html";

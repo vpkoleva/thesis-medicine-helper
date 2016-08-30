@@ -50,6 +50,16 @@ public class SchedulesConversion {
         return result;
     }
 
+    public List<Schedule> convertDOtoJson(List<WebScheduleDO> webSchedules) {
+        final List<Schedule> result = new ArrayList<>();
+
+        for (WebScheduleDO webSchedule : webSchedules) {
+            result.add(webSchedule.getSchedule());
+        }
+
+        return result;
+    }
+
     private DateTime getNextStartDate(DateTime start, Schedule schedule) {
         return calculateDateTime(start, schedule.getFrequency(), schedule.getFrequencyType());
     }

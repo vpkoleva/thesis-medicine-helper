@@ -43,7 +43,7 @@
          <p>
             <button type="button" class="btn btn-lg btn-default"  data-toggle="modal" data-target="#addPatient">Добави пациент</button>
             <button type="button" class="btn btn-lg btn-default" data-toggle="modal" data-target="#addDiagnose">Добави диагноза</button>
-            <!-- Modal -->
+         <!-- Modal -->
          <div class="modal fade" id="addDiagnose" role="dialog">
             <div class="modal-dialog">
                <!-- Modal content-->
@@ -109,7 +109,7 @@
             <ul class="example-animate-container list-group nav-list">
                <li class="animate-repeat list-group-item" ng-repeat="x in myData | filter:p as results">
                   {{ x.firstName + ' ' + x.lastName + ', ' + x.diagnoseName }}
-                  <button type="button" class="btn-primary btn-sm pull-right" ng-click="getIndex(x.id, x.firstName + ' ' + x.lastName)">Промени</button>
+                  <button type="button" class="btn-primary btn-sm pull-right" ng-click="edit(x.id, x.firstName + ' ' + x.lastName)">Промени</button>
                   <button type="button" class="btn-primary btn-sm pull-right" ng-click="delete(x.id)">Изтрий</button>
                   <button type="button" class="btn-primary btn-sm pull-right" ng-if="x.mobileUserId == 0" data-toggle="modal" data-target="#linkMobileUser" data-patient-id="{{x.id}}">Свържи</button>
                </li>
@@ -151,7 +151,7 @@
             <ul class="example-animate-container list-group nav-list">
                <li class="animate-repeat list-group-item" ng-repeat="y in myData | filter:q as results">
                   {{y.diagnoseName}}
-                  <button type="button" ng-click="getIndex(y.id, y.diagnoseName)" class="btn-primary btn-sm pull-right">Промени</button>
+                  <button type="button" ng-click="edit(y.id, y.diagnoseName)" class="btn-primary btn-sm pull-right">Промени</button>
                   <button type="button" class="btn-primary btn-sm pull-right" ng-click="delete(y.id)">Изтрий</button>
                </li>
                <li class="animate-repeat" ng-if="results.length == 0">
@@ -168,7 +168,6 @@
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
       <script>window.jQuery || document.write('<script src="Bootstrap/assets/js/vendor/jquery.min.js"><\/script>')</script>
       <script src="css/Bootstrap/js/bootstrap.min.js"></script>
-      <script src="css/Bootstrap/assets/js/docs.min.js"></script>
       <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
       <script src="css/Bootstrap/assets/js/ie10-viewport-bug-workaround.js"></script>
    </body>

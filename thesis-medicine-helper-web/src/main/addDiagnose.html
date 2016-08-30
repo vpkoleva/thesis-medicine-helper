@@ -17,10 +17,6 @@
       <link href="css/theme.css" rel="stylesheet">
       <script src='js/lib/jquery.min.js'></script>
       <script src='js/lib/moment.min.js'></script>
-      <script src='calendar/fullcalendar.min.js'></script>
-      <script src='calendar/lang/bg.js'></script>
-      <link href='calendar/fullcalendar.css' rel='stylesheet' />
-      <link href='calendar/fullcalendar.print.css' rel='stylesheet' media='print' />
       <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
       <script type="text/javascript" src="js/addDiagnoseJS.js"></script>
       <script src="css/Bootstrap/assets/js/ie-emulation-modes-warning.js"></script>
@@ -40,9 +36,9 @@
          <!-- Main jumbotron for a primary marketing message or call to action -->
          <div class="jumbotron">
             <h1>Данни за диагноза '<script>document.write(sessionStorage.getItem("diagnoseName"))</script>'</h1>
-            <p>Добави лечебен план за диагноза</p>
+            <p>Добави график за диагноза</p>
          </div>
-         <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Добави нов лечебен план</button>
+         <button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Добави нов график</button>
          <!-- Modal -->
          <div class="modal fade" id="myModal" role="dialog">
             <div class="modal-dialog">
@@ -104,7 +100,6 @@
                      </form>
                   </div>
                   <div class="modal-footer">
-                     <button type="button" class="btn btn-default pull-left" data-ng-click="delete()">Изтрий</button>
                      <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Затвори</button>
                      <button type="submit" class="btn btn-default pull-right" data-ng-click="submit(testForm)">Запази</button>
                   </div>
@@ -115,14 +110,30 @@
          <br/>
          <br/>
          <br/>
-         <div id='calendar'></div>
+         <h2>Промени график за диагноза</h2>
+         <div id="result"></div>
+         <div  ng-controller="schedulesCtrl">
+            <div class="form-group">
+               <label for="searchSchedule">Търси график:</label>
+               <input  id="searchSchedule" class="form-control" type="search" ng-model="p" placeholder="филтрирай графиците..." aria-label="filter schedules" />
+            </div>
+            <ul class="example-animate-container list-group nav-list">
+               <li class="animate-repeat list-group-item" ng-repeat="x in schedules | filter:p as results">
+                  {{ x.description + ", започва след " + x.startAfter +" с честота всеки " + x.frequency + " и продължителност " + x.duration }}
+                  <button type="button" class="btn-primary btn-sm pull-right" ng-click="edit(x.id)">Промени</button>
+                  <button type="button" class="btn-primary btn-sm pull-right" ng-click="delete(x.id)">Изтрий</button>
+               </li>
+               <li class="animate-repeat" ng-if="results.length == 0">
+                  <strong>Не са намерени графици...</strong>
+               </li>
+            </ul>
+         </div>
       </div>
       <!-- /container -->
       <!-- Bootstrap core JavaScript
          ================================================== -->
       <!-- Placed at the end of the document so the pages load faster -->
       <script src="css/Bootstrap/js/bootstrap.min.js"></script>
-      <script src="css/Bootstrap/assets/js/docs.min.js"></script>
       <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
       <script src="css/Bootstrap/assets/js/ie10-viewport-bug-workaround.js"></script>
    </body>

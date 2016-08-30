@@ -40,10 +40,9 @@ public class WebScheduleService {
     @Timed
     @Path("/all/diagnose/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public List<ScheduleInfo> getWebSchedules(@Auth User user, @PathParam("id") int diagnoseId,
-            @QueryParam("start") String start, @QueryParam("end") String end) {
+    public List<Schedule> getWebSchedules(@Auth User user, @PathParam("id") int diagnoseId) {
         List<WebScheduleDO> schedulesFromDB = schedulesDao.findByDiagnoseId(diagnoseId, user.getId());
-        return convert.convertDOtoJsonList(schedulesFromDB, start, end);
+        return convert.convertDOtoJson(schedulesFromDB);
     }
 
     @GET

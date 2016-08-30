@@ -1,22 +1,18 @@
-$(document).ready(function() {
-	$('#calendar').fullCalendar({
-		eventClick: function(event, element) {
-			sessionStorage.setItem("eventId", event.id);
-			sessionStorage.setItem("isForUpdate", true);
-			$("#myModal").modal("show");
-			$('#calendar').fullCalendar('updateEvent', event);
-		},
-		defaultDate: '1970-01-01',
-		editable: true,
-		eventLimit: true, // allow "more" link when too many events
-		events: {
-			url: baseUrl + urlWebScheduleAllDiagnose + sessionStorage.getItem("diagnoseID"),
-			headers: { 'Authorization': 'Bearer ' + sessionStorage.getItem("authToken") },
-			type: 'GET',
-			error: handleErrorResponse
-		}
-	});
-});
+function convert(value, duration) {
+	var end
+	switch(duration){
+		case "MONTH":
+			end = value == 1 ? "месец" : "месеца"
+			break
+		case "YEAR":
+			end = value == 1 ? "година" : "години"
+			break
+		case "DAY":
+		default:
+			end = value == 1 ? "ден" : "дни"
+	}
+	return value + " " + end
+}
 
 var app = angular.module('myApp', []);
 app.controller('formController', function($scope, $http) {
@@ -28,11 +24,11 @@ app.controller('formController', function($scope, $http) {
 		$scope.frequency = null;
 		$scope.duration = null;
 		$scope.$apply();
-		$('#calendar').fullCalendar('refetchEvents');
+		location.reload()
 	});
 	$('#myModal').on('shown.bs.modal', function(e) {
 		if(sessionStorage.getItem("isForUpdate") == 'true') {
-			$http(requestGet(urlWebScheduleGet + sessionStorage.getItem("eventId"))).then(function(response) {
+			$http(requestGet(urlWebScheduleGet + sessionStorage.getItem("scheduleId"))).then(function(response) {
 				$scope.scheduleId = response.data.id;
 				$scope.action = response.data.description;
 				$scope.startAfter = response.data.startAfter;
@@ -49,11 +45,6 @@ app.controller('formController', function($scope, $http) {
 			$scope.$apply();
 		}
 	});
-	$scope.delete = function() {
-		if (confirm("Моля потвърдете изтриването")) {
-			$http(requestDelete(urlWebScheduleDelete + $scope.scheduleId)).then(handleWebScheduleResponse, handleErrorResponse);
-		}
-	};
 	$scope.submit = function(form) {
 		var url = sessionStorage.getItem("isForUpdate") == 'true' ? urlWebScheduleUpdate : urlWebScheduleSave;
 		var data = {
@@ -67,14 +58,40 @@ app.controller('formController', function($scope, $http) {
 			durationType: $scope.durationType,
 			diagnoseId: sessionStorage.getItem("diagnoseID")
 		}
-		$http(requestPost(url, data)).then(handleWebScheduleResponse, handleErrorResponse);
+		$http(requestPost(url, data)).then(function(response) {
+			if (response.data.success) {
+				$('#myModal').modal('hide');
+			} else {
+				alert(response.data.error);
+			}
+		}, handleErrorResponse);
 	}
 });
 
-var handleWebScheduleResponse = function(response) {
-	if (response.data.success) {
-		$('#myModal').modal('hide');
-	} else {
-		alert(response.data.error);
+app.controller('schedulesCtrl', function($scope, $http) {
+	$http(requestGet(urlWebScheduleAllDiagnose + sessionStorage.getItem("diagnoseID"))).then(function(response) {
+		$scope.schedules = []
+		angular.forEach(response.data, function(item) {
+			item.startAfter = convert(item.startAfter, item.startAfterType)
+			item.frequency = convert(item.frequency, item.frequencyType)
+			item.duration = convert(item.duration, item.durationType)
+			$scope.schedules.push(item)
+		});
+	}, handleErrorResponse);
+	$scope.edit = function(index) {
+		sessionStorage.setItem("scheduleId", index);
+		sessionStorage.setItem("isForUpdate", true);
+		$("#myModal").modal("show");
 	}
-}
+	$scope.delete = function(index) {
+		if (confirm("Моля потвърдете изтриването")) {
+			$http(requestDelete(urlWebScheduleDelete + index)).then(function(response) {
+				if (response.data.success) {
+					location.reload()
+				} else {
+					alert(response.data.error);
+				}
+			}, handleErrorResponse);
+		}
+	}
+});
