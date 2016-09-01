@@ -14,16 +14,22 @@ app.controller('loginController', function($scope, $http) {
 				sessionStorage.setItem("authToken", response.data.authToken);
 				window.location="index.html"
 			} else {
-				alert("Само лекари могат да използват приложението")
+				showErrors("Само лекари могат да използват приложението")
 			}
 		}, function(response) {
 			if (response.data != null) {
 				if (response.status == '401') {
-					alert("Грешни потребителско име или парола");
+					showErrors("Грешни потребителско име или парола");
 				}
 			} else {
-				alert("Няма връзка със сървъра")
+				showErrors("Няма връзка със сървъра")
 			}
 		});
 	}
 });
+
+function showErrors(message){
+	var error = document.getElementById("error")
+	error.innerHTML = message;
+	error.className += "alert alert-danger";
+}
