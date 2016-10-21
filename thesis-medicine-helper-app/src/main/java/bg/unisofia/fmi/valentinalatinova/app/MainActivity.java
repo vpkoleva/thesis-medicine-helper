@@ -73,7 +73,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      */
     @Override
     public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-
     }
 
     /**
@@ -84,7 +83,6 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
      */
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-
     }
 
     // Static methods

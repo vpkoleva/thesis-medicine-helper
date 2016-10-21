@@ -178,12 +178,6 @@ public class SchedulesFragment extends CustomFragment {
         transaction.commit();
     }
 
-    private void refreshSchedulesFragment(Date selectedDate) {
-        refreshCalendar();
-        clearSchedulesTable();
-        drawSchedulesTable(getSchedulesByDate(selectedDate));
-    }
-
     private void refreshCalendar() {
         // Clear previously selected dates
         schedulesCalendar.clearBackgroundResourceForDates(datesWithSchedules);
@@ -204,43 +198,6 @@ public class SchedulesFragment extends CustomFragment {
         }
     }
 
-    /**
-     * Implements CaldroidListener abstract class to handles calendar events.
-     */
-    private final CaldroidListener calendarListener = new CaldroidListener() {
-        private Date lastClicked = Calendar.getInstance().getTime();
-
-        @Override
-        public void onSelectDate(final Date date, View view) {
-            clearSchedulesTable();
-            int events = 0;
-            for (Date selected : datesWithSchedules) {
-                if (DateUtils.isSameDay(date, selected)) {
-                    events++;
-                }
-            }
-            if (events > 0) {
-                drawSchedulesTable(getSchedulesByDate(date));
-            }
-            schedulesCalendar.clearTextColorForDate(lastClicked);
-            schedulesCalendar.setTextColorForDate(R.color.blue, date);
-            schedulesCalendar.refreshView();
-            lastClicked = date;
-        }
-
-        @Override
-        public void onChangeMonth(int month, int year) {
-        }
-
-        @Override
-        public void onLongClickDate(Date date, View view) {
-        }
-
-        @Override
-        public void onCaldroidViewCreated() {
-        }
-    };
-
     private List<ScheduleInfo> getSchedulesByDate(Date date) {
         List<ScheduleInfo> result = new ArrayList<>();
         for (ScheduleInfo schedule : allSchedules) {
@@ -257,24 +214,22 @@ public class SchedulesFragment extends CustomFragment {
         return result;
     }
 
-    private void clearSchedulesTable() {
+    private void drawSchedulesTable(List<ScheduleInfo> schedules) {
+        // Clear Schedules table
         TextView label = (TextView) rootView.findViewById(R.id.schedules_view_for);
         label.setVisibility(TextView.INVISIBLE);
         TableLayout schedulesTable = (TableLayout) rootView.findViewById(R.id.schedules_list);
         schedulesTable.removeAllViews();
-    }
 
-    private void drawSchedulesTable(List<ScheduleInfo> schedules) {
+        // Draw Schedules table
         if (schedules != null && schedules.size() > 0) {
             // Generate header
-            TextView label = (TextView) rootView.findViewById(R.id.schedules_view_for);
             label.setVisibility(TextView.VISIBLE);
             String format = getString(R.string.schedules_view_for);
             String text = String.format(format, DateUtils
                     .formatDay(schedules.get(0).getStart().withZone(DateTimeZone.getDefault()).toDate()));
             label.setText(text);
             // Generate records
-            TableLayout schedulesTable = (TableLayout) rootView.findViewById(R.id.schedules_list);
             for (ScheduleInfo result : schedules) {
                 TableRow row = generateTableRow(result);
                 // Add hour
@@ -293,9 +248,25 @@ public class SchedulesFragment extends CustomFragment {
         }
     }
 
+    /**
+     * Implements CaldroidListener abstract class to handles calendar events.
+     */
+    private final CaldroidListener calendarListener = new CaldroidListener() {
+        private Date lastClicked = Calendar.getInstance().getTime();
+
+        @Override
+        public void onSelectDate(final Date date, View view) {
+            drawSchedulesTable(getSchedulesByDate(date));
+            schedulesCalendar.clearTextColorForDate(lastClicked);
+            schedulesCalendar.setTextColorForDate(R.color.blue, date);
+            schedulesCalendar.refreshView();
+            lastClicked = date;
+        }
+    };
+
     private class GetSchedules extends AsyncTask<String, String, List<ScheduleInfo>> {
 
-        private final String PATH_SCHEDULES = "/mobile/schedule/all";
+        private static final String PATH_SCHEDULES = "/mobile/schedule/all";
 
         /**
          * Performs the action in background thread.
@@ -322,13 +293,14 @@ public class SchedulesFragment extends CustomFragment {
         @Override
         protected void onPostExecute(List<ScheduleInfo> result) {
             allSchedules = result;
-            refreshSchedulesFragment(Calendar.getInstance().getTime());
+            refreshCalendar();
+            drawSchedulesTable(getSchedulesByDate(Calendar.getInstance().getTime()));
         }
     }
 
     private class DeleteSchedule extends AsyncTask<Long, String, Result> {
 
-        private final String PATH_DELETE = "/mobile/schedule/delete/";
+        private static final String PATH_DELETE = "/mobile/schedule/delete/";
 
         @Override
         protected Result doInBackground(Long... params) {

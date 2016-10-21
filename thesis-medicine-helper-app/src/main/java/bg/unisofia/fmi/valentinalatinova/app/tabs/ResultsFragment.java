@@ -161,7 +161,6 @@ public class ResultsFragment extends CustomFragment {
     }
 
     // Private methods
-
     private void registerOnClickListenersNavigationButtons() {
         // Previous
         Button prev = (Button) rootView.findViewById(R.id.results_button_prev);
@@ -364,7 +363,7 @@ public class ResultsFragment extends CustomFragment {
 
     private class DeleteResults extends AsyncTask<Long, String, Result> {
 
-        private final String PATH_DELETE = "/mobile/results/delete/";
+        private static final String PATH_DELETE = "/mobile/results/delete/";
 
         @Override
         protected Result doInBackground(Long... params) {
@@ -391,7 +390,7 @@ public class ResultsFragment extends CustomFragment {
 
     private class DeleteResultsValue extends AsyncTask<Long, String, Result> {
 
-        private final String PATH_DELETE = "/mobile/results/value/delete/";
+        private static final String PATH_DELETE = "/mobile/results/value/delete/";
 
         @Override
         protected Result doInBackground(Long... params) {

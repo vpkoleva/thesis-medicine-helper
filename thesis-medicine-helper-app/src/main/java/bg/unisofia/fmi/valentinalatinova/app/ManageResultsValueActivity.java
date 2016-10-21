@@ -19,8 +19,10 @@ public class ManageResultsValueActivity extends Activity {
 
     public static final String RESULT_EXTRA = "MobileResultsValue";
     public static final String RESULT_ID = "MobileResultsId";
-    private final String PATH_SAVE_VALUE = "/mobile/results/value/save";
-    private final String PATH_UPDATE_VALUE = "/mobile/results/value/update";
+
+    private static final String PATH_SAVE_VALUE = "/mobile/results/value/save";
+    private static final String PATH_UPDATE_VALUE = "/mobile/results/value/update";
+
     private MobileResultsValue currentValue;
     private long currentResultsId = -1;
     private long currentValueId = -1;
@@ -47,6 +49,7 @@ public class ManageResultsValueActivity extends Activity {
         registerOnClickListeners();
     }
 
+    // Private methods
     private void registerOnClickListeners() {
         // Save button
         Button save = (Button) findViewById(R.id.manage_results_value_button_save);

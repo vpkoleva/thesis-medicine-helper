@@ -23,6 +23,7 @@ public class ManageResultActivity extends Activity {
         registerOnClickListeners();
     }
 
+    // Private methods
     private void registerOnClickListeners() {
         // Save button
         Button save = (Button) findViewById(R.id.manage_result_button_save);
@@ -59,7 +60,7 @@ public class ManageResultActivity extends Activity {
 
     private class CreateResult extends AsyncTask<String, String, Result> {
 
-        private final String PATH_CREATE_RESULT = "/mobile/results/save";
+        private static final String PATH_CREATE_RESULT = "/mobile/results/save";
 
         /**
          * Performs the action in background thread.

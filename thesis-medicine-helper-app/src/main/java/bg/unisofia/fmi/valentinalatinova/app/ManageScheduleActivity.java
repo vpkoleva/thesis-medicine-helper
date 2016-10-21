@@ -56,6 +56,7 @@ public class ManageScheduleActivity extends Activity {
         registerOnClickListeners();
     }
 
+    // Private methods
     private void registerOnClickListeners() {
         // Save button
         Button save = (Button) findViewById(R.id.manage_schedule_button_save);
@@ -214,7 +215,7 @@ public class ManageScheduleActivity extends Activity {
 
     private class GetSchedule extends AsyncTask<Long, String, Schedule> {
 
-        private final String PATH_SCHEDULE = "/mobile/schedule/get/";
+        private static final String PATH_SCHEDULE = "/mobile/schedule/get/";
 
         /**
          * Performs the action in background thread.

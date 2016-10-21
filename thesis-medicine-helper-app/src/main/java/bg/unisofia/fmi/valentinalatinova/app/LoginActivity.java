@@ -42,16 +42,6 @@ public class LoginActivity extends Activity {
         fillLoginForm();
     }
 
-    private void registerOnClickListenerButtonLogin() {
-        Button button = (Button) findViewById(R.id.login_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new GetAuthToken().execute();
-            }
-        });
-    }
-
     /**
      * Create standard options menu. Currently there is only Settings option in it.
      *
@@ -94,6 +84,17 @@ public class LoginActivity extends Activity {
                 reloadSettings();
                 break;
         }
+    }
+
+    // Private methods
+    private void registerOnClickListenerButtonLogin() {
+        Button button = (Button) findViewById(R.id.login_button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new GetAuthToken().execute();
+            }
+        });
     }
 
     private void reloadSettings() {
