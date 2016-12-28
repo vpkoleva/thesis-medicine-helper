@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -18,14 +19,13 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.Spinner;
 import android.widget.TimePicker;
+import bg.unisofia.fmi.valentinalatinova.app.utils.Constants;
 import bg.unisofia.fmi.valentinalatinova.app.utils.HttpClient;
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 import bg.unisofia.fmi.valentinalatinova.core.json.Schedule;
 import bg.unisofia.fmi.valentinalatinova.core.utils.Duration;
 
 public class ManageScheduleActivity extends Activity {
-
-    public static final String SCHEDULE_ID = "ScheduleId";
 
     private static final String PATH_SAVE_SCHEDULE = "/mobile/schedule/save";
     private static final String PATH_UPDATE_SCHEDULE = "/mobile/schedule/update";
@@ -40,7 +40,7 @@ public class ManageScheduleActivity extends Activity {
         setContentView(R.layout.activity_manage_schedule);
         // Get schedule object
         Intent intent = getIntent();
-        currentScheduleId = intent.getLongExtra(SCHEDULE_ID, -1);
+        currentScheduleId = intent.getLongExtra(Constants.SCHEDULE_ID, -1);
         // If schedule is passed then this is an Edit Action so capture its ID
         if (currentScheduleId != -1) {
             setTitle(R.string.manage_schedule_edit_window);
@@ -74,8 +74,8 @@ public class ManageScheduleActivity extends Activity {
             }
         });
         // Cancel button
-        Button button = (Button) findViewById(R.id.manage_schedule_button_cancel);
-        button.setOnClickListener(new View.OnClickListener() {
+        Button cancel = (Button) findViewById(R.id.manage_schedule_button_cancel);
+        cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setResult(RESULT_CANCELED);
@@ -85,12 +85,14 @@ public class ManageScheduleActivity extends Activity {
     }
 
     private void initialiseManageScheduleForm() {
+        final boolean isEdit = currentSchedule != null;
         // Description
-        String descriptionText = currentSchedule != null ? currentSchedule.getDescription() : "";
+        String descriptionText = isEdit ? currentSchedule.getDescription() : "";
         EditText description = (EditText) findViewById(R.id.manage_schedule_description);
         description.setText(descriptionText);
         // Date
-        DateTime dateTime = currentSchedule != null ? currentSchedule.getStartDate() : DateTime.now();
+        DateTime dateTime = isEdit ? calculateStartTime(currentSchedule.getStartDate(), currentSchedule.getStartAfter(),
+                currentSchedule.getStartAfterType()) : DateTime.now();
         DatePicker date = (DatePicker) findViewById(R.id.manage_schedule_date);
         int year = dateTime.getYear();
         // Calendar month starts from 0
@@ -101,22 +103,22 @@ public class ManageScheduleActivity extends Activity {
         TimePicker time = (TimePicker) findViewById(R.id.manage_schedule_time);
         int hour = dateTime.getHourOfDay();
         time.setIs24HourView(true);
-        time.setCurrentHour(hour + 1);
+        time.setCurrentHour(isEdit ? hour : hour + 1);
         time.setCurrentMinute(0);
         // StartAfter
-        int startAfter = currentSchedule != null ? currentSchedule.getStartAfter() : 1;
-        createDurationNumberPicker(R.id.manage_schedule_startAfter, startAfter);
-        Duration startAfterType = currentSchedule != null ? currentSchedule.getStartAfterType() : Duration.DAY;
+        int startAfter = isEdit ? currentSchedule.getStartAfter() : 0;
+        createDurationNumberPicker(R.id.manage_schedule_startAfter, startAfter, 0);
+        Duration startAfterType = isEdit ? currentSchedule.getStartAfterType() : Duration.DAY;
         createDurationSpinner(R.id.manage_schedule_startAfter_type, startAfterType);
         // Frequency
-        int frequency = currentSchedule != null ? currentSchedule.getFrequency() : 1;
-        createDurationNumberPicker(R.id.manage_schedule_frequency, frequency);
-        Duration frequencyType = currentSchedule != null ? currentSchedule.getFrequencyType() : Duration.DAY;
+        int frequency = isEdit ? currentSchedule.getFrequency() : 1;
+        createDurationNumberPicker(R.id.manage_schedule_frequency, frequency, 1);
+        Duration frequencyType = isEdit ? currentSchedule.getFrequencyType() : Duration.DAY;
         createDurationSpinner(R.id.manage_schedule_frequency_type, frequencyType);
         // Duration
-        int duration = currentSchedule != null ? currentSchedule.getDuration() : 1;
-        createDurationNumberPicker(R.id.manage_schedule_duration, duration);
-        Duration durationType = currentSchedule != null ? currentSchedule.getDurationType() : Duration.DAY;
+        int duration = isEdit ? currentSchedule.getDuration() : 1;
+        createDurationNumberPicker(R.id.manage_schedule_duration, duration, 1);
+        Duration durationType = isEdit ? currentSchedule.getDurationType() : Duration.DAY;
         createDurationSpinner(R.id.manage_schedule_duration_type, durationType);
     }
 
@@ -135,13 +137,15 @@ public class ManageScheduleActivity extends Activity {
         TimePicker time = (TimePicker) findViewById(R.id.manage_schedule_time);
         int hour = time.getCurrentHour();
         int minute = time.getCurrentMinute();
-        DateTime dateTime = new DateTime(year, month, day, hour, minute);
-        currentSchedule.setStartDate(dateTime);
         // StartAfter
         NumberPicker startAfter = (NumberPicker) findViewById(R.id.manage_schedule_startAfter);
         currentSchedule.setStartAfter(startAfter.getValue());
         Spinner startAfterType = (Spinner) findViewById(R.id.manage_schedule_startAfter_type);
         currentSchedule.setStartAfterType(toDuration(startAfterType.getSelectedItem().toString()));
+        // StartDate
+        DateTime dateTime = calculateStartTime(new DateTime(year, month, day, hour, minute),
+                currentSchedule.getStartAfter(), currentSchedule.getStartAfterType());
+        currentSchedule.setStartDate(dateTime);
         // Frequency
         NumberPicker frequency = (NumberPicker) findViewById(R.id.manage_schedule_frequency);
         currentSchedule.setFrequency(frequency.getValue());
@@ -154,9 +158,9 @@ public class ManageScheduleActivity extends Activity {
         currentSchedule.setDurationType(toDuration(durationType.getSelectedItem().toString()));
     }
 
-    private void createDurationNumberPicker(int id, int value) {
+    private void createDurationNumberPicker(int id, int value, int minValue) {
         NumberPicker duration = (NumberPicker) findViewById(id);
-        duration.setMinValue(1);
+        duration.setMinValue(minValue);
         duration.setMaxValue(30);
         duration.setValue(value);
     }
@@ -184,6 +188,21 @@ public class ManageScheduleActivity extends Activity {
         Intent intent = new Intent();
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    public DateTime calculateStartTime(DateTime dateTime, int value, Duration duration) {
+        switch (duration) {
+            case HOUR:
+                return dateTime.minusHours(value).withZone(DateTimeZone.getDefault());
+            case DAY:
+                return dateTime.minusDays(value).withZone(DateTimeZone.getDefault());
+            case MONTH:
+                return dateTime.minusMonths(value).withZone(DateTimeZone.getDefault());
+            case YEAR:
+                return dateTime.minusYears(value).withZone(DateTimeZone.getDefault());
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     private String fromDuration(Duration duration) {

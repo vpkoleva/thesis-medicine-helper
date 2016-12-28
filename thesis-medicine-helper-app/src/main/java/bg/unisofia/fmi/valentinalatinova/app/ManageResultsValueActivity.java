@@ -11,14 +11,12 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
+import bg.unisofia.fmi.valentinalatinova.app.utils.Constants;
 import bg.unisofia.fmi.valentinalatinova.app.utils.HttpClient;
 import bg.unisofia.fmi.valentinalatinova.core.json.MobileResultsValue;
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 
 public class ManageResultsValueActivity extends Activity {
-
-    public static final String RESULT_EXTRA = "MobileResultsValue";
-    public static final String RESULT_ID = "MobileResultsId";
 
     private static final String PATH_SAVE_VALUE = "/mobile/results/value/save";
     private static final String PATH_UPDATE_VALUE = "/mobile/results/value/update";
@@ -33,7 +31,7 @@ public class ManageResultsValueActivity extends Activity {
         setContentView(R.layout.activity_manage_results_value);
         // Get results value object
         Intent intent = getIntent();
-        currentValue = (MobileResultsValue) intent.getSerializableExtra(RESULT_EXTRA);
+        currentValue = (MobileResultsValue) intent.getSerializableExtra(Constants.MOBILE_RESULTS_VALUE);
         // If results value is passed then this is an Edit Action
         if (currentValue != null) {
             currentValueId = currentValue.getId();
@@ -41,7 +39,7 @@ public class ManageResultsValueActivity extends Activity {
             setTitle(R.string.manage_results_value_edit_window);
         } else {
             // Added as Extra only on Add, not on Edit
-            currentResultsId = intent.getLongExtra(RESULT_ID, -1);
+            currentResultsId = intent.getLongExtra(Constants.MOBILE_RESULTS_ID, -1);
             setTitle(R.string.manage_results_value_add_window);
         }
         // Fill form with existing data
@@ -67,8 +65,8 @@ public class ManageResultsValueActivity extends Activity {
             }
         });
         // Cancel button
-        Button button = (Button) findViewById(R.id.manage_results_value_button_cancel);
-        button.setOnClickListener(new View.OnClickListener() {
+        Button cancel = (Button) findViewById(R.id.manage_results_value_button_cancel);
+        cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setResult(RESULT_CANCELED);
@@ -120,10 +118,8 @@ public class ManageResultsValueActivity extends Activity {
     }
 
     private void assembleResponseAndFinish() {
-        Bundle resultData = new Bundle();
-        resultData.putSerializable(RESULT_EXTRA, currentValue);
         Intent intent = new Intent();
-        intent.putExtras(resultData);
+        intent.putExtra(Constants.MOBILE_RESULTS_VALUE, currentValue);
         setResult(RESULT_OK, intent);
         finish();
     }

@@ -12,7 +12,7 @@ public final class Logger {
         Log.e(LOG_NAME, exception.getMessage(), exception);
     }
 
-    public static void debug(String message) {
-        Log.d(LOG_NAME, message);
+    public static void debug(Class clazz, String message) {
+        Log.d(LOG_NAME, clazz.getName() + ": " + message);
     }
 }

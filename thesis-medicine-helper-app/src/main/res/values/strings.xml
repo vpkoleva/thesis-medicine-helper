@@ -42,4 +42,6 @@
     <string name="manage_results_value_edit_window">Редактирай стойност</string>
     <string name="manage_results_value_datetime_label">Измерено на: </string>
     <string name="manage_results_value_measurement_label">Стойност: </string>
+    <string name="reminder_label">Напомняне за график</string>
+    <string name="reminder_close">Готово, затвори прозореца</string>
 </resources>

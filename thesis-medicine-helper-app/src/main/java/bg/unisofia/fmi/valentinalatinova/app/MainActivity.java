@@ -10,7 +10,9 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
 import bg.unisofia.fmi.valentinalatinova.app.tabs.TabsPagerAdapter;
+import bg.unisofia.fmi.valentinalatinova.app.utils.Constants;
 import bg.unisofia.fmi.valentinalatinova.app.utils.HttpClient;
+import bg.unisofia.fmi.valentinalatinova.app.utils.Logger;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
 
@@ -43,8 +45,7 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         switch (requestCode) {
             case RESULT_LOGIN:
                 if (resultCode == Activity.RESULT_OK) {
-                    Bundle result = data.getExtras();
-                    httpClient = (HttpClient) result.getSerializable(LoginActivity.RESULT_EXTRA);
+                    httpClient = (HttpClient) data.getSerializableExtra(Constants.HTTP_CLIENT);
                     initialiseTabs();
                 } else {
                     finish();
@@ -105,12 +106,11 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
     // Private methods
     private void startLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
-        intent.putExtra("", httpClient);
         startActivityForResult(intent, RESULT_LOGIN);
     }
 
     private void initialiseTabs() {
-        // Initialisation
+        Logger.debug(MainActivity.class, "Initialising tabs");
         TabsPagerAdapter mAdapter = new TabsPagerAdapter(getSupportFragmentManager());
         viewPager = (ViewPager) findViewById(R.id.main_activity_pager);
         viewPager.setAdapter(mAdapter);

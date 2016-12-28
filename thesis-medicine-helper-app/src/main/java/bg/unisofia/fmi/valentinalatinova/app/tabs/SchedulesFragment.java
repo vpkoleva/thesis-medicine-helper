@@ -10,9 +10,13 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -27,11 +31,14 @@ import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import bg.unisofia.fmi.valentinalatinova.app.AlarmReceiver;
 import bg.unisofia.fmi.valentinalatinova.app.MainActivity;
 import bg.unisofia.fmi.valentinalatinova.app.ManageScheduleActivity;
 import bg.unisofia.fmi.valentinalatinova.app.R;
+import bg.unisofia.fmi.valentinalatinova.app.utils.Constants;
 import bg.unisofia.fmi.valentinalatinova.app.utils.DateUtils;
 import bg.unisofia.fmi.valentinalatinova.app.utils.HttpClient;
+import bg.unisofia.fmi.valentinalatinova.app.utils.Logger;
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 import bg.unisofia.fmi.valentinalatinova.core.json.ScheduleInfo;
 
@@ -46,6 +53,8 @@ public class SchedulesFragment extends CustomFragment {
     private ScheduleInfo currentSchedule;
     private List<ScheduleInfo> allSchedules;
     private List<Date> datesWithSchedules = new ArrayList<>();
+    private AlarmManager alarmManager;
+    private List<PendingIntent> alarmPendingIntents = new ArrayList<>();
 
     /**
      * Instantiates fragment user interface.
@@ -58,9 +67,10 @@ public class SchedulesFragment extends CustomFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_schedules, container, false);
+        alarmManager = (AlarmManager) rootView.getContext().getSystemService(Context.ALARM_SERVICE);
+        invokeGetSchedules();
         initialiseCalendar();
         registerOnClickListeners();
-        invokeGetSchedules();
         return rootView;
     }
 
@@ -104,7 +114,7 @@ public class SchedulesFragment extends CustomFragment {
             switch (item.getItemId()) {
                 case MENU_EDIT_ID:
                     Intent intent = new Intent(rootView.getContext(), ManageScheduleActivity.class);
-                    intent.putExtra(ManageScheduleActivity.SCHEDULE_ID, currentSchedule.getId());
+                    intent.putExtra(Constants.SCHEDULE_ID, currentSchedule.getId());
                     startActivityForResult(intent, RESULT_EDIT);
                     break;
                 case MENU_DELETE_ID:
@@ -163,6 +173,7 @@ public class SchedulesFragment extends CustomFragment {
     }
 
     private void initialiseCalendar() {
+        Logger.debug(SchedulesFragment.class, "Initialise calendar");
         schedulesCalendar = new CaldroidFragment();
         Bundle args = new Bundle();
         Calendar today = Calendar.getInstance();
@@ -281,6 +292,8 @@ public class SchedulesFragment extends CustomFragment {
             List<ScheduleInfo> result = new ArrayList<>();
             if (schedulesArray != null) {
                 Collections.addAll(result, schedulesArray);
+                Logger.debug(SchedulesFragment.class, "Get schedules: " + result.size());
+                setAlarms(result);
             }
             return result;
         }
@@ -295,6 +308,28 @@ public class SchedulesFragment extends CustomFragment {
             allSchedules = result;
             refreshCalendar();
             drawSchedulesTable(getSchedulesByDate(Calendar.getInstance().getTime()));
+        }
+
+        private void setAlarms(List<ScheduleInfo> schedules) {
+            // Cancel all exiting
+            for (PendingIntent pendingIntent : alarmPendingIntents) {
+                alarmManager.cancel(pendingIntent);
+            }
+
+            alarmPendingIntents = new ArrayList<>();
+            for (ScheduleInfo schedule : schedules) {
+                DateTime runTime = schedule.getStart().withZone(DateTimeZone.getDefault());
+                if (runTime.isAfterNow()) {
+                    Intent intent = new Intent(rootView.getContext(), AlarmReceiver.class);
+                    intent.putExtra(Constants.ALARM_SCHEDULE, schedule);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(rootView.getContext(),
+                            schedule.hashCode(), intent, PendingIntent.FLAG_CANCEL_CURRENT);
+                    Logger.debug(SchedulesFragment.class, "Schedule '" + schedule.getTitle()
+                            + "' with id '" + schedule.getId() + "' will start once at '" + runTime);
+                    alarmManager.set(AlarmManager.RTC_WAKEUP, runTime.getMillis(), pendingIntent);
+                    alarmPendingIntents.add(pendingIntent);
+                }
+            }
         }
     }
 
@@ -312,6 +347,7 @@ public class SchedulesFragment extends CustomFragment {
         protected void onPostExecute(Result result) {
             if (result != null) {
                 if (result.isSuccess()) {
+                    Logger.debug(SchedulesFragment.class, "Deleted schedule: " + result.getId());
                     invokeGetSchedules();
                 } else {
                     MainActivity.createErrorDialog(rootView.getContext(), result.getError());

@@ -24,6 +24,7 @@ import bg.unisofia.fmi.valentinalatinova.app.MainActivity;
 import bg.unisofia.fmi.valentinalatinova.app.ManageResultActivity;
 import bg.unisofia.fmi.valentinalatinova.app.ManageResultsValueActivity;
 import bg.unisofia.fmi.valentinalatinova.app.R;
+import bg.unisofia.fmi.valentinalatinova.app.utils.Constants;
 import bg.unisofia.fmi.valentinalatinova.app.utils.DateUtils;
 import bg.unisofia.fmi.valentinalatinova.app.utils.HttpClient;
 import bg.unisofia.fmi.valentinalatinova.app.utils.Logger;
@@ -102,12 +103,11 @@ public class ResultsFragment extends CustomFragment {
      */
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        Logger.debug(item.getGroupId() + "-" + item.getItemId());
         if (MENU_GROUP_ID == item.getGroupId()) {
             switch (item.getItemId()) {
                 case MENU_EDIT_ID:
                     Intent intent = new Intent(rootView.getContext(), ManageResultsValueActivity.class);
-                    intent.putExtra(ManageResultsValueActivity.RESULT_EXTRA, currentResultValue);
+                    intent.putExtra(Constants.MOBILE_RESULTS_VALUE, currentResultValue);
                     startActivityForResult(intent, RESULT_VALUE_EDIT);
                     break;
                 case MENU_DELETE_ID:
@@ -136,17 +136,15 @@ public class ResultsFragment extends CustomFragment {
         super.onActivityResult(requestCode, resultCode, data);
         // In case of OK result
         if (resultCode == Activity.RESULT_OK) {
-            Bundle result = data.getExtras();
             // In case of Add result
             if (requestCode == RESULT_ADD) {
-                currentResult = (MobileResults) result.getSerializable(ManageResultActivity.RESULT_EXTRA);
+                currentResult = (MobileResults) data.getSerializableExtra(Constants.MOBILE_RESULTS);
                 allResults.add(currentResult);
                 currentResultValue = null;
                 refreshResultsTable(0);
                 // In case of Add or Edit result value
             } else if (requestCode == RESULT_VALUE_EDIT || requestCode == RESULT_VALUE_ADD) {
-                currentResultValue = (MobileResultsValue) result
-                        .getSerializable(ManageResultsValueActivity.RESULT_EXTRA);
+                currentResultValue = (MobileResultsValue) data.getSerializableExtra(Constants.MOBILE_RESULTS_VALUE);
                 // Remove before add in case of Edit Schedule
                 if (requestCode == RESULT_VALUE_EDIT) {
                     // equals() depend on 'id' only
@@ -221,7 +219,7 @@ public class ResultsFragment extends CustomFragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(rootView.getContext(), ManageResultsValueActivity.class);
-                intent.putExtra(ManageResultsValueActivity.RESULT_ID, currentResult.getId());
+                intent.putExtra(Constants.MOBILE_RESULTS_ID, currentResult.getId());
                 startActivityForResult(intent, RESULT_VALUE_ADD);
             }
         });
@@ -356,6 +354,7 @@ public class ResultsFragment extends CustomFragment {
          */
         @Override
         protected void onPostExecute(List<MobileResults> result) {
+            Logger.debug(ResultsFragment.class, "Get results: " + result.size());
             allResults = result;
             refreshResultsTable(0);
         }

@@ -31,6 +31,14 @@
                 android:label="@string/manage_results_window"/>
         <activity android:name="ManageScheduleActivity"/>
         <activity android:name="ManageResultsValueActivity"/>
+
+        <activity
+                android:name="ReminderActivity"
+                android:label="@string/reminder_label"
+                android:theme="@android:style/Theme.Holo.Light.Dialog"/>
+
+        <receiver
+                android:name="AlarmReceiver"/>
     </application>
 
 </manifest>

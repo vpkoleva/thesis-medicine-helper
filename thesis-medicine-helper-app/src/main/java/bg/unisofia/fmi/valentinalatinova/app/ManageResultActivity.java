@@ -7,13 +7,13 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import bg.unisofia.fmi.valentinalatinova.app.utils.Constants;
 import bg.unisofia.fmi.valentinalatinova.app.utils.HttpClient;
 import bg.unisofia.fmi.valentinalatinova.core.json.MobileResults;
 import bg.unisofia.fmi.valentinalatinova.core.json.Result;
 
 public class ManageResultActivity extends Activity {
 
-    public static final String RESULT_EXTRA = "MobileResults";
     private MobileResults currentResult;
 
     @Override
@@ -39,8 +39,8 @@ public class ManageResultActivity extends Activity {
             }
         });
         // Cancel button
-        Button button = (Button) findViewById(R.id.manage_result_button_cancel);
-        button.setOnClickListener(new View.OnClickListener() {
+        Button cancel = (Button) findViewById(R.id.manage_result_button_cancel);
+        cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setResult(RESULT_CANCELED);
@@ -50,10 +50,8 @@ public class ManageResultActivity extends Activity {
     }
 
     private void assembleResponseAndFinish() {
-        Bundle resultData = new Bundle();
-        resultData.putSerializable(RESULT_EXTRA, currentResult);
         Intent intent = new Intent();
-        intent.putExtras(resultData);
+        intent.putExtra(Constants.MOBILE_RESULTS, currentResult);
         setResult(RESULT_OK, intent);
         finish();
     }

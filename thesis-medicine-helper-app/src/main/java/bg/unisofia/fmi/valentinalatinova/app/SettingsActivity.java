@@ -5,9 +5,6 @@ import android.preference.PreferenceActivity;
 
 public class SettingsActivity extends PreferenceActivity {
 
-    public static final String KEY_URL = "settings_url";
-    public static final String KEY_ACCEPT_ALL_CERTIFICATES = "settings_accept_all_certificates";
-
     /**
      * Called when activity is first created.
      *

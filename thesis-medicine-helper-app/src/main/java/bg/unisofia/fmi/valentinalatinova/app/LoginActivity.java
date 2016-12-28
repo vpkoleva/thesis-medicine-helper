@@ -15,11 +15,12 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
+import bg.unisofia.fmi.valentinalatinova.app.utils.Constants;
 import bg.unisofia.fmi.valentinalatinova.app.utils.HttpClient;
+import bg.unisofia.fmi.valentinalatinova.app.utils.Logger;
 
 public class LoginActivity extends Activity {
 
-    public static final String RESULT_EXTRA = "HttpClient";
     private final String KEY_USERNAME = "settings_username";
     private final String KEY_PASSWORD = "settings_password";
     private final String KEY_REMEMBER = "settings_remember";
@@ -99,8 +100,8 @@ public class LoginActivity extends Activity {
 
     private void reloadSettings() {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String settingsUrl = sharedPref.getString(SettingsActivity.KEY_URL, null);
-        boolean settingsAcceptAll = sharedPref.getBoolean(SettingsActivity.KEY_ACCEPT_ALL_CERTIFICATES, true);
+        String settingsUrl = sharedPref.getString(Constants.SETTINGS_KEY_URL, null);
+        boolean settingsAcceptAll = sharedPref.getBoolean(Constants.SETTINGS_KEY_ACCEPT_ALL, true);
         // If connection defaults are not read, take them from string.xml
         if (settingsUrl == null) {
             settingsUrl = this.getString(R.string.settings_url_default);
@@ -166,11 +167,10 @@ public class LoginActivity extends Activity {
         @Override
         protected void onPostExecute(HttpClient result) {
             if (result != null) {
-                Bundle resultData = new Bundle();
-                resultData.putSerializable(RESULT_EXTRA, result);
                 Intent intent = new Intent();
-                intent.putExtras(resultData);
+                intent.putExtra(Constants.HTTP_CLIENT, result);
                 setResult(RESULT_OK, intent);
+                Logger.debug(LoginActivity.class, "Login successful");
                 finish();
             } else {
                 TextView login = (TextView) findViewById(R.id.login_error);

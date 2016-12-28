@@ -1,0 +1,20 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp">
+
+    <TextView
+            android:id="@+id/reminder_text"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:labelFor="@+id/manage_result_name"/>
+
+    <Button
+            android:id="@+id/reminder_button_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/reminder_close"
+            android:layout_below="@+id/reminder_text"/>
+
+</RelativeLayout>
