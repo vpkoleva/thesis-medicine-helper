@@ -9,6 +9,7 @@ import org.joda.time.format.DateTimeFormat;
 public final class DateUtils {
 
     private DateUtils() {
+        // Utils class
     }
 
     public static String formatDay(Date date) {

@@ -44,13 +44,13 @@ public class MedicineApp extends Application<MedicineConfig> {
             throw ex;
         }
 
+        // Register CORS Response filter
+        CorsResponseFilter filter = new CorsResponseFilter(config.getAllowCorsForDomain());
+        environment.jersey().register(filter);
+
         // Create DAOs
         AccessTokenDAO accessTokenDao = new AccessTokenDAO();
         UserDAO userDao = new UserDAO(dataBaseCommander);
-
-        // Register CORS Response filter
-        CorsResponseFilter filter = new CorsResponseFilter();
-        environment.jersey().register(filter);
 
         // Register oauth2 service
         final OAuth2Service oAuth2Service = new OAuth2Service(config.getOAuth().getAllowedGrantTypes(),

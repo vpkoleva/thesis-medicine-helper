@@ -10,6 +10,8 @@ database:
   username: root
   password: root
 
+allowCorsForDomain: "*"
+
 # Change default server ports
 server:
   applicationConnectors:

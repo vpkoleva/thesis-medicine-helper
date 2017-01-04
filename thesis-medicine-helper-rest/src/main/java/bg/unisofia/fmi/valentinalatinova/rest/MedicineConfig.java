@@ -2,10 +2,12 @@ package bg.unisofia.fmi.valentinalatinova.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableList;
+
 import io.dropwizard.Configuration;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.NotEmpty;
 
 public class MedicineConfig extends Configuration {
 
@@ -17,12 +19,20 @@ public class MedicineConfig extends Configuration {
     @JsonProperty
     private Database database = new Database();
 
+    @NotNull
+    @JsonProperty
+    private String allowCorsForDomain;
+
     public OAuth getOAuth() {
         return authentication;
     }
 
     public Database getDatabase() {
         return database;
+    }
+
+    public String getAllowCorsForDomain() {
+        return allowCorsForDomain;
     }
 
     public static class OAuth {

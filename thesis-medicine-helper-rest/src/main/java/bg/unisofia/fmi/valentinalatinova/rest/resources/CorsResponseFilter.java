@@ -9,10 +9,16 @@ import javax.ws.rs.core.MultivaluedMap;
 
 public class CorsResponseFilter implements ContainerResponseFilter {
 
+    private String allowCorsForDomain;
+
+    public CorsResponseFilter(String allowCorsForDomain) {
+        this.allowCorsForDomain = allowCorsForDomain;
+    }
+
     public void filter(ContainerRequestContext requestContext, ContainerResponseContext responseContext)
             throws IOException {
         MultivaluedMap<String, Object> headers = responseContext.getHeaders();
-        headers.add("Access-Control-Allow-Origin", "*"); // This can be limited to specific domain
+        headers.add("Access-Control-Allow-Origin", allowCorsForDomain);
         headers.add("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
         headers.add("Access-Control-Allow-Headers", "X-Requested-With, Content-Type, Authorization");
     }

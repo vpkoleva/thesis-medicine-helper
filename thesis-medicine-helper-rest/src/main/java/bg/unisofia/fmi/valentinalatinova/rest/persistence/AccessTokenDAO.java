@@ -12,7 +12,7 @@ import bg.unisofia.fmi.valentinalatinova.rest.data.AccessToken;
 import bg.unisofia.fmi.valentinalatinova.rest.data.User;
 
 public class AccessTokenDAO {
-    private static Map<UUID, AccessToken> accessTokenTable = new HashMap<>();
+    private Map<UUID, AccessToken> accessTokenTable = new HashMap<>();
 
     public Optional<AccessToken> findAccessTokenById(final UUID accessTokenId) {
         AccessToken accessToken = accessTokenTable.get(accessTokenId);

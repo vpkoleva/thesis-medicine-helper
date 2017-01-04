@@ -10,7 +10,7 @@ public final class Constants {
     public static final String SETTINGS_KEY_URL = "settings_url";
     public static final String SETTINGS_KEY_ACCEPT_ALL = "settings_accept_all_certificates";
 
-    private Constants(String value) {
-        //Utils class
+    private Constants() {
+        // Utils class
     }
 }

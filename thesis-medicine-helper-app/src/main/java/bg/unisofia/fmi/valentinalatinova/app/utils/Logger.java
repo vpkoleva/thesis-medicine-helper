@@ -6,6 +6,7 @@ public final class Logger {
     private static final String LOG_NAME = "medicine-helper";
 
     private Logger() {
+        // Utils class
     }
 
     public static void error(Exception exception) {
