@@ -28,7 +28,7 @@ public class DataBaseCommander {
         connection = DriverManager.getConnection(
                 "jdbc:mysql://" + database.getHost() + ":" + database.getPort() + "/" + database.getDatabase()
                         + "?user=" + database.getUsername() + "&password=" + database.getPassword()
-                        + "&characterEncoding=UTF-8&useLegacyDatetimeCode=false&serverTimezone=UTC");
+                        + "&autoReconnect=true&characterEncoding=UTF-8&useLegacyDatetimeCode=false&serverTimezone=UTC");
     }
 
     public PreparedStatement createPreparedStatement(String sql, Object... statementData) {
@@ -137,7 +137,9 @@ public class DataBaseCommander {
         if (preparedStatements != null) {
             for (PreparedStatement preparedStatement : preparedStatements) {
                 try {
-                    preparedStatement.close();
+                    if (preparedStatement != null) {
+                        preparedStatement.close();
+                    }
                 } catch (SQLException sqlEx) {
                     LOGGER.warn("Warning during closing of prepared statement: ", sqlEx);
                 }
